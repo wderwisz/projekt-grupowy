@@ -1,0 +1,75 @@
+using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.Splines;
+using UnityEngine.XR.Interaction.Toolkit.Inputs.Simulation;
+using UnityEngine.UIElements;
+
+public class DrawingPath3D : MonoBehaviour
+{
+    //public XRController controller; 
+    public XRBaseController controller;
+    public SplineContainer splineContainerPrefab; 
+    public float pointSpacing = 0.2f;
+
+    private SplineContainer currentSpline;
+    private bool isDrawing = false;
+
+    private Vector3 lastKnotPosition = Vector3.zero;
+
+    void Update()
+    {
+        //if (controller.inputDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out bool isPressed) && isPressed)
+        if(controller.selectInteractionState.active)
+        {
+            if (!isDrawing)
+            {
+                StartDrawing();
+            }
+            AddPoint();
+        }
+        else if (isDrawing)
+        {
+            //Debug.Log("Stopped!");
+            StopDrawing();
+        }
+        //else Debug.Log("Not drawing!");
+    }
+
+    void StartDrawing()
+    {
+        currentSpline = Instantiate(splineContainerPrefab, Vector3.zero, Quaternion.identity);
+        isDrawing = true;
+    }
+
+    void AddPoint()
+    {
+        Vector3 newPosition = controller.transform.position;
+        newPosition = currentSpline.transform.InverseTransformPoint(newPosition);
+        BezierKnot knot = new BezierKnot(newPosition);
+
+        if (currentSpline.Spline.Count != 0)
+        {
+            BezierKnot lastKnot = currentSpline.Spline[currentSpline.Spline.Count - 1];
+            lastKnotPosition = (Vector3)lastKnot.Position;
+        }
+
+        if (Vector3.Distance(newPosition, lastKnotPosition) > pointSpacing)
+        {
+            currentSpline.Spline.Add(knot);
+            lastKnotPosition = newPosition;
+        }
+        Debug.Log(knot);
+    }
+
+    void StopDrawing()
+    {
+        isDrawing = false;
+        ExtrudeSpline();
+    }
+
+    void ExtrudeSpline()
+    {
+        SplineExtrude extrude = currentSpline.gameObject.GetComponent<SplineExtrude>();
+        Debug.Log("Extruded");
+    }
+}
