@@ -19,7 +19,7 @@ public class DrawingPath3D : MonoBehaviour
     void Update()
     {
         //if (controller.inputDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out bool isPressed) && isPressed)
-        if(controller.selectInteractionState.active)
+        if(controller.activateInteractionState.active)
         {
             if (!isDrawing)
             {
@@ -58,18 +58,42 @@ public class DrawingPath3D : MonoBehaviour
             currentSpline.Spline.Add(knot);
             lastKnotPosition = newPosition;
         }
-        Debug.Log(knot);
+        //Debug.Log(knot);
+    }
+
+    void AddCollidersToSpline()
+    {
+        for (int i = 0; i < currentSpline.Spline.Count - 1; i++)
+        {
+            GameObject colliderSegment = new GameObject($"SplineCollider_{i}");
+            colliderSegment.transform.parent = currentSpline.transform;
+
+            BoxCollider boxCollider = colliderSegment.AddComponent<BoxCollider>();
+
+            Vector3 start = (Vector3)currentSpline.Spline[i].Position;
+            Vector3 end = (Vector3)currentSpline.Spline[i + 1].Position;
+
+            Vector3 midPoint = (start + end) / 2;
+            colliderSegment.transform.position = midPoint;
+
+            float segmentLength = Vector3.Distance(start, end);
+            boxCollider.size = new Vector3(0.015f, 0.015f, segmentLength);
+
+            colliderSegment.transform.LookAt(end);
+            colliderSegment.tag = "SplineSegment";
+        }
     }
 
     void StopDrawing()
     {
         isDrawing = false;
         ExtrudeSpline();
+        AddCollidersToSpline();
     }
 
     void ExtrudeSpline()
     {
         SplineExtrude extrude = currentSpline.gameObject.GetComponent<SplineExtrude>();
-        Debug.Log("Extruded");
+        //Debug.Log("Extruded");
     }
 }
