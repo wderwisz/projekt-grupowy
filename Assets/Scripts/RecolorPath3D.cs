@@ -9,29 +9,18 @@ public class RecolorPath3D : MonoBehaviour
     private Material originalMaterial;
     private MeshRenderer[] meshRenderers;
 
-    void Start()
-    {
-        meshRenderers = GetComponentsInChildren<MeshRenderer>();
-        if (meshRenderers.Length > 0)
+     private void OnTriggerEnter(Collider other)
+     {
+        Debug.Log("Triggerring");
+        // SprawdŸ, czy obiekt to kontroler
+        if (other.CompareTag("Controller"))
         {
-            originalMaterial = meshRenderers[0].material;
-        }
-    }
+            Debug.Log($"Usuwanie segmentu spline'a: {gameObject.name}");
 
-    public void OnHoverEntered(HoverEnterEventArgs args)
-    {
-        foreach (var renderer in meshRenderers)
-        {
-            renderer.material = newMaterial;
+            
+            MeshRenderer renderer = gameObject.GetComponent<MeshRenderer>();
+            //renderer.sharedMaterial = newMaterial;
         }
-        Debug.Log("Kontroler wszed³ w interakcjê ze spline'em.");
-    }
+     }
 
-    public void OnHoverExited(HoverExitEventArgs args)
-    {
-        foreach (var renderer in meshRenderers)
-        {
-            renderer.material = originalMaterial;
-        }
-    }
 }
