@@ -12,14 +12,14 @@ public class ObjectRandomMovement : MonoBehaviour
 
     private Vector3 lastPositionVector = Vector3.zero;
 
-    [SerializeField]
-    private float minDistanceAfterMovement = 0.25f;
+    [SerializeField] private float minDistanceAfterMovement = 0.25f;
 
     private void Awake()
     {
         //lastPositionVector = Vector3.zero;
     }
 
+    // Wyznaczanie nowej losowej pozycji punktu
     private Vector3 getNewRandomPositionVector(Vector3 oldVector)
     {
         Vector3 newVector;
@@ -30,6 +30,7 @@ public class ObjectRandomMovement : MonoBehaviour
         return newVector;
     }
 
+    // Obs³uga najechania promieniem na punkt (z RayInteractora)
     public void OnHoverEntered(HoverEnterEventArgs args)
     {
         Debug.Log($"{args.interactorObject} hovered over {args.interactableObject}", this);

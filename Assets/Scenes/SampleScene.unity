@@ -2159,7 +2159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1449537987}
   m_Layer: 0
-  m_Name: InteractableBoard
+  m_Name: InteractableBoardPoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2197,7 +2197,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1761066420}
   m_Layer: 0
-  m_Name: InteractableBoard (1)
+  m_Name: InteractableBoardDrawing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2615,6 +2615,7 @@ MonoBehaviour:
   controller: {fileID: 1789286848}
   splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
   pointSpacing: 0.006
+  config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
 --- !u!1001 &1884299422
 PrefabInstance:
   m_ObjectHideFlags: 0

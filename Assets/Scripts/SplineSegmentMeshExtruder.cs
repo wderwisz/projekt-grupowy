@@ -8,6 +8,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 {
     public Material[] segmentMaterials; // Tablica materia³ów do ró¿nych segmentów spline'a
 
+    // Liczba wierzcho³ków bry³y ekstrudowanej na pojedynczym segmencie i liczba jej trójk¹tów
     private const int numberOfVertices = 8;
     private const int numberOfTriangles = 12;
 
@@ -56,7 +57,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             // Przypisz materia³ (rotacyjnie dla ró¿nych segmentów)
             meshRenderer.material = segmentMaterials[i % segmentMaterials.Length];
 
-            // Generuj extrudowany segment jako osobny mesh
+            // Generowanie ekstrudowanego segmentu jako osobny mesh
             Vector3 startPoint = (Vector3)spline[i].Position;
             Vector3 endPoint = (Vector3)spline[i + 1].Position;
 
@@ -64,25 +65,29 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             Mesh mesh = GenerateExtrudedMesh(startPoint, endPoint);
             meshFilter.mesh = mesh;
 
+            // Dodawanie collidera do mesha i ustawianie jego atrybutów
             MeshCollider collider = segmentMesh.AddComponent<MeshCollider>();
             collider.convex = true;
             collider.isTrigger = true;
 
             //segmentMesh.AddComponent<DestroyingSplineSegment>();
             segmentMesh.AddComponent<RecolorPath3D>();
+
         }
     }
 
+    // Funkcja tworz¹ca mesh w ramach pojedynczego segmentu
     private Mesh GenerateExtrudedMesh(Vector3 start, Vector3 end)
     {
-        // Twórz prosty extrudowany quad mesh dla segmentu
         Mesh mesh = new Mesh();
         Vector3 direction = end - start;
 
+        // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
         Vector3 temp = Vector3.up * width / 2;
         Vector3 right = Vector3.Cross(direction.normalized, temp).normalized * width;
         Vector3 up = Vector3.Cross(direction.normalized, right).normalized * width;
 
+        // Wyznaczenie konkretnych wierzcho³ków segmentu
         Vector3[] vertices = new Vector3[numberOfVertices]
         {
             start - right - up,  //0
@@ -95,6 +100,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             end + right + up  //7
         };
 
+        // Wyznaczanie trójk¹tów mesha pomiêdzy wierzcho³kami
         int[] triangles = new int[numberOfTriangles * 3] { 
             0, 1, 2,    // sciany
             2, 1, 3,
@@ -117,7 +123,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         return mesh;
     }
 
-    // do usuniêcia, dodawanie rêczne boxColliderów - teraz dzia³a na meshColliderze
+    // Do usuniêcia, dodawanie rêczne boxColliderów - teraz dzia³a na meshColliderze
     public void AddCollidersToSpline(SplineContainer currentSpline)
     {
         for (int i = 0; i < currentSpline.Spline.Count - 1; i++)

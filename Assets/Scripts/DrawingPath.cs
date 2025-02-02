@@ -28,11 +28,11 @@ public class DrawingPath : MonoBehaviour
         rayInteractor = FindObjectOfType<XRRayInteractor>();
     }
 
+    // Dwie funkcje wywo³ywane przez RayInteractor
     public void OnHoverEntered(HoverEnterEventArgs args)
     {
         isHovering = true;
     }
-
     public void OnHoverExit(HoverExitEventArgs args)
     {
         isHovering = false;
@@ -42,8 +42,9 @@ public class DrawingPath : MonoBehaviour
     {
         if (isHovering)
         {
-            if (primaryButtonAction.action.ReadValue<float>() > 0)
+            if (primaryButtonAction.action.ReadValue<float>() > 0)  // Wciœniêcie przycisku
             {
+                // Tworzenie kropek na powierzchni whiteboarda
                 if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit) && hit.collider.gameObject == whiteboard)
                 {
                     Debug.Log($"Hit Point: {hit.point}");

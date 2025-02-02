@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// KLASA NIEU¯YWANA, DO USUNIÊCIA
+
 public class DestroyingSplineSegment : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
