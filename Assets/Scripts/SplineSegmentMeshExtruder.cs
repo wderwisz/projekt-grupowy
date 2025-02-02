@@ -7,6 +7,7 @@ using UnityEngine.Splines;
 public class SplineSegmentMeshExtruder : MonoBehaviour
 {
     public Material[] segmentMaterials; // Tablica materia³ów do ró¿nych segmentów spline'a
+    public Material recolorMaterial;
 
     // Liczba wierzcho³ków bry³y ekstrudowanej na pojedynczym segmencie i liczba jej trójk¹tów
     private const int numberOfVertices = 8;
@@ -14,11 +15,23 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
     private float width = 0.01f;  // Szerokoœæ segmentu
 
+    private List<GameObject> segments;
+
+    public List<GameObject> getSegmentList()
+    {
+        return segments;
+    }
+
+    private void Awake()
+    {
+        segments = new List<GameObject>();
+    }
 
     // Funkcja do ekstrudowania pojedynczego segmentu. Wywo³ywana po dodaniu kolejnego knota do spline'a
     public void ExtrudeSingleSegment(Spline spline, int knotIndex)
     {
         GameObject segmentMesh = new GameObject($"SplineSegmentMesh_{knotIndex}");
+        Segment3D segmentComponent = segmentMesh.AddComponent<Segment3D>();
         segmentMesh.transform.parent = this.transform;
 
         MeshFilter meshFilter = segmentMesh.AddComponent<MeshFilter>();
@@ -40,7 +53,13 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         collider.isTrigger = true;
 
         //segmentMesh.AddComponent<DestroyingSplineSegment>();
-        segmentMesh.AddComponent<RecolorPath3D>();
+        RecolorPath3D recolorPath3D = segmentMesh.AddComponent<RecolorPath3D>();
+        recolorPath3D.newMaterial = recolorMaterial;
+
+        segments.Add(segmentMesh);
+
+        recolorPath3D.setCurrentSegment(segments[knotIndex - 1]);
+        if(knotIndex > 1) recolorPath3D.setPreviousSegment(segments[knotIndex - 2]);
     }
 
     // funkcja do ekstrudowania ca³ego spline'a po zakoñczeniu rysowania 
@@ -49,6 +68,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         for (int i = 0; i < spline.Count - 1; i++)
         {
             GameObject segmentMesh = new GameObject($"SplineSegmentMesh_{i}");
+            Segment3D segmentComponent = segmentMesh.AddComponent<Segment3D>();
             segmentMesh.transform.parent = this.transform;
 
             MeshFilter meshFilter = segmentMesh.AddComponent<MeshFilter>();
@@ -71,8 +91,13 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             collider.isTrigger = true;
 
             //segmentMesh.AddComponent<DestroyingSplineSegment>();
-            segmentMesh.AddComponent<RecolorPath3D>();
+            RecolorPath3D recolorPath3D = segmentMesh.AddComponent<RecolorPath3D>();
+            recolorPath3D.newMaterial = recolorMaterial;
 
+            segments.Add(segmentMesh);
+
+            recolorPath3D.setCurrentSegment(segments[i]);
+            if (i > 0) recolorPath3D.setPreviousSegment(segments[i - 1]);
         }
     }
 

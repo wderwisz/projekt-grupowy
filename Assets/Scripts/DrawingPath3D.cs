@@ -5,6 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs.Simulation;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
 using System;
+using System.Collections.Generic;
 
 public class DrawingPath3D : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class DrawingPath3D : MonoBehaviour
     private bool isDrawing = false;
 
     private SplineSegmentMeshExtruder extruder;
+    private List<Segment3D> segments;
 
     private Vector3 lastKnotPosition = Vector3.zero;
 
@@ -70,7 +72,7 @@ public class DrawingPath3D : MonoBehaviour
             currentSpline.Spline.Add(knot);
             lastKnotPosition = newPosition;
 
-            if (config.getDrawingMode())
+            if (config.getDrawingMode() && currentSpline.Spline.Count > 1)
             {
                 // Ekstrudowanie pojedynczego segmentu wyznaczonego miêdzy obecnym a poprzednim wêz³em
                 extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1);
