@@ -13,7 +13,10 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private const int numberOfVertices = 8;
     private const int numberOfTriangles = 12;
 
-    private float width = 0.01f;  // Szerokoœæ segmentu
+    [SerializeField][Range(0.01f, 2.0f)] private float width = 0.01f;  // Szerokoœæ segmentu
+    [SerializeField][Range(0.01f, 2.0f)] private float hight = 0.01f;  // wysokoœæ segmentu
+
+    private Vector3 lastPerpendicularInY = Vector3.zero; 
 
     private List<GameObject> segments;
 
@@ -105,25 +108,31 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private Mesh GenerateExtrudedMesh(Vector3 start, Vector3 end)
     {
         Mesh mesh = new Mesh();
-        Vector3 direction = end - start;
+        Vector3 directionVector = end - start;
+
+        Vector3 currentPerpendicularInY = GetPerpendicularXY(directionVector);
+        if (lastPerpendicularInY == Vector3.zero)
+        {
+            lastPerpendicularInY = GetPerpendicularXY(directionVector);
+        }
 
         // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
-        Vector3 temp = Vector3.up * width / 2;
-        Vector3 right = Vector3.Cross(direction.normalized, temp).normalized * width;
-        Vector3 up = Vector3.Cross(direction.normalized, right).normalized * width;
+        Vector3 y1 = lastPerpendicularInY * hight;
+        Vector3 y2 = currentPerpendicularInY * hight;
+        Vector3 z = new Vector3(0, 0, 1) * width;
 
-        // Wyznaczenie konkretnych wierzcho³ków segmentu
+        lastPerpendicularInY = currentPerpendicularInY;
         Vector3[] vertices = new Vector3[numberOfVertices]
-        {
-            start - right - up,  //0
-            start + right - up,
-            end - right - up, 
-            end + right - up,
-            start - right + up,
-            start + right + up,
-            end - right + up,
-            end + right + up  //7
-        };
+      {
+            start - z - y1,  //0
+            start + z - y1,
+            end - z - y2,
+            end + z - y2,
+            start - z + y1,
+            start + z+ y1,
+            end - z + y2,
+            end + z + y2  //7
+      };
 
         // Wyznaczanie trójk¹tów mesha pomiêdzy wierzcho³kami
         int[] triangles = new int[numberOfTriangles * 3] { 
@@ -147,33 +156,9 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
         return mesh;
     }
-
-    // Do usuniêcia, dodawanie rêczne boxColliderów - teraz dzia³a na meshColliderze
-    public void AddCollidersToSpline(SplineContainer currentSpline)
+    Vector3 GetPerpendicularXY(Vector3 v)
     {
-        for (int i = 0; i < currentSpline.Spline.Count - 1; i++)
-        {
-            GameObject colliderSegment = new GameObject($"SplineCollider_{i}");
-            colliderSegment.transform.parent = currentSpline.transform;
-
-            BoxCollider boxCollider = colliderSegment.AddComponent<BoxCollider>();
-            boxCollider.AddComponent<DestroyingSplineSegment>();
-            boxCollider.isTrigger = true;
-
-            Rigidbody rb = colliderSegment.AddComponent<Rigidbody>();
-            rb.isKinematic = true;
-
-            Vector3 start = (Vector3)currentSpline.Spline[i].Position;
-            Vector3 end = (Vector3)currentSpline.Spline[i + 1].Position;
-
-            Vector3 midPoint = (start + end) / 2;
-            colliderSegment.transform.position = midPoint;
-
-            float segmentLength = Vector3.Distance(start, end);
-            boxCollider.size = new Vector3(0.015f, 0.015f, segmentLength);
-
-            colliderSegment.transform.LookAt(end);
-            colliderSegment.tag = "SplineSegment";
-        }
+        return new Vector3(-v.y, v.x, 0).normalized; // Normalizujemy wynik, aby by³ jednostkowy
     }
+  
 }

@@ -12,7 +12,7 @@ public class DrawingPath3D : MonoBehaviour
     //public XRController controller; 
     public XRBaseController controller;
     public SplineContainer splineContainerPrefab;
-    [SerializeField] [Range(0.01f, 2.0f)] private float pointSpacing = 0.1f;
+    [SerializeField] [Range(0.001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
 
     private SplineContainer currentSpline;
