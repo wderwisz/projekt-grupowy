@@ -1,12 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
-using CommonUsages = UnityEngine.XR.CommonUsages;
 
 public class DrawingPath : MonoBehaviour
 {
@@ -16,19 +10,63 @@ public class DrawingPath : MonoBehaviour
     [SerializeField]
     private GameObject dot;
 
+    private Config config;
+
     public InputActionReference primaryButtonAction;
 
     private XRRayInteractor rayInteractor;
 
     private bool isHovering = false;
 
+    private PathManager pathManager;
 
     private void Awake()
     {
         rayInteractor = FindObjectOfType<XRRayInteractor>();
+        if (config == null)
+        {
+            config = Resources.Load<Config>("MainConfig");
+            if (config == null)
+                Debug.LogError("Nie uda³o siê za³adowaæ Config z Resources!");
+        }
     }
 
-    // Dwie funkcje wywo³ywane przez RayInteractor
+
+    private void Update()
+    {
+        if (config == null)
+        {
+            Debug.LogError("Config nie zosta³ przypisany!");
+            return; 
+        }
+
+        if (config.getDrawingMode())
+        {
+            if (isHovering)
+            {
+                if (primaryButtonAction.action.ReadValue<float>() > 0)  // wcisniecie przycisku
+                {
+                    if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit) && hit.collider.gameObject == whiteboard)
+                    {
+                        Debug.Log($"Hit Point: {hit.point}");
+                        GameObject newDot = Instantiate(dot, hit.point, Quaternion.Euler(0f, 0f, 90f));
+                        if (pathManager != null)
+                            pathManager.AddDot(newDot);
+                    }
+                }
+                else
+                {
+                    Debug.Log("No hit");
+                }
+            }
+        }
+        else
+        {
+            // tryb kolorowania
+        }
+    }
+
+
     public void OnHoverEntered(HoverEnterEventArgs args)
     {
         isHovering = true;
@@ -36,26 +74,5 @@ public class DrawingPath : MonoBehaviour
     public void OnHoverExit(HoverExitEventArgs args)
     {
         isHovering = false;
-    }
-
-    private void Update()
-    {
-        if (isHovering)
-        {
-            if (primaryButtonAction.action.ReadValue<float>() > 0)  // Wciœniêcie przycisku
-            {
-                // Tworzenie kropek na powierzchni whiteboarda
-                if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit) && hit.collider.gameObject == whiteboard)
-                {
-                    Debug.Log($"Hit Point: {hit.point}");
-                    Instantiate(dot, hit.point, Quaternion.Euler(0f, 0f, 90f));
-                }
-            }
-            else
-            {
-                Debug.Log("No hit");
-            }
-        }
-
     }
 }
