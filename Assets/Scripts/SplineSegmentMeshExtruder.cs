@@ -16,10 +16,15 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     [SerializeField][Range(0.01f, 2.0f)] private float width = 0.01f;  // Szerokoœæ segmentu
     [SerializeField][Range(0.01f, 2.0f)] private float hight = 0.01f;  // wysokoœæ segmentu
 
-    private Vector3 lastPerpendicularInY = Vector3.zero; 
-
+    private Vector3 lastPerpendicularVector = Vector3.zero;
+    private bool isSegmentation = true;
     private List<GameObject> segments;
 
+
+
+    private List<Vector3> verticesList = new List<Vector3>();  // Przechowywanie wierzcho³ków
+    private List<int> trianglesList = new List<int>();         // Przechowywanie trójk¹tów
+    private Vector3[] lastVertices = new Vector3[4];           // Wierzcho³ki koñca poprzedniego segmentu
     public List<GameObject> getSegmentList()
     {
         return segments;
@@ -30,135 +35,266 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         segments = new List<GameObject>();
     }
 
-    // Funkcja do ekstrudowania pojedynczego segmentu. Wywo³ywana po dodaniu kolejnego knota do spline'a
-    public void ExtrudeSingleSegment(Spline spline, int knotIndex)
+  
+
+    private GameObject CreateSegmentMesh(Vector3 startPoint, Vector3 endPoint, int index)
     {
-        GameObject segmentMesh = new GameObject($"SplineSegmentMesh_{knotIndex}");
-        Segment3D segmentComponent = segmentMesh.AddComponent<Segment3D>();
+        GameObject segmentMesh = new GameObject($"SplineSegmentMesh_{index}");
         segmentMesh.transform.parent = this.transform;
+
+        Segment3D segmentComponent = segmentMesh.AddComponent<Segment3D>();
 
         MeshFilter meshFilter = segmentMesh.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = segmentMesh.AddComponent<MeshRenderer>();
 
-        // Przypisz materia³ (rotacyjnie dla ró¿nych segmentów)
-        meshRenderer.material = segmentMaterials[knotIndex % segmentMaterials.Length];
+        // Przypisz materia³ rotacyjnie
+        meshRenderer.material = segmentMaterials[index % segmentMaterials.Length];
 
-        // Generuj extrudowany segment jako osobny mesh
-        Vector3 startPoint = (Vector3)spline[knotIndex - 1].Position;
-        Vector3 endPoint = (Vector3)spline[knotIndex].Position;
-
-        // Tworzenie prostego mesha wzd³u¿ segmentu spline'a
-        Mesh mesh = GenerateExtrudedMesh(startPoint, endPoint);
+        // Generuj extrudowany mesh
+        Mesh mesh = GenerateExtrudedMesh(startPoint, endPoint, isSegmentation);
         meshFilter.mesh = mesh;
 
+        // Dodaj collider
         MeshCollider collider = segmentMesh.AddComponent<MeshCollider>();
         collider.convex = true;
         collider.isTrigger = true;
 
-        //segmentMesh.AddComponent<DestroyingSplineSegment>();
+        // Dodaj komponent do zmiany koloru
         RecolorPath3D recolorPath3D = segmentMesh.AddComponent<RecolorPath3D>();
         recolorPath3D.newMaterial = recolorMaterial;
 
+        // Dodaj segment do listy
         segments.Add(segmentMesh);
 
-        recolorPath3D.setCurrentSegment(segments[knotIndex - 1]);
-        if(knotIndex > 1) recolorPath3D.setPreviousSegment(segments[knotIndex - 2]);
+        return segmentMesh;
     }
 
-    // funkcja do ekstrudowania ca³ego spline'a po zakoñczeniu rysowania 
+    // Funkcja do ekstrudowania pojedynczego segmentu
+    public void ExtrudeSingleSegment(Spline spline, int knotIndex)
+    {
+        if (knotIndex <= 0) return;
+
+        Vector3 startPoint = (Vector3)spline[knotIndex - 1].Position;
+        Vector3 endPoint = (Vector3)spline[knotIndex].Position;
+
+        GameObject segmentMesh = CreateSegmentMesh(startPoint, endPoint, knotIndex);
+
+        // Ustawianie zale¿noœci miêdzy segmentami
+        RecolorPath3D recolorPath3D = segmentMesh.GetComponent<RecolorPath3D>();
+        recolorPath3D.setCurrentSegment(segments[knotIndex - 1]);
+        if (knotIndex > 1) recolorPath3D.setPreviousSegment(segments[knotIndex - 2]);
+    }
+
+    // Funkcja do ekstrudowania ca³ego spline'a
     public void ExtrudeAndApplyMaterials(Spline spline)
     {
         for (int i = 0; i < spline.Count - 1; i++)
         {
-            GameObject segmentMesh = new GameObject($"SplineSegmentMesh_{i}");
-            Segment3D segmentComponent = segmentMesh.AddComponent<Segment3D>();
-            segmentMesh.transform.parent = this.transform;
-
-            MeshFilter meshFilter = segmentMesh.AddComponent<MeshFilter>();
-            MeshRenderer meshRenderer = segmentMesh.AddComponent<MeshRenderer>();
-
-            // Przypisz materia³ (rotacyjnie dla ró¿nych segmentów)
-            meshRenderer.material = segmentMaterials[i % segmentMaterials.Length];
-
-            // Generowanie ekstrudowanego segmentu jako osobny mesh
             Vector3 startPoint = (Vector3)spline[i].Position;
             Vector3 endPoint = (Vector3)spline[i + 1].Position;
 
-            // Tworzenie prostego mesha wzd³u¿ segmentu spline'a
-            Mesh mesh = GenerateExtrudedMesh(startPoint, endPoint);
-            meshFilter.mesh = mesh;
+            GameObject segmentMesh = CreateSegmentMesh(startPoint, endPoint, i);
 
-            // Dodawanie collidera do mesha i ustawianie jego atrybutów
-            MeshCollider collider = segmentMesh.AddComponent<MeshCollider>();
-            collider.convex = true;
-            collider.isTrigger = true;
-
-            //segmentMesh.AddComponent<DestroyingSplineSegment>();
-            RecolorPath3D recolorPath3D = segmentMesh.AddComponent<RecolorPath3D>();
-            recolorPath3D.newMaterial = recolorMaterial;
-
-            segments.Add(segmentMesh);
-
+            // Ustawianie zale¿noœci miêdzy segmentami
+            RecolorPath3D recolorPath3D = segmentMesh.GetComponent<RecolorPath3D>();
             recolorPath3D.setCurrentSegment(segments[i]);
             if (i > 0) recolorPath3D.setPreviousSegment(segments[i - 1]);
         }
+        lastPerpendicularVector = Vector3.zero;
+        
     }
 
-    // Funkcja tworz¹ca mesh w ramach pojedynczego segmentu
-    private Mesh GenerateExtrudedMesh(Vector3 start, Vector3 end)
+
+    private Mesh GenerateExtrudedMeshContinuous(Vector3 start, Vector3 end)
     {
         Mesh mesh = new Mesh();
         Vector3 directionVector = end - start;
 
-        Vector3 currentPerpendicularInY = GetPerpendicularXY(directionVector);
-        if (lastPerpendicularInY == Vector3.zero)
+        Vector3 currentPerpendicularInY = GetPerpendicularInPlane(start, end);
+        if (lastPerpendicularVector == Vector3.zero)
         {
-            lastPerpendicularInY = GetPerpendicularXY(directionVector);
+           lastPerpendicularVector = GetPerpendicularInPlane(start, end);
         }
 
-        // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
-        Vector3 y1 = lastPerpendicularInY * hight;
+        // Wyznaczanie przesuniêæ
+        Vector3 y1 = lastPerpendicularVector * hight;
         Vector3 y2 = currentPerpendicularInY * hight;
-        Vector3 z = new Vector3(0, 0, 1) * width;
 
-        lastPerpendicularInY = currentPerpendicularInY;
+        Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
+        Vector3 z2 = GetPerpendicular(currentPerpendicularInY, directionVector) * width;
+        lastPerpendicularVector = currentPerpendicularInY;
+
+        // Definiowanie wierzcho³ków
+        Vector3[] newVertices = new Vector3[4]
+        {
+        end - z2 - y2, // Dolny lewy (nowy)
+        end + z2 - y2, // Dolny prawy (nowy)
+        end - z2 + y2, // Górny lewy (nowy)
+        end + z2 + y2  // Górny prawy (nowy)
+        };
+
+        // Jeœli to pierwszy segment, dodaj równie¿ wierzcho³ki pocz¹tkowe
+        if (verticesList.Count == 0)
+        {
+            verticesList.Add(start - z1 - y1);
+            verticesList.Add(start + z1 - y1);
+            verticesList.Add(start - z1 + y1);
+            verticesList.Add(start + z1 + y1);
+        }
+
+        // Dodaj nowe wierzcho³ki do listy
+        verticesList.AddRange(newVertices);
+
+        // Dodawanie trójk¹tów dla œcian bocznych (ale nie ³¹cz¹cych segmentów)
+        int startIndex = verticesList.Count - 8;  // Indeks pierwszego wierzcho³ka poprzedniego segmentu
+
+        if (startIndex >= 0)
+        {
+            // Boczne œciany (bez wewnêtrznych)
+            trianglesList.AddRange(new int[] {
+            startIndex, startIndex + 1, startIndex + 5,
+            startIndex, startIndex + 5, startIndex + 4,
+
+            startIndex + 1, startIndex + 3, startIndex + 7,
+            startIndex + 1, startIndex + 7, startIndex + 5,
+
+            startIndex + 2, startIndex + 6, startIndex + 7,
+            startIndex + 2, startIndex + 7, startIndex + 3,
+
+            startIndex, startIndex + 4, startIndex + 6,
+            startIndex, startIndex + 6, startIndex + 2
+        });
+        }
+
+        // Zapamiêtaj wierzcho³ki koñcowe dla nastêpnego segmentu
+        lastVertices = newVertices;
+
+        // Tworzenie i zwracanie mesha
+        mesh.vertices = verticesList.ToArray();
+        mesh.triangles = trianglesList.ToArray();
+        mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
+        return mesh;
+    }
+
+
+
+    private Mesh GenerateExtrudedMeshWithSegmentation(Vector3 start, Vector3 end)
+    {
+        Mesh mesh = new Mesh();
+        Vector3 directionVector = end - start;
+        Vector3 currentPerpendicularVector = GetPerpendicularInPlane(start, end);
+
+        if(lastPerpendicularVector == Vector3.zero)
+        {
+           lastPerpendicularVector = GetPerpendicularInPlane(start, end);
+        }
+
+
+        // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
+        Vector3 y1 = lastPerpendicularVector * hight;
+        Vector3 y2 = currentPerpendicularVector * hight;
+        Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
+        Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * width;
+        lastPerpendicularVector = currentPerpendicularVector;
         Vector3[] vertices = new Vector3[numberOfVertices]
       {
-            start - z - y1,  //0
-            start + z - y1,
-            end - z - y2,
-            end + z - y2,
-            start - z + y1,
-            start + z+ y1,
-            end - z + y2,
-            end + z + y2  //7
+                start - z1 - y1,  //0
+                start + z1 - y1,
+                end - z2 - y2,
+                end + z2 - y2,
+                start - z1 + y1,
+                start + z1+ y1,
+                end - z2 + y2,
+                end + z2 + y2  //7
       };
 
         // Wyznaczanie trójk¹tów mesha pomiêdzy wierzcho³kami
-        int[] triangles = new int[numberOfTriangles * 3] { 
-            0, 1, 2,    // sciany
-            2, 1, 3,
-            0, 2, 6,
-            6, 4, 0,
-            1, 7, 3,
-            7, 1, 5,
-            5, 4, 6, 
-            6, 7, 5,
-            0, 4, 5,    // podstawy
-            0, 5, 1,
-            2, 7, 6,
-            2, 3, 7
-        };
+        int[] triangles = new int[numberOfTriangles * 3] {
+                0, 1, 2,    // sciany
+                2, 1, 3,
+                0, 2, 6,
+                6, 4, 0,
+                1, 7, 3,
+                7, 1, 5,
+                5, 4, 6,
+                6, 7, 5,
+                0, 4, 5,    // podstawy
+                0, 5, 1,
+                2, 7, 6,
+                2, 3, 7
+            };
 
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
-
+        mesh.RecalculateTangents();
         return mesh;
     }
-    Vector3 GetPerpendicularXY(Vector3 v)
+
+    Vector3 GetPerpendicular(Vector3 a, Vector3 b)
     {
-        return new Vector3(-v.y, v.x, 0).normalized; // Normalizujemy wynik, aby by³ jednostkowy
+        return Vector3.Cross(a, b).normalized;
     }
-  
+
+    private Mesh GenerateExtrudedMesh(Vector3 start, Vector3 end, bool isSegmetation)
+    {
+        if (isSegmetation)
+        {
+            return GenerateExtrudedMeshWithSegmentation(start, end);
+        }
+        else
+        {
+            return GenerateExtrudedMeshContinuous(start, end);
+        }
+    }
+
+    public static Vector3 GetPerpendicularInPlane(Vector3 p2, Vector3 p3)
+    {
+        Vector3 reference = p3 - p2;
+
+        // Jeœli wektor referencyjny jest zerowy, zwracamy domyœln¹ wartoœæ
+        if (reference == Vector3.zero)
+        {
+            return Vector3.up;
+        }
+
+        // Tworzymy punkt pomocniczy w pobli¿u œrodka odcinka, ale nie na linii p2-p3
+        Vector3 midpoint = (p2 + p3) / 2;
+        Vector3 p1 = new Vector3(midpoint.x, midpoint.y + 1.1f, midpoint.z); // Dodanie ma³ej perturbacji do Y
+
+        Vector3 v1 = p2 - p1;
+        Vector3 v2 = p3 - p1;
+
+        // Sprawdzenie, czy v1 i v2 nie s¹ wspó³liniowe
+        Vector3 normal = Vector3.Cross(v1, v2).normalized;
+        if (normal == Vector3.zero)
+        {
+            // Jeœli normalna nie istnieje, próbujemy innego punktu p1
+            p1.y += 0.1f;
+            normal = Vector3.Cross(p2 - p1, p3 - p1).normalized;
+
+            if (normal == Vector3.zero)
+            {
+                return Vector3.up; // Ostateczna wartoœæ awaryjna
+            }
+        }
+
+        // Projekcja reference na p³aszczyznê
+        Vector3 referenceProjected = reference - Vector3.Dot(reference, normal) * normal;
+
+        // Jeœli projekcja jest zerowa, próbujemy z innym punktem p1
+        if (referenceProjected == Vector3.zero)
+        {
+            return Vector3.Cross(normal, Vector3.right).normalized;
+        }
+
+        return Vector3.Cross(referenceProjected, normal).normalized;
+    }
+
+
+
+
 }
+
+

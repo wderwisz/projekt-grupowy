@@ -2595,7 +2595,7 @@ Transform:
   m_GameObject: {fileID: 1880938764}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.02, z: -0.01}
   m_LocalScale: {x: 1.6, y: 1, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2615,7 +2615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 1789286848}
   splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
-  pointSpacing: 0.01
+  pointSpacing: 0.001
   config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
 --- !u!114 &1880938770
 MonoBehaviour:
@@ -2631,7 +2631,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   segmentMaterials: []
   recolorMaterial: {fileID: 0}
-  width: 0.37
+  width: 0.01
   hight: 0.01
 --- !u!1001 &1884299422
 PrefabInstance:
