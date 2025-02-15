@@ -23,10 +23,31 @@ public class DrawingPath3D : MonoBehaviour
 
     private Vector3 lastKnotPosition = Vector3.zero;
 
+    private GameState currentGameState;
+
+
+    void Awake()
+    {
+        GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.onGameStateChanged -= GameManagerOnGameStateChanges;
+    }
+
+    private void GameManagerOnGameStateChanges(GameState newState)
+    {
+        currentGameState = newState;
+    }
+
     void Update()
     {
+        //currentGameState = GameManager.instance.state;
+        if (currentGameState != GameState.DOCTOR_MODE) return; //Sprawdzenie trybu gry
+
         //if (controller.inputDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out bool isPressed) && isPressed)
-        if(controller.activateInteractionState.active)
+        if (controller.activateInteractionState.active)
         {
             if (!isDrawing)
             {

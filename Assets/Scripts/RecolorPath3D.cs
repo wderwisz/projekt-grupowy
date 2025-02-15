@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -11,6 +12,7 @@ public class RecolorPath3D : MonoBehaviour
     private MeshRenderer[] meshRenderers;
     private Config config;
     private List<GameObject> segments;
+    private GameState currentGameState;
 
     [SerializeField]
     private GameObject previousSegment = null;
@@ -19,6 +21,10 @@ public class RecolorPath3D : MonoBehaviour
 
     private void Awake()
     {
+
+        //currentGameState = GameManager.instance.state;
+        //GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //RecolorPath subskrybuje GameManager
+
         // Dodawanie ScriptableObject z konfiguracj¹ do skryptu segmentu
         string[] configFile = AssetDatabase.FindAssets("MainConfig", new[] { "Assets/Configuration" });
         string path = AssetDatabase.GUIDToAssetPath(configFile[0]);
@@ -35,12 +41,24 @@ public class RecolorPath3D : MonoBehaviour
         currentSegment = segment;
     }
 
+    private void GameManagerOnGameStateChanges(GameState newState)
+    {
+        currentGameState = newState;
+    }
+
+
+
     // Funkcja wywo³ywana po dotkniêciu przez collider kontrolera (tylko gdy liveDrawingMode = false)
     private void OnTriggerEnter(Collider other)
-     {  
+     {
+
+        currentGameState = GameManager.instance.state;
+
+        if (currentGameState != GameState.PATIENT_MODE) return; //Sprawdzenie trybu gry
+
         if (other.CompareTag("Controller"))
         {
-            if (config.getDrawingMode()) return;
+            //if (config.getDrawingMode()) return;
 
             if(previousSegment != null && !previousSegment.GetComponent<Segment3D>().isColored()) return;
 
