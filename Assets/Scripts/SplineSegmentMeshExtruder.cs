@@ -110,7 +110,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         Mesh mesh = new Mesh();
         Vector3 directionVector = end - start;
 
-        Vector3 currentPerpendicularInY = GetPerpendicularInPlane(start, end);
+        Vector3 currentPerpendicularVector = GetPerpendicularInPlane(start, end);
         if (lastPerpendicularVector == Vector3.zero)
         {
            lastPerpendicularVector = GetPerpendicularInPlane(start, end);
@@ -118,12 +118,12 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
         // Wyznaczanie przesuniêæ
         Vector3 y1 = lastPerpendicularVector * hight;
-        Vector3 y2 = currentPerpendicularInY * hight;
+        Vector3 y2 = currentPerpendicularVector * hight;
 
         Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
-        Vector3 z2 = GetPerpendicular(currentPerpendicularInY, directionVector) * width;
-        lastPerpendicularVector = currentPerpendicularInY;
-
+        Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * width;
+        lastPerpendicularVector = currentPerpendicularVector;
+     
         // Definiowanie wierzcho³ków
         Vector3[] newVertices = new Vector3[4]
         {
@@ -189,14 +189,16 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         {
            lastPerpendicularVector = GetPerpendicularInPlane(start, end);
         }
-
-
         // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
         Vector3 y1 = lastPerpendicularVector * hight;
         Vector3 y2 = currentPerpendicularVector * hight;
         Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
         Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * width;
         lastPerpendicularVector = currentPerpendicularVector;
+        //if (Vector3.Angle(lastPerpendicularVector, currentPerpendicularVector) > 170)
+          //lastPerpendicularVector = Vector3.zero; // Resetuj, jeœli zmiana jest zbyt du¿a
+       
+
         Vector3[] vertices = new Vector3[numberOfVertices]
       {
                 start - z1 - y1,  //0
@@ -249,7 +251,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         }
     }
 
-    public static Vector3 GetPerpendicularInPlane(Vector3 p2, Vector3 p3)
+    public Vector3 GetPerpendicularInPlane(Vector3 p2, Vector3 p3)
     {
         Vector3 reference = p3 - p2;
 
@@ -258,20 +260,20 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         {
             return Vector3.up;
         }
-
-        // Tworzymy punkt pomocniczy w pobli¿u œrodka odcinka, ale nie na linii p2-p3
-        Vector3 midpoint = (p2 + p3) / 2;
-        Vector3 p1 = new Vector3(midpoint.x, midpoint.y + 1.1f, midpoint.z); // Dodanie ma³ej perturbacji do Y
+        //punkt pomocniczny na lezy na poprzednim wektorze prostopadlym do punktu startowego
+        Vector3 p1 = p2 - lastPerpendicularVector; 
 
         Vector3 v1 = p2 - p1;
         Vector3 v2 = p3 - p1;
-
+       
         // Sprawdzenie, czy v1 i v2 nie s¹ wspó³liniowe
         Vector3 normal = Vector3.Cross(v1, v2).normalized;
         if (normal == Vector3.zero)
         {
+            // Tworzymy punkt pomocniczy w pobli¿u œrodka odcinka, ale nie na lini  i p2-p3
+            Vector3 midpoint = (p2 + p3) / 2;
             // Jeœli normalna nie istnieje, próbujemy innego punktu p1
-            p1.y += 0.1f;
+            p1 = new Vector3(midpoint.x, midpoint.y+1.0f, midpoint.z ); // Dodanie ma³ej perturbacji do y
             normal = Vector3.Cross(p2 - p1, p3 - p1).normalized;
 
             if (normal == Vector3.zero)
@@ -291,10 +293,6 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
         return Vector3.Cross(referenceProjected, normal).normalized;
     }
-
-
-
-
 }
 
 
