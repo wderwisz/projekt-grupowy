@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -14,7 +15,17 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private const int numberOfTriangles = 12;
 
     [SerializeField][Range(0.01f, 2.0f)] private float width = 0.01f;  // Szerokoœæ segmentu
-    [SerializeField][Range(0.01f, 2.0f)] private float hight = 0.01f;  // wysokoœæ segmentu
+    [SerializeField][Range(0.01f, 2.0f)] private float height = 0.01f;  // wysokoœæ segmentu
+
+    private float baseWidth = 0.01f;
+    private float baseHeight = 0.01f;
+    internal void scaleWidthAndHeight(float v)
+    {
+        width = baseWidth * v;
+        height = baseHeight * v;
+
+        Debug.Log(width.ToString() + height.ToString());
+    }
 
     private Vector3 lastPerpendicularVector = Vector3.zero;
     private bool isSegmentation = true;
@@ -117,8 +128,8 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         }
 
         // Wyznaczanie przesuniêæ
-        Vector3 y1 = lastPerpendicularVector * hight;
-        Vector3 y2 = currentPerpendicularVector * hight;
+        Vector3 y1 = lastPerpendicularVector * height;
+        Vector3 y2 = currentPerpendicularVector * height;
 
         Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
         Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * width;
@@ -190,8 +201,8 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
            lastPerpendicularVector = GetPerpendicularInPlane(start, end);
         }
         // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
-        Vector3 y1 = lastPerpendicularVector * hight;
-        Vector3 y2 = currentPerpendicularVector * hight;
+        Vector3 y1 = lastPerpendicularVector * height;
+        Vector3 y2 = currentPerpendicularVector * height;
         Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
         Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * width;
         lastPerpendicularVector = currentPerpendicularVector;
@@ -292,6 +303,18 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         }
 
         return Vector3.Cross(referenceProjected, normal).normalized;
+    }
+
+    public void ClearTrail() //usuwanie traila 
+    {
+        Debug.Log(segments.Count);
+        foreach (GameObject segment in segments)
+        {
+            Debug.Log(segment);
+            Destroy(segment);
+        }
+
+        segments.Clear();
     }
 }
 

@@ -59,15 +59,15 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        bool isPressed = controller.selectInteractionState.active; // Sprawdzanie czy wciœniêto
+        //bool isPressed = controller.selectInteractionState.active; // Sprawdzanie czy wciœniêto
 
-        if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciœniêcia
-        {
-            UpdateGameState(state == GameState.DOCTOR_MODE ? GameState.PATIENT_MODE : GameState.DOCTOR_MODE);
-            Debug.Log("Tryb zmieniony na: " + state);
-        }
+        //if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciœniêcia
+        //{
+        //    UpdateGameState(state == GameState.DOCTOR_MODE ? GameState.PATIENT_MODE : GameState.DOCTOR_MODE);
+        //    Debug.Log("Tryb zmieniony na: " + state);
+        //}
 
-        wasPressedLastFrame = isPressed; // Zapamiêtanie stanu na kolejn¹ klatkê
+        //wasPressedLastFrame = isPressed; // Zapamiêtanie stanu na kolejn¹ klatkê
     }
 
 
