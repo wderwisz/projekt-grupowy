@@ -13,8 +13,9 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private const int numberOfVertices = 8;
     private const int numberOfTriangles = 12;
 
-    [SerializeField][Range(0.01f, 2.0f)] private float width = 0.01f;  // Szerokoœæ segmentu
-    [SerializeField][Range(0.01f, 2.0f)] private float hight = 0.01f;  // wysokoœæ segmentu
+    private float width = 0.01f;  // Szerokoœæ segmentu
+    private float hight = 0.01f;  // wysokoœæ segmentu
+    private float vectorScale = 1.0f;//skalowanie rozmiaru segmentu
 
     private Vector3 lastPerpendicularVector = Vector3.zero;
     private bool isSegmentation = true;
@@ -117,11 +118,10 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         }
 
         // Wyznaczanie przesuniêæ
-        Vector3 y1 = lastPerpendicularVector * hight;
-        Vector3 y2 = currentPerpendicularVector * hight;
-
-        Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
-        Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * width;
+        Vector3 y1 = lastPerpendicularVector * vectorScale * hight;
+        Vector3 y2 = currentPerpendicularVector * vectorScale * hight;
+        Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * vectorScale * width;
+        Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * vectorScale * width;
         lastPerpendicularVector = currentPerpendicularVector;
      
         // Definiowanie wierzcho³ków
@@ -190,13 +190,11 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
            lastPerpendicularVector = GetPerpendicularInPlane(start, end);
         }
         // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
-        Vector3 y1 = lastPerpendicularVector * hight;
-        Vector3 y2 = currentPerpendicularVector * hight;
-        Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * width;
-        Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * width;
+        Vector3 y1 = lastPerpendicularVector * vectorScale * hight;
+        Vector3 y2 = currentPerpendicularVector * vectorScale * hight;
+        Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * vectorScale * width;
+        Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * vectorScale * width;
         lastPerpendicularVector = currentPerpendicularVector;
-        //if (Vector3.Angle(lastPerpendicularVector, currentPerpendicularVector) > 170)
-          //lastPerpendicularVector = Vector3.zero; // Resetuj, jeœli zmiana jest zbyt du¿a
        
 
         Vector3[] vertices = new Vector3[numberOfVertices]
@@ -293,6 +291,9 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
         return Vector3.Cross(referenceProjected, normal).normalized;
     }
+   
+
+
 }
 
 

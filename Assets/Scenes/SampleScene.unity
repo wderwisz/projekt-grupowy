@@ -2631,8 +2631,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   segmentMaterials: []
   recolorMaterial: {fileID: 0}
-  width: 0.01
-  hight: 0.01
+  vectorScale: 1
 --- !u!1001 &1884299422
 PrefabInstance:
   m_ObjectHideFlags: 0
