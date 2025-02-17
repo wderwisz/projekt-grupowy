@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: MainConfig
   m_EditorClassIdentifier: 
   liveDrawingMode: 1
+  erasingMode: 1

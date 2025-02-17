@@ -12,8 +12,18 @@ public class Config : ScriptableObject
     // true gdy testujemy tworzenie szlaku; false gdy kolorowanie 
     [SerializeField] private bool liveDrawingMode = true;
 
+    //w³¹czenie opcji zmazywania w trybie fizjoterapeuty (narazie w 2d)
+    //pewnie lepiej by³oby ustawiæ na inny przycisk na kontolerze
+    // usuwanie linii jedynie od jej koñca
+    [SerializeField] private bool erasingMode = false;
+
     public bool getDrawingMode()
     {
         return liveDrawingMode;
+    }
+
+    public bool getErasingMode() 
+    {
+        return erasingMode;
     }
 }

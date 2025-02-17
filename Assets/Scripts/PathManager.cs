@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class PathManager : MonoBehaviour
@@ -7,6 +8,11 @@ public class PathManager : MonoBehaviour
 
     public int nextDotIndex = 0;
 
+    public int coloredDots = 0;
+
+    private float delayInSeconds = 3.0f;
+
+    //dodawanie kropki do listy 
     public void AddDot(GameObject dot)
     {
         dots.Add(dot);
@@ -19,4 +25,57 @@ public class PathManager : MonoBehaviour
             dotRecolor.dotIndex = dots.Count - 1;
         }
     }
+
+    // wydobywanie instancji kropki po indeksie
+    public DotRecolor GetDot(int index)
+    {
+        if (index >= 0 && index < dots.Count)
+        {
+            // Pobierz komponent DotRecolor z GameObjectu na podstawie indeksu
+            DotRecolor dotRecolor = dots[index].GetComponent<DotRecolor>();
+            if (dotRecolor != null)
+            {
+                return dotRecolor;
+            }
+            else
+            {
+                Debug.Log("Obiekt nie ma komponentu DotRecolor.");
+                return null;
+            }
+        }
+        else
+        {
+            Debug.Log("Indeks spoza zakresu listy.");
+            return null;
+        }
+    }
+
+
+    //sprawdzenie czy ukoñczono rysowanie szlaku
+    public void CheckAndRemoveDots()
+    {
+        if (coloredDots == dots.Count - 1)  // Sprawdzamy, czy to ostatnia kropka
+        {
+            StartCoroutine(RemoveDotsAfterDelay());  // Uruchamiamy coroutine, która poczeka 3 sekundy
+        }
+    }
+
+    //usuwanie szlaku z opóŸnieniem
+    private IEnumerator RemoveDotsAfterDelay()
+    {
+        yield return new WaitForSeconds(delayInSeconds); 
+
+        // Usuwamy wszystkie obiekty z listy ze sceny
+        foreach (GameObject dot in dots)
+        {
+            Destroy(dot);  
+        }
+
+        // Teraz czyœcimy listê i zerujemy indeksy
+        dots.Clear(); 
+        nextDotIndex = 0;
+        coloredDots = 0;
+        Debug.Log("Wszystkie kropki zosta³y usuniête.");
+    }
+
 }
