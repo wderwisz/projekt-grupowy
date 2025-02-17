@@ -12,11 +12,11 @@ public class DrawingPath3D : MonoBehaviour
     //public XRController controller; 
     public XRBaseController controller;
     public SplineContainer splineContainerPrefab;
-    [SerializeField] [Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
+    [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
 
     private SplineContainer currentSpline;
-    private bool isDrawing = false;
+    private bool isDrawing = true;
 
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
@@ -26,7 +26,7 @@ public class DrawingPath3D : MonoBehaviour
     void Update()
     {
         //if (controller.inputDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out bool isPressed) && isPressed)
-        if(controller.activateInteractionState.active)
+        if (controller.activateInteractionState.active)
         {
             if (!isDrawing)
             {
@@ -55,7 +55,7 @@ public class DrawingPath3D : MonoBehaviour
     {
         // Wyznaczanie pozycji punktu
         Vector3 newPosition = controller.transform.position;
-        newPosition = currentSpline.transform.InverseTransformPoint(newPosition);
+        newPosition = currentSpline.transform.InverseTransformPoint(newPosition);//
         BezierKnot knot = new BezierKnot(newPosition);
 
         // Przechowanie pozycji ostatnio dodanego punktu
@@ -72,10 +72,10 @@ public class DrawingPath3D : MonoBehaviour
             currentSpline.Spline.Add(knot);
             lastKnotPosition = newPosition;
 
-            if (config.getDrawingMode() && currentSpline.Spline.Count > 1)
+            if (config.getDrawingMode() && currentSpline.Spline.Count > 2)
             {
-                // Ekstrudowanie pojedynczego segmentu wyznaczonego miêdzy obecnym a poprzednim wêz³em
-                extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1);
+                // Ekstrudowanie pojedynczego segmentu miêdzy dwoma poprzednimi wêz³ami(currentNode - 1 i currentNode - 2)
+                extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
             }
         }
     }
@@ -84,8 +84,25 @@ public class DrawingPath3D : MonoBehaviour
     void StopDrawing()
     {
         isDrawing = false;
-        if(!config.getDrawingMode()) ExtrudeSpline();
+        if (!config.getDrawingMode())
+        {
+            ExtrudeSpline();
+        }
+        else
+        {
+            int layer = extruder.numberOfLayers();
+            // Ekstrudowanie ostatniego segmentu natepuje po zakoñczoniu rysowania aby dorysowaæ œciane krañcow¹
+            // Ekstrudowanie wystêpuje kilka razy aby ostani segemnt nie dawa³ wra¿enia przeŸroczystego 
+            for (int i = 0; i < layer; i++)
+            {
+                extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
+            }
+            extruder.restoreSettings();
+        }
+
     }
+
+
 
     // Ekstrudowanie ca³ego spline'a po skoñczeniu rysowania (liveDrawingMode = false) do testowania kolorowania
     void ExtrudeSpline()

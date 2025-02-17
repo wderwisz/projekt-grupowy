@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines;
 
+
 public class SplineSegmentMeshExtruder : MonoBehaviour
 {
     public Material[] segmentMaterials; // Tablica materia³ów do ró¿nych segmentów spline'a
@@ -15,13 +16,16 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
     private float width = 0.01f;  // Szerokoœæ segmentu
     private float hight = 0.01f;  // wysokoœæ segmentu
-    private float vectorScale = 1.0f;//skalowanie rozmiaru segmentu
+    [SerializeField][Range(0.01f, 10.0f)] private float vectorScale = 1.0f;
 
     private Vector3 lastPerpendicularVector = Vector3.zero;
-    private bool isSegmentation = true;
+    [SerializeField] private bool isSegmentation = false;
     private List<GameObject> segments;
 
+    bool isFirstSegment = true;
+    bool isLastSegment = false;
 
+    int numberOfLayersInLastSegement = 3;
 
     private List<Vector3> verticesList = new List<Vector3>();  // Przechowywanie wierzcho³ków
     private List<int> trianglesList = new List<int>();         // Przechowywanie trójk¹tów
@@ -36,7 +40,6 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         segments = new List<GameObject>();
     }
 
-  
 
     private GameObject CreateSegmentMesh(Vector3 startPoint, Vector3 endPoint, int index)
     {
@@ -71,10 +74,14 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     }
 
     // Funkcja do ekstrudowania pojedynczego segmentu
-    public void ExtrudeSingleSegment(Spline spline, int knotIndex)
+    public void ExtrudeSingleSegment(Spline spline, int knotIndex, bool lastSegement = false)
     {
         if (knotIndex <= 0) return;
 
+        if (lastSegement && !isSegmentation)
+        {
+            isLastSegment = true;
+        }
         Vector3 startPoint = (Vector3)spline[knotIndex - 1].Position;
         Vector3 endPoint = (Vector3)spline[knotIndex].Position;
 
@@ -89,33 +96,62 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     // Funkcja do ekstrudowania ca³ego spline'a
     public void ExtrudeAndApplyMaterials(Spline spline)
     {
+
         for (int i = 0; i < spline.Count - 1; i++)
         {
-            Vector3 startPoint = (Vector3)spline[i].Position;
-            Vector3 endPoint = (Vector3)spline[i + 1].Position;
+            //ostatni segment ma kilka warstwy 
+            int layer = settingsForLastSegment(spline, i);
 
-            GameObject segmentMesh = CreateSegmentMesh(startPoint, endPoint, i);
+            for (int j = 0; j < layer; j++)
+            {
+                Vector3 startPoint = (Vector3)spline[i].Position;
+                Vector3 endPoint = (Vector3)spline[i + 1].Position;
 
-            // Ustawianie zale¿noœci miêdzy segmentami
-            RecolorPath3D recolorPath3D = segmentMesh.GetComponent<RecolorPath3D>();
-            recolorPath3D.setCurrentSegment(segments[i]);
-            if (i > 0) recolorPath3D.setPreviousSegment(segments[i - 1]);
+                GameObject segmentMesh = CreateSegmentMesh(startPoint, endPoint, i);
+
+                // Ustawianie zale¿noœci miêdzy segmentami
+                RecolorPath3D recolorPath3D = segmentMesh.GetComponent<RecolorPath3D>();
+                recolorPath3D.setCurrentSegment(segments[i]);
+                if (i > 0) recolorPath3D.setPreviousSegment(segments[i - 1]);
+            }
         }
-        lastPerpendicularVector = Vector3.zero;
-        
+        restoreSettings();
     }
 
+
+    public void restoreSettings()
+    {
+        lastPerpendicularVector = Vector3.zero;
+        isFirstSegment = true;
+    }
+    public int numberOfLayers()
+    {
+        if (isSegmentation)
+        {
+            return 1;
+        }
+        return numberOfLayersInLastSegement;
+    }
+    private int settingsForLastSegment(Spline spline, int index)
+    {
+        if (!isSegmentation && index == spline.Count - 2)
+        {
+            isLastSegment = true;
+            return numberOfLayersInLastSegement;
+        }
+        return 1;
+    }
 
     private Mesh GenerateExtrudedMeshContinuous(Vector3 start, Vector3 end)
     {
         Mesh mesh = new Mesh();
+
         Vector3 directionVector = end - start;
 
         Vector3 currentPerpendicularVector = GetPerpendicularInPlane(start, end);
+
         if (lastPerpendicularVector == Vector3.zero)
-        {
-           lastPerpendicularVector = GetPerpendicularInPlane(start, end);
-        }
+            lastPerpendicularVector = GetPerpendicularInPlane(start, end);
 
         // Wyznaczanie przesuniêæ
         Vector3 y1 = lastPerpendicularVector * vectorScale * hight;
@@ -123,7 +159,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * vectorScale * width;
         Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * vectorScale * width;
         lastPerpendicularVector = currentPerpendicularVector;
-     
+
         // Definiowanie wierzcho³ków
         Vector3[] newVertices = new Vector3[4]
         {
@@ -148,23 +184,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         // Dodawanie trójk¹tów dla œcian bocznych (ale nie ³¹cz¹cych segmentów)
         int startIndex = verticesList.Count - 8;  // Indeks pierwszego wierzcho³ka poprzedniego segmentu
 
-        if (startIndex >= 0)
-        {
-            // Boczne œciany (bez wewnêtrznych)
-            trianglesList.AddRange(new int[] {
-            startIndex, startIndex + 1, startIndex + 5,
-            startIndex, startIndex + 5, startIndex + 4,
-
-            startIndex + 1, startIndex + 3, startIndex + 7,
-            startIndex + 1, startIndex + 7, startIndex + 5,
-
-            startIndex + 2, startIndex + 6, startIndex + 7,
-            startIndex + 2, startIndex + 7, startIndex + 3,
-
-            startIndex, startIndex + 4, startIndex + 6,
-            startIndex, startIndex + 6, startIndex + 2
-        });
-        }
+        updateTriangleList(startIndex);
 
         // Zapamiêtaj wierzcho³ki koñcowe dla nastêpnego segmentu
         lastVertices = newVertices;
@@ -174,10 +194,62 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         mesh.triangles = trianglesList.ToArray();
         mesh.RecalculateNormals();
         mesh.RecalculateTangents();
+        mesh.RecalculateBounds();
+
         return mesh;
     }
 
+    private void updateTriangleList(int index)
+    {
+        if (index >= 0)
+            trianglesList.AddRange(trailBody(index));
 
+        if (isFirstSegment)
+            trianglesList.AddRange(initialSideWall(index));
+
+        if (isLastSegment)
+            trianglesList.AddRange(finalSideWall(index));
+    }
+
+    private int[] trailBody(int index)
+    {
+        //korpus szlaku bez scian bocznych
+        int[] corp = new int[] {
+            index, index + 1, index + 5,
+            index, index + 5, index + 4,
+
+            index + 1, index + 3, index + 7,
+            index + 1, index + 7, index + 5,
+
+            index + 2, index + 6, index + 7,
+            index + 2, index + 7, index + 3,
+
+            index, index + 4, index + 6,
+            index, index + 6, index + 2
+        };
+        return corp;
+    }
+    private int[] finalSideWall(int index)
+    {
+        isLastSegment = false;
+        int[] sideWall = new int[] {
+            index + 5, index + 6, index + 4,
+            index + 6, index + 5, index + 7,
+        };
+        return sideWall;
+
+    }
+
+    private int[] initialSideWall(int index)
+    {
+        isFirstSegment = false;
+        int[] sideWall = new int[] {
+            index, index + 2, index + 1,
+            index + 2, index + 3, index + 1,
+        };
+        return sideWall;
+
+    }
 
     private Mesh GenerateExtrudedMeshWithSegmentation(Vector3 start, Vector3 end)
     {
@@ -185,17 +257,17 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         Vector3 directionVector = end - start;
         Vector3 currentPerpendicularVector = GetPerpendicularInPlane(start, end);
 
-        if(lastPerpendicularVector == Vector3.zero)
+        if (lastPerpendicularVector == Vector3.zero)
         {
-           lastPerpendicularVector = GetPerpendicularInPlane(start, end);
+            lastPerpendicularVector = GetPerpendicularInPlane(start, end);
         }
-        // Wyznaczanie wspó³rzêdnych przesuniêæ wierzcho³ków
+        // Wyznaczanie wspólrzednych przesuniecia wierzcholków
         Vector3 y1 = lastPerpendicularVector * vectorScale * hight;
         Vector3 y2 = currentPerpendicularVector * vectorScale * hight;
         Vector3 z1 = GetPerpendicular(lastPerpendicularVector, directionVector) * vectorScale * width;
         Vector3 z2 = GetPerpendicular(currentPerpendicularVector, directionVector) * vectorScale * width;
         lastPerpendicularVector = currentPerpendicularVector;
-       
+
 
         Vector3[] vertices = new Vector3[numberOfVertices]
       {
@@ -209,7 +281,18 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
                 end + z2 + y2  //7
       };
 
-        // Wyznaczanie trójk¹tów mesha pomiêdzy wierzcho³kami
+        // Wyznaczanie trójkatów mesha pomiedzy wierzcholkami
+        int[] triangles = meshTriangles();
+
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
+        return mesh;
+    }
+
+    private int[] meshTriangles()
+    {
         int[] triangles = new int[numberOfTriangles * 3] {
                 0, 1, 2,    // sciany
                 2, 1, 3,
@@ -224,12 +307,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
                 2, 7, 6,
                 2, 3, 7
             };
-
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
-        mesh.RecalculateNormals();
-        mesh.RecalculateTangents();
-        return mesh;
+        return triangles;
     }
 
     Vector3 GetPerpendicular(Vector3 a, Vector3 b)
@@ -259,11 +337,11 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             return Vector3.up;
         }
         //punkt pomocniczny na lezy na poprzednim wektorze prostopadlym do punktu startowego
-        Vector3 p1 = p2 - lastPerpendicularVector; 
+        Vector3 p1 = p2 - lastPerpendicularVector;
 
         Vector3 v1 = p2 - p1;
         Vector3 v2 = p3 - p1;
-       
+
         // Sprawdzenie, czy v1 i v2 nie s¹ wspó³liniowe
         Vector3 normal = Vector3.Cross(v1, v2).normalized;
         if (normal == Vector3.zero)
@@ -271,7 +349,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             // Tworzymy punkt pomocniczy w pobli¿u œrodka odcinka, ale nie na lini  i p2-p3
             Vector3 midpoint = (p2 + p3) / 2;
             // Jeœli normalna nie istnieje, próbujemy innego punktu p1
-            p1 = new Vector3(midpoint.x, midpoint.y+1.0f, midpoint.z ); // Dodanie ma³ej perturbacji do y
+            p1 = new Vector3(midpoint.x, midpoint.y + 1.0f, midpoint.z); // Dodanie ma³ej perturbacji do y
             normal = Vector3.Cross(p2 - p1, p3 - p1).normalized;
 
             if (normal == Vector3.zero)
@@ -291,8 +369,6 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
         return Vector3.Cross(referenceProjected, normal).normalized;
     }
-   
-
 
 }
 
