@@ -22,7 +22,7 @@ public class SizeSlider : MonoBehaviour
         {
             sliderText.text = v.ToString("0.00");
             setSize(v);
-            splineExtruder.scaleWidthAndHeight(v);
+            splineExtruder.setVectorScale(v);
         });
     }
 
