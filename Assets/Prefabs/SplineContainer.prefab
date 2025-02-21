@@ -182,6 +182,8 @@ MonoBehaviour:
   recolorMaterial: {fileID: 2100000, guid: 6703d98bf09b5894299aff0e03d0863c, type: 2}
   width: 0.005
   height: 0.005
+  vectorScale: 1
+  isSegmentation: 0
 --- !u!64 &-8533230323690412426
 MeshCollider:
   m_ObjectHideFlags: 0
