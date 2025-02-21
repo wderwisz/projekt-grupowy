@@ -20,13 +20,15 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     [SerializeField][Range(0.01f, 10.0f)] private float vectorScale = 1.0f;
 
     private Vector3 lastPerpendicularVector = Vector3.zero;
-    [SerializeField] private bool isSegmentation = false;
+    [SerializeField] private bool isSegmentation = true;
     private List<GameObject> segments;
 
     bool isFirstSegment = true;
     bool isLastSegment = false;
 
     int numberOfLayersInLastSegement = 3;
+
+    
 
     private List<Vector3> verticesList = new List<Vector3>();  // Przechowywanie wierzcho�k�w
     private List<int> trianglesList = new List<int>();         // Przechowywanie tr�jk�t�w
@@ -41,6 +43,9 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         segments = new List<GameObject>();
     }
 
+    public void setVectorScale(float v){
+        vectorScale = v;
+    }
 
     private GameObject CreateSegmentMesh(Vector3 startPoint, Vector3 endPoint, int index)
     {
