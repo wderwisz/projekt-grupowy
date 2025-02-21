@@ -259,13 +259,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169858460}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 310144911}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &169858462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3291,7 +3291,8 @@ GameObject:
   - component: {fileID: 1123183021}
   - component: {fileID: 1123183024}
   - component: {fileID: 1123183026}
-  m_Layer: 0
+  - component: {fileID: 1123183027}
+  m_Layer: 6
   m_Name: Whiteboard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3307,8 +3308,8 @@ Transform:
   m_GameObject: {fileID: 1123183019}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.0309486, y: 2.4055548, z: 0.030078514}
+  m_LocalPosition: {x: -0.31, y: 1.02, z: -1.444}
+  m_LocalScale: {x: 8.030949, y: 4.405555, z: 0.030078514}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1761066420}
@@ -3524,7 +3525,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteboard: {fileID: 1123183019}
   dot: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
+  config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
+  pathManager: {fileID: 1123183027}
   primaryButtonAction: {fileID: -2439264783773714294, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
+  maxDotSpacing: 0.1
 --- !u!54 &1123183026
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3552,6 +3556,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &1123183027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123183019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14178188f158bd44aab486f3fb40b6e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dots: []
+  nextDotIndex: 0
+  coloredDots: 0
 --- !u!1 &1172231411
 GameObject:
   m_ObjectHideFlags: 0
@@ -5485,7 +5504,7 @@ Transform:
   m_GameObject: {fileID: 1880938764}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.02, z: -0.01}
+  m_LocalPosition: {x: 1.94, y: 0, z: 0}
   m_LocalScale: {x: 1.6, y: 1, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children: []

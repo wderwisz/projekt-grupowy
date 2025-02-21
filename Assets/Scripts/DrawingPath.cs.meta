@@ -3,7 +3,12 @@ guid: 270313696f100b44f909847cd3e5baa2
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - whiteboard: {instanceID: 0}
+  - dot: {instanceID: 0}
+  - config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
+  - primaryButtonAction: {instanceID: 0}
+  - pathManager: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
