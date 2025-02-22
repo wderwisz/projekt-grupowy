@@ -2132,6 +2132,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Device Simulator
       objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3527,7 +3531,9 @@ MonoBehaviour:
   dot: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
   config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
   pathManager: {fileID: 1123183027}
-  primaryButtonAction: {fileID: -2439264783773714294, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
+  primaryButtonActionXRI: {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  primaryButtonActionSimulator: {fileID: -2439264783773714294, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
+  isSimulated: 0
   maxDotSpacing: 0.1
 --- !u!54 &1123183026
 Rigidbody:
@@ -5540,8 +5546,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   segmentMaterials: []
   recolorMaterial: {fileID: 0}
-  width: 0.01
-  height: 0.01
+  vectorScale: 1
+  isSegmentation: 1
 --- !u!1 &1882593762
 GameObject:
   m_ObjectHideFlags: 0
@@ -5650,7 +5656,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1882593762}
   m_CullTransparentMesh: 1
-  vectorScale: 1
 --- !u!1001 &1884299422
 PrefabInstance:
   m_ObjectHideFlags: 0

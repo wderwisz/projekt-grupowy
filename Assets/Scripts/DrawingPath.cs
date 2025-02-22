@@ -8,8 +8,11 @@ public class DrawingPath : MonoBehaviour
     [SerializeField] private GameObject dot;
     [SerializeField] private Config config;
     [SerializeField] private PathManager pathManager;
-    public InputActionReference primaryButtonAction;
- 
+    private InputActionReference primaryButtonAction;
+    public InputActionReference primaryButtonActionXRI;
+    public InputActionReference primaryButtonActionSimulator;
+    public bool isSimulated = true;
+
     private XRRayInteractor rayInteractor;
     private bool isHovering = false;
 
@@ -22,6 +25,8 @@ public class DrawingPath : MonoBehaviour
     {
         rayInteractor = FindObjectOfType<XRRayInteractor>();
 
+        // Przypisujemy poprawn¹ akcjê w zale¿noœci od stanu checkboxa
+        primaryButtonAction = isSimulated ? primaryButtonActionSimulator : primaryButtonActionXRI;
     }
 
     private void Update()
