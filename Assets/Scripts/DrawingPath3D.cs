@@ -95,8 +95,8 @@ public class DrawingPath3D : MonoBehaviour
 
             if (config.getDrawingMode() && currentSpline.Spline.Count > 2)
             {
-                // Ekstrudowanie pojedynczego segmentu miêdzy dwoma poprzednimi wêz³ami(currentNode - 1 i currentNode - 2)
-                extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
+                 // Ekstrudowanie pojedynczego segmentu miêdzy dwoma poprzednimi wêz³ami(currentNode - 1 i currentNode - 2)
+                 extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
             }
         }
     }
@@ -111,13 +111,8 @@ public class DrawingPath3D : MonoBehaviour
         }
         else
         {
-            int layer = extruder.numberOfLayers();
             // Ekstrudowanie ostatniego segmentu natepuje po zakoñczoniu rysowania aby dorysowaæ œciane krañcow¹
-            // Ekstrudowanie wystêpuje kilka razy aby ostani segemnt nie dawa³ wra¿enia przeŸroczystego 
-            for (int i = 0; i < layer; i++)
-            {
-                extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
-            }
+            extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
             extruder.restoreSettings();
         }
 
