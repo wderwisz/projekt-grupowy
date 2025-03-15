@@ -7,12 +7,15 @@ public class MenuController : MonoBehaviour
 {
 
     //public InputActionProperty showMenuAction;
-    [SerializeField] public GameObject menu;
+    [SerializeField] private GameObject menu;
+    [SerializeField] private XRRayInteractor leftRay;
+    [SerializeField] private XRRayInteractor rightRay;
     private bool isMenuActive = false;
     private bool wasPressedLastFrame = false;
     public XRBaseController controller;
     public Transform player;
     public float menuDistance = 1.5f;
+
 
 
     // Start is called before the first frame update
@@ -22,7 +25,8 @@ public class MenuController : MonoBehaviour
         menu.SetActive(false);
         Camera mainCamera = Camera.main;
         player = mainCamera.transform;
-
+        leftRay.enabled =  false;
+        rightRay.enabled =  false;
     }
 
     // Update is called once per frame
@@ -37,6 +41,13 @@ public class MenuController : MonoBehaviour
             if (isMenuActive)
             {
                 PositionMenu();
+                leftRay.enabled = true;
+                rightRay.enabled = true;
+            }
+            else
+            {
+                leftRay.enabled = false;
+                rightRay.enabled = false;
             }
         }
 
