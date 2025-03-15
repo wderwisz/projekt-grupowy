@@ -12,8 +12,12 @@ public class DrawingPath3D : MonoBehaviour
     //public XRController controller; 
     public XRBaseController controller;
     public SplineContainer splineContainerPrefab;
+
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
+
+    [SerializeField][Range(0f, 1f)] private float hapticIntensity = 0.2f;
+    [SerializeField] private float hapticDuration = 0.15f;
 
     private SplineContainer currentSpline;
     private bool isDrawing = true;
@@ -54,7 +58,7 @@ public class DrawingPath3D : MonoBehaviour
                 StartDrawing();
             }
             AddPoint();
-
+      
         }
         else if (isDrawing)
         {
@@ -76,7 +80,7 @@ public class DrawingPath3D : MonoBehaviour
     {
         // Wyznaczanie pozycji punktu
         Vector3 newPosition = controller.transform.position;
-        newPosition = currentSpline.transform.InverseTransformPoint(newPosition);//
+        newPosition = currentSpline.transform.InverseTransformPoint(newPosition);
         BezierKnot knot = new BezierKnot(newPosition);
 
         // Przechowanie pozycji ostatnio dodanego punktu
@@ -95,8 +99,9 @@ public class DrawingPath3D : MonoBehaviour
 
             if (config.getDrawingMode() && currentSpline.Spline.Count > 2)
             {
-                 // Ekstrudowanie pojedynczego segmentu miêdzy dwoma poprzednimi wêz³ami(currentNode - 1 i currentNode - 2)
-                 extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
+                // Ekstrudowanie pojedynczego segmentu miêdzy dwoma poprzednimi wêz³ami(currentNode - 1 i currentNode - 2)
+                extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
+                HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
             }
         }
     }

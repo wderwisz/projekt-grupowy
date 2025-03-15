@@ -167,6 +167,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1283436808}
     m_Modifications:
+    - target: {fileID: 1900194195678271764, guid: 719c46dce70d691408acec8a4cea50da, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2938774513028819255, guid: 719c46dce70d691408acec8a4cea50da, type: 3}
       propertyPath: m_Color.g
       value: 1
@@ -230,7 +234,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7844886647108531386, guid: 719c46dce70d691408acec8a4cea50da, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1597786200}
   m_SourcePrefab: {fileID: 100100000, guid: 719c46dce70d691408acec8a4cea50da, type: 3}
 --- !u!1 &169858460
 GameObject:
@@ -2081,7 +2088,6 @@ GameObject:
   m_Component:
   - component: {fileID: 622005828}
   - component: {fileID: 622005829}
-  - component: {fileID: 622005830}
   m_Layer: 0
   m_Name: DirectInteractor
   m_TagString: Untagged
@@ -2171,8 +2177,8 @@ MonoBehaviour:
   m_AudioClipForOnHoverCanceled: {fileID: 0}
   m_AllowHoverAudioWhileSelecting: 1
   m_PlayHapticsOnSelectEntered: 0
-  m_HapticSelectEnterIntensity: 0
-  m_HapticSelectEnterDuration: 0
+  m_HapticSelectEnterIntensity: 0.723
+  m_HapticSelectEnterDuration: 0.57
   m_PlayHapticsOnSelectExited: 0
   m_HapticSelectExitIntensity: 0
   m_HapticSelectExitDuration: 0
@@ -2194,27 +2200,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_PhysicsTriggerInteraction: 1
---- !u!135 &622005830
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 622005827}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.004
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &695734057
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3206,6 +3191,7 @@ GameObject:
   - component: {fileID: 936513765}
   - component: {fileID: 936513764}
   - component: {fileID: 936513763}
+  - component: {fileID: 936513766}
   m_Layer: 5
   m_Name: ClearButton
   m_TagString: Untagged
@@ -3327,6 +3313,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 936513761}
   m_CullTransparentMesh: 1
+--- !u!114 &936513766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936513761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f148ce30086a054eb0c159a0f1f4900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intensity: 0.75
+  duration: 0.3
 --- !u!1 &973716200
 GameObject:
   m_ObjectHideFlags: 0
@@ -3474,6 +3474,52 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
+--- !u!1 &1073815310
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1073815311}
+  - component: {fileID: 1073815312}
+  m_Layer: 0
+  m_Name: HapticController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1073815311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073815310}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1218141645}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1073815312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073815310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82eed366dbfb77c4fac200f0602081f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftController: {fileID: 817923286}
+  rightController: {fileID: 1789286848}
 --- !u!1 &1083608470
 GameObject:
   m_ObjectHideFlags: 0
@@ -4010,6 +4056,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 300205791}
+  - {fileID: 1073815311}
+  - {fileID: 2103827845}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1281224216
@@ -4806,6 +4854,25 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6494111447168806690, guid: 719c46dce70d691408acec8a4cea50da, type: 3}
   m_PrefabInstance: {fileID: 40515447}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1597786193 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7844886647108531386, guid: 719c46dce70d691408acec8a4cea50da, type: 3}
+  m_PrefabInstance: {fileID: 40515447}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1597786200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1597786193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f148ce30086a054eb0c159a0f1f4900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intensity: 0.75
+  duration: 0.4
 --- !u!1 &1647474644
 GameObject:
   m_ObjectHideFlags: 0
@@ -5609,7 +5676,6 @@ GameObject:
   - component: {fileID: 1880938767}
   - component: {fileID: 1880938766}
   - component: {fileID: 1880938765}
-  - component: {fileID: 1880938769}
   - component: {fileID: 1880938770}
   m_Layer: 0
   m_Name: Plane
@@ -5705,22 +5771,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1880938769
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1880938764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed1a3308ac466b04c830cff29d7dba03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 1789286848}
-  splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
-  pointSpacing: 0.01
-  config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
 --- !u!114 &1880938770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6284,9 +6334,9 @@ MonoBehaviour:
   m_PlayHapticsOnSelectCanceled: 0
   m_HapticSelectCancelIntensity: 0
   m_HapticSelectCancelDuration: 0
-  m_PlayHapticsOnHoverEntered: 0
-  m_HapticHoverEnterIntensity: 0
-  m_HapticHoverEnterDuration: 0
+  m_PlayHapticsOnHoverEntered: 1
+  m_HapticHoverEnterIntensity: 0.795
+  m_HapticHoverEnterDuration: 0.51
   m_PlayHapticsOnHoverExited: 0
   m_HapticHoverExitIntensity: 0
   m_HapticHoverExitDuration: 0
@@ -6339,6 +6389,56 @@ MonoBehaviour:
   m_OccludeARHitsWith3DObjects: 0
   m_OccludeARHitsWith2DObjects: 0
   m_ScaleMode: 0
+--- !u!1 &2103827844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2103827845}
+  - component: {fileID: 2103827846}
+  m_Layer: 0
+  m_Name: Path3DController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2103827845
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103827844}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1218141645}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2103827846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103827844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1a3308ac466b04c830cff29d7dba03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 1789286848}
+  splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
+  pointSpacing: 0.01
+  config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
+  hapticIntensity: 0.4
+  hapticDuration: 0.1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

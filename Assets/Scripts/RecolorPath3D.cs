@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class RecolorPath3D : MonoBehaviour
@@ -13,11 +14,12 @@ public class RecolorPath3D : MonoBehaviour
     private Config config;
     private List<GameObject> segments;
     private GameState currentGameState;
-
-    [SerializeField]
     private GameObject previousSegment = null;
-    [SerializeField]
     private GameObject currentSegment;
+
+    [SerializeField][Range(0f,1f)] private float hapticIntensity = 0.3f;
+    [SerializeField] private float hapticDuration = 0.1f;
+
 
     private void Awake()
     {
@@ -48,7 +50,7 @@ public class RecolorPath3D : MonoBehaviour
 
 
 
-    // Funkcja wywo³ywana po dotkniêciu przez collider kontrolera (tylko gdy liveDrawingMode = false)
+    // Funkcja wywo³ywana po dotkniêciu przez collider kontrolera 
     private void OnTriggerEnter(Collider other)
      {
 
@@ -58,9 +60,11 @@ public class RecolorPath3D : MonoBehaviour
 
         if (other.CompareTag("Controller"))
         {
-            //if (config.getDrawingMode()) return;
-
+            // Sprawdzenie czy poprzedni segment pokolorowany
             if(previousSegment != null && !previousSegment.GetComponent<Segment3D>().isColored()) return;
+
+            // Sprawdzenie czy obecny jest ju¿ pomalowany
+            if(currentSegment.GetComponent<Segment3D>().isColored()) return;
 
             currentSegment.GetComponent<Segment3D>().setColored(true);
 
@@ -68,6 +72,9 @@ public class RecolorPath3D : MonoBehaviour
 
             MeshRenderer renderer = gameObject.GetComponent<MeshRenderer>();
             renderer.sharedMaterial = newMaterial;
+
+            XRBaseController controller = other.GetComponentInParent<XRBaseController>();
+            HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
         }
      }
 

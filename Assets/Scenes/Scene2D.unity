@@ -5575,6 +5575,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menu: {fileID: 2079049044}
+  leftRay: {fileID: 0}
+  rightRay: {fileID: 0}
   controller: {fileID: 1611919295}
   player: {fileID: 0}
   menuDistance: 1.5

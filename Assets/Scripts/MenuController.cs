@@ -93,5 +93,8 @@ public class MenuController : MonoBehaviour
     {
         isMenuActive = false;
         menu.SetActive(false);
+
+        leftRay.enabled = false;
+        rightRay.enabled = false;
     }
 }
