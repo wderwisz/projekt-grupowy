@@ -7,6 +7,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines;
 using System.Linq;
+using UnityEditor;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class SplineSegmentMeshExtruder : MonoBehaviour
 {
@@ -411,6 +413,40 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
         segments.Clear();
     }
+
+
+
+    public void GenerateCirclePoints(float radius, XRBaseController controller)
+    {
+
+        int segments = (int)(radius * 200);
+        Vector3 center = controller.transform.position;  // Pobierz pozycję obiektu
+        Vector3 normal = controller.transform.right;     // Normalna do płaszczyzny (prostopadła do X)
+
+        // Tworzenie lokalnego układu współrzędnych
+        Vector3 up = Vector3.up;  // Można dostosować, jeśli obiekt jest przechylony
+        Vector3 tangent = Vector3.Cross(up, normal).normalized;  // Wektor poziomy
+        Vector3 bitangent = Vector3.Cross(normal, tangent).normalized; // Wektor pionowy
+        float angleOffset = 90;
+        Quaternion rotation = Quaternion.AngleAxis(angleOffset, up);
+        Spline spline = new Spline();
+        
+        for (int i = 0; i < segments; i++)  
+        {
+          
+            float angle = i * Mathf.PI * 2 / segments;
+
+            BezierKnot knot = new BezierKnot(center + rotation *
+                tangent * (Mathf.Cos(angle) * radius) + 
+                bitangent * (Mathf.Sin(angle) * radius));
+            spline.Add(knot); 
+        }
+        spline.Add(spline[0]);
+        ExtrudeAndApplyMaterials(spline);
+    }
+
+
+
 }
 
 

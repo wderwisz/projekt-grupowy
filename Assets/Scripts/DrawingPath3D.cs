@@ -113,7 +113,9 @@ public class DrawingPath3D : MonoBehaviour
         if (!config.getDrawingMode())
         {
             ExtrudeSpline();
-        }
+            //extruder.GenerateCirclePoints( 0.1f,controller);
+            //extruder.GeneratePolygonPoints(5, 0.2f, controller);
+            }
         else
         {
             // Ekstrudowanie ostatniego segmentu natepuje po zakoñczoniu rysowania aby dorysowaæ œciane krañcow¹
