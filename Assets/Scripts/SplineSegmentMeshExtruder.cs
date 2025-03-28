@@ -107,6 +107,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         RecolorPath3D recolorPath3D = segmentMesh.GetComponent<RecolorPath3D>();
         recolorPath3D.setCurrentSegment(segments[knotIndex - 1]);
         if (knotIndex > 1) recolorPath3D.setPreviousSegment(segments[knotIndex - 2]);
+        recolorPath3D.setSegments(segments);
     }
     //Dla rysowania live przed dodaniem kolejnej warstwy usuwamy poprzenia
     private void DeleteLastSegment()
@@ -140,6 +141,8 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
                 RecolorPath3D recolorPath3D = segmentMesh.GetComponent<RecolorPath3D>();
                 recolorPath3D.setCurrentSegment(segments[i]);
                 if (i > 0) recolorPath3D.setPreviousSegment(segments[i - 1]);
+                recolorPath3D.setSegments(segments);
+
             }
             else 
             {
