@@ -9,6 +9,7 @@ using UnityEngine.Splines;
 using System.Linq;
 using UnityEditor;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.Experimental.Rendering;
 
 public class SplineSegmentMeshExtruder : MonoBehaviour
 {
@@ -419,22 +420,22 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     public void GenerateCirclePoints(float radius, XRBaseController controller)
     {
 
-        int segments = (int)(radius * 200);
+        int numberOfSegments = (int)(radius * 200);
         Vector3 center = controller.transform.position;  // Pobierz pozycję obiektu
         Vector3 normal = controller.transform.right;     // Normalna do płaszczyzny (prostopadła do X)
 
         // Tworzenie lokalnego układu współrzędnych
-        Vector3 up = Vector3.up;  // Można dostosować, jeśli obiekt jest przechylony
+        Vector3 up = Vector3.up;  
         Vector3 tangent = Vector3.Cross(up, normal).normalized;  // Wektor poziomy
         Vector3 bitangent = Vector3.Cross(normal, tangent).normalized; // Wektor pionowy
         float angleOffset = 90;
         Quaternion rotation = Quaternion.AngleAxis(angleOffset, up);
         Spline spline = new Spline();
         
-        for (int i = 0; i < segments; i++)  
+        for (int i = 0; i < numberOfSegments; i++)  
         {
           
-            float angle = i * Mathf.PI * 2 / segments;
+            float angle = i * Mathf.PI * 2 / numberOfSegments;
 
             BezierKnot knot = new BezierKnot(center + rotation *
                 tangent * (Mathf.Cos(angle) * radius) + 
@@ -445,6 +446,50 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         ExtrudeAndApplyMaterials(spline);
     }
 
+    public void GeneratePolygonPoints(int sides, float radius, XRBaseController controller)
+    {
+        int numberOfSegments = (int)(radius * 200);
+        if (sides < 3) return; // Minimalna ilość boków to 3 (trójkąt)
+
+        Vector3 center = controller.transform.position;  // Środek wielokąta
+        Vector3 normal = controller.transform.right;     // Normalna do płaszczyzny
+        Vector3 up = Vector3.up;
+
+        // Układ współrzędnych dla wielokąta
+        Vector3 tangent = Vector3.Cross(up, normal).normalized;
+        Vector3 bitangent = Vector3.Cross(normal, tangent).normalized;
+        
+        float angleOffset = 90; //Przesuniecie aby wielokat byl rysowany prostopadle do kontrolera
+        Quaternion rotation = Quaternion.AngleAxis(angleOffset, up);
+        //rotation = rotation * Quaternion.Euler(0, 0, 0);
+        Spline spline = new Spline();
+        float angle = 0;
+        
+        // Obliczanie pozycji wierzchołka wielokąta
+        Vector3 lastLocalPoint = tangent * (Mathf.Cos(angle) * radius) +
+                             bitangent * (Mathf.Sin(angle) * radius);
+
+        for (int i = 1; i <= sides; i++)
+        {
+            int k = i % sides;
+            angle = k * Mathf.PI * 2 / sides;  // Kąt dla wierzchołka
+
+            // Obliczanie pozycji wierzchołka wielokąta
+            Vector3 localPoint = tangent * (Mathf.Cos(angle) * radius) +
+                                 bitangent * (Mathf.Sin(angle) * radius);
+           
+            Vector3 lengthOfWall = localPoint - lastLocalPoint ;
+            for(int j = 1; j <= numberOfSegments; j++)
+            {
+                Vector3 point = lastLocalPoint + j * lengthOfWall / numberOfSegments;
+                BezierKnot knot = new BezierKnot(center + rotation * point);
+                spline.Add(knot);
+            }
+            lastLocalPoint = localPoint;
+        }
+        spline.Add(spline[0]); // Zamknięcie wielokąta
+        ExtrudeAndApplyMaterials(spline);
+    }
 
 
 }
