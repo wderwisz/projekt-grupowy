@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.Experimental.Rendering;
+using System.IO;
 
 public class SplineSegmentMeshExtruder : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private Vector3 lastPerpendicularVector = Vector3.zero;
     [SerializeField] private bool isSegmentation = true;
     private List<GameObject> segments;
-    private GameObject lastSegment = null;      //ostatni sgegment ktoty nalzey usunac
+    private GameObject lastSegment = null;      //ostatni segment ktory nalezy usunac
 
     bool isFirstSegment = true;
     bool isLastSegment = false;
@@ -37,6 +38,8 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private List<int> trianglesList = new List<int>();         // Przechowywanie trojkatow
 
     private Vector3[] lastVertices = new Vector3[4];           // Wierzcholki konca poprzedniego segmentu
+
+   
     public List<GameObject> getSegmentList()
     {
         return segments;
@@ -45,6 +48,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private void Awake()
     {
         segments = new List<GameObject>();
+      
     }
 
     public void setVectorScale(float v){
@@ -121,12 +125,13 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             segments.RemoveAt(segments.Count - 1);
 
         }
+       
     }
 
     // Funkcja do ekstrudowania calego spline'a
     public void ExtrudeAndApplyMaterials(Spline spline)
     {
-
+      
         for (int i = 0; i < spline.Count - 1; i++)
         {
 
@@ -411,7 +416,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
             Debug.Log(segment);
             Destroy(segment);
         }
-
+       
         segments.Clear();
     }
 
@@ -491,6 +496,32 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         ExtrudeAndApplyMaterials(spline);
     }
 
+    public void Save(List<Spline> list)
+    {
+        SaveLoadSplinePoints.SaveVector3List(Path.Combine(Application.persistentDataPath, "points.json"), list);
+    }
+    public void Load()
+    {
+        List<List<Vector3>> list = SaveLoadSplinePoints.LoadVector3List(Path.Combine(Application.persistentDataPath, "points.json"));
+        foreach(var pointsList in list)
+        {
+            ExtrudeAndApplyMaterials(CreateSpline(pointsList));
+        }
+
+    }
+
+    public Spline CreateSpline(List<Vector3> points)
+    {
+        SplineContainer splineContainer = gameObject.AddComponent<SplineContainer>();
+
+        splineContainer.Spline.Clear();
+
+        foreach (var point in points)
+        {
+            splineContainer.Spline.Add(new BezierKnot(point));
+        }
+        return splineContainer.Spline;
+    }
 
 }
 

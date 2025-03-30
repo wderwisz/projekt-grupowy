@@ -22,14 +22,16 @@ public class DrawingPath3D : MonoBehaviour
     private SplineContainer currentSpline;
     private bool isDrawing = true;
 
+   
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
+    private List<Spline> listOfSplines = new List<Spline>();
 
     private Vector3 lastKnotPosition = Vector3.zero;
 
     private GameState currentGameState;
 
-
+    public int counter = 0;
     void Awake()
     {
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
@@ -95,6 +97,8 @@ public class DrawingPath3D : MonoBehaviour
         {
             // Dodanie punktu do krzywej
             currentSpline.Spline.Add(knot);
+            //
+
             lastKnotPosition = newPosition;
 
             if (config.getDrawingMode() && currentSpline.Spline.Count > 2)
@@ -113,9 +117,12 @@ public class DrawingPath3D : MonoBehaviour
         if (!config.getDrawingMode())
         {
             ExtrudeSpline();
+            
+            //extruder.Save(listOfSplines);
+            //extruder.Load();
             //extruder.GenerateCirclePoints(0.1f,controller);
             //extruder.GeneratePolygonPoints(5, 0.1f, controller);
-            }
+        }
         else
         {
             // Ekstrudowanie ostatniego segmentu natepuje po zakoñczoniu rysowania aby dorysowaæ œciane krañcow¹
@@ -130,6 +137,7 @@ public class DrawingPath3D : MonoBehaviour
     // Ekstrudowanie ca³ego spline'a po skoñczeniu rysowania (liveDrawingMode = false) do testowania kolorowania
     void ExtrudeSpline()
     {
+        listOfSplines.Add(currentSpline.Spline);
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         //extruder.AddCollidersToSpline(currentSpline);
     }
