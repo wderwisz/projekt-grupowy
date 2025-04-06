@@ -2942,7 +2942,7 @@ MonoBehaviour:
   m_UpdateTrackingType: 0
   m_EnableInputTracking: 1
   m_EnableInputActions: 1
-  m_ModelPrefab: {fileID: 8270855663187062767, guid: 1392f805216c47742996d4742c80721c, type: 3}
+  m_ModelPrefab: {fileID: 6350655580882400678, guid: 086e1b7d7f7d1494d838f82c83e6baae, type: 3}
   m_ModelParent: {fileID: 0}
   m_Model: {fileID: 0}
   m_AnimateModel: 0
@@ -5357,7 +5357,7 @@ MonoBehaviour:
   m_UpdateTrackingType: 0
   m_EnableInputTracking: 1
   m_EnableInputActions: 1
-  m_ModelPrefab: {fileID: 3475118261464492563, guid: 9f3369e30fbd31f4bb596b1a99babe83, type: 3}
+  m_ModelPrefab: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
   m_ModelParent: {fileID: 0}
   m_Model: {fileID: 0}
   m_AnimateModel: 0
@@ -6544,6 +6544,63 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
   hapticIntensity: 0.4
   hapticDuration: 0.1
+--- !u!1001 &1682107609837609993
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3877868120041910868, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_Name
+      value: MetaQuestTouchPlus_Right
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -6560,3 +6617,4 @@ SceneRoots:
   - {fileID: 705507995}
   - {fileID: 189646025}
   - {fileID: 1462286587}
+  - {fileID: 1682107609837609993}
