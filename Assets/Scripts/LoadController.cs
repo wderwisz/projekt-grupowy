@@ -1,30 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.InputSystem;
 using UnityEngine.Splines;
+using System.IO;
+using UnityEngine.XR.Interaction.Toolkit;
+using TMPro;
 
-public class MenuController : MonoBehaviour
+public class LoadController : MonoBehaviour
 {
-
-    //public InputActionProperty showMenuAction;
+    [SerializeField] private SplineContainer prefab;
     [SerializeField] private GameObject menu;
+    [SerializeField] private DrawingPath3D drawingPathScript;
     [SerializeField] private XRRayInteractor leftRay;
     [SerializeField] private XRRayInteractor rightRay;
-    [SerializeField] private DrawingPath3D drawingPathScript;
-    [SerializeField] private SaveController saveController;
-    [SerializeField] private LoadController loadController;
-    [SerializeField] private GameObject saveFileMenu;
-    private bool isMenuActive = false;
-    private bool wasPressedLastFrame = false;
-    public XRBaseController controller;
+    [SerializeField] private MenuController menuController;
+
+
+    public bool isMenuActive = false;
     public Transform player;
+    public XRBaseController controller;
     public float menuDistance = 1.5f;
-    private Spline spline;
-    private SplineSegmentMeshExtruder[] splineExtruder;
-
-
 
     // Start is called before the first frame update
     void Start()
@@ -33,38 +28,31 @@ public class MenuController : MonoBehaviour
         menu.SetActive(false);
         Camera mainCamera = Camera.main;
         player = mainCamera.transform;
-        leftRay.enabled =  false;
-        rightRay.enabled =  false;
+        leftRay.enabled = false;
+        rightRay.enabled = false;
+
     }
 
     // Update is called once per frame
     void Update()
     {
         //w³¹czanie menu poprzez dolny trigger lewego kontrolera shift + G 
-        bool isPressed = controller.selectInteractionState.active;
-        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciœniêcia
-        {
-            isMenuActive = !isMenuActive;
-            menu.SetActive(isMenuActive);
-            if (isMenuActive)
-            {
-                PositionMenu();
-                leftRay.enabled = true;
-                rightRay.enabled = true;
-            }
-            else
-            {
-                leftRay.enabled = false;
-                rightRay.enabled = false;
-            }
-        }
-
+        //bool isPressed = controller.selectInteractionState.active;
         if (isMenuActive)
         {
+            menu.SetActive(isMenuActive);
+            PositionMenu();
+            leftRay.enabled = true;
+            rightRay.enabled = true;
             FollowPlayer();
-        }
 
-        wasPressedLastFrame = isPressed;
+        }
+        if (controller.selectInteractionState.active && isMenuActive)
+        {
+            CloseMenu();
+            menuController.CloseMenu();
+            
+        }
     }
 
     void FollowPlayer()
@@ -96,44 +84,53 @@ public class MenuController : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(forward);
         menu.transform.rotation = lookRotation;
     }
-    public void FindSplineExtruder() //funkcja do usuwania szlaku
-    {
-        splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
-        if (splineExtruder != null)
-        {
-            foreach (SplineSegmentMeshExtruder extruder in splineExtruder)
-            {
-                extruder.ClearTrail();
-            }
-        }
-        else
-        {
-            Debug.Log("Nie znaleziono szlaku");
-        }
-    }
+
     public void CloseMenu() // Funkcja do zamykania menu
     {
         isMenuActive = false;
         menu.SetActive(false);
-
         leftRay.enabled = false;
         rightRay.enabled = false;
     }
 
-
-    public void SaveSpline()
+   
+    public void Load(string filePath)
     {
-        saveController.isMenuActive = true;
-        CloseMenu();
+        menuController.FindSplineExtruder();
+        List<List<Vector3>> list = SaveLoadSplinePoints.LoadVector3List(Path.Combine(Application.persistentDataPath + "/saves/", filePath));
+        foreach (var pointsList in list)
+        {
+            CreateSpline(pointsList);
+        }
 
     }
 
-
-    public void LoadSpline()
+    public void CreateSpline(List<Vector3> points)
     {
-        FindSplineExtruder();
-        loadController.isMenuActive = true;
-        CloseMenu();
-      
+
+
+        Transform player = Camera.main.transform;
+        Vector3 forward = player.forward;
+        forward.y = 0;
+        forward.Normalize();
+        Vector3 newPosition = player.position + forward * 0.5f;
+        newPosition.y = 0;
+
+        SplineContainer currentSpline = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        SplineSegmentMeshExtruder extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
+
+        Debug.Log(extruder);
+
+        currentSpline.Spline.Clear();
+
+        foreach (var point in points)
+        {
+            currentSpline.Spline.Add(new BezierKnot(point));
+
+        }
+        //return splineContainer.Spline;
+        extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
+        currentSpline.transform.position = newPosition;
     }
+
 }
