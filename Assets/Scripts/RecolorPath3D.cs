@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR 
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -28,9 +30,9 @@ public class RecolorPath3D : MonoBehaviour
         //GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //RecolorPath subskrybuje GameManager
 
         // Dodawanie ScriptableObject z konfiguracj¹ do skryptu segmentu
-        string[] configFile = AssetDatabase.FindAssets("MainConfig", new[] { "Assets/Configuration" });
-        string path = AssetDatabase.GUIDToAssetPath(configFile[0]);
-        config = AssetDatabase.LoadAssetAtPath<Config>(path);
+        //string[] configFile = AssetDatabase.FindAssets("MainConfig", new[] { "Assets/Configuration" });
+        //string path = AssetDatabase.GUIDToAssetPath(configFile[0]);
+        //config = AssetDatabase.LoadAssetAtPath<Config>(path);
     }
 
     public void setPreviousSegment(GameObject segment)
