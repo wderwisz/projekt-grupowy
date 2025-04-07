@@ -96,8 +96,9 @@ public class LoadController : MonoBehaviour
    
     public void Load(string filePath)
     {
+        
         menuController.FindSplineExtruder();
-        List<List<Vector3>> list = SaveLoadSplinePoints.LoadVector3List(Path.Combine(Application.persistentDataPath + "/saves/", filePath));
+        List<List<Vector3>> list = SaveLoadSplinePoints.LoadVector3List(Path.Combine(Application.persistentDataPath,"saves", filePath));
         foreach (var pointsList in list)
         {
             CreateSpline(pointsList);
@@ -128,6 +129,7 @@ public class LoadController : MonoBehaviour
             currentSpline.Spline.Add(new BezierKnot(point));
 
         }
+        drawingPathScript.listOfSplines.Add(currentSpline.Spline);
         //return splineContainer.Spline;
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         currentSpline.transform.position = newPosition;

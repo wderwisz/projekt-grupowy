@@ -12,7 +12,7 @@ public class LoadLevelButton : MonoBehaviour
 
     public void LoadFromFile()
     {
-        string path = Path.Combine(Application.persistentDataPath + "/saves/", levelText.text +".json");
+        string path = Path.Combine(Application.persistentDataPath ,"saves", levelText.text +".json");
         //Debug.Log(levelText.text);
         loadController.Load(path);
     }

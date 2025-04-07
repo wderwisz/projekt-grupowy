@@ -6,6 +6,8 @@ using System.IO;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
 using Microsoft.MixedReality.Toolkit.Experimental.UI;
+using System;
+
 public class SaveController : MonoBehaviour
 {
     [SerializeField] private SplineContainer prefab;
@@ -104,9 +106,29 @@ public class SaveController : MonoBehaviour
     public void Save()
     {
         List<Spline> splines = drawingPathScript.listOfSplines;
+
+        Debug.Log("lista splinów " + splines.Count );
+
         string fileName = inputField.text + ".json";
         Debug.Log(fileName);
-        SaveLoadSplinePoints.SaveVector3List(Path.Combine(Application.persistentDataPath + "/saves/", fileName), splines);
+        try
+        {
+            string saveDir = Path.Combine(Application.persistentDataPath, "saves");
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+
+            SaveLoadSplinePoints.SaveVector3List(
+                Path.Combine(saveDir, fileName),
+                splines);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to save spline points: {ex.Message}");
+        }
+       // SaveLoadSplinePoints.SaveVector3List(Path.Combine(Application.persistentDataPath, fileName), splines);
+        //SaveLoadSplinePoints.SaveVector3List(Path.Combine(Application.persistentDataPath + "/saves/", fileName), splines);
         CloseMenu();
     }
 

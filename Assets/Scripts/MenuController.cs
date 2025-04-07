@@ -98,6 +98,8 @@ public class MenuController : MonoBehaviour
     }
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
+
+        drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
         splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
         if (splineExtruder != null)
         {

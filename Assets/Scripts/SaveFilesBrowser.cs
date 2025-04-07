@@ -18,7 +18,7 @@ public class SaveFilesBrowser : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(Application.persistentDataPath + "/saves/"));
+        DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(Application.persistentDataPath, "saves"));
         FileInfo[] saveFiles = directoryInfo.GetFiles();
         int fileNumber = saveFiles.Length;
         for (int i = 0; i < fileNumber; i++ ) {

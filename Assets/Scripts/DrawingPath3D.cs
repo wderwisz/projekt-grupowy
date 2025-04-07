@@ -128,8 +128,9 @@ public class DrawingPath3D : MonoBehaviour
             // Ekstrudowanie ostatniego segmentu natepuje po zakoñczoniu rysowania aby dorysowaæ œciane krañcow¹
             extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
             extruder.restoreSettings();
-            listOfSplines.Add(currentSpline.Spline);
+           // listOfSplines.Add(currentSpline.Spline);
         }
+        listOfSplines.Add(currentSpline.Spline);
 
     }
 
@@ -138,7 +139,6 @@ public class DrawingPath3D : MonoBehaviour
     // Ekstrudowanie ca³ego spline'a po skoñczeniu rysowania (liveDrawingMode = false) do testowania kolorowania
     void ExtrudeSpline()
     {
-        //listOfSplines.Add(currentSpline.Spline);
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         //extruder.AddCollidersToSpline(currentSpline);
     }
