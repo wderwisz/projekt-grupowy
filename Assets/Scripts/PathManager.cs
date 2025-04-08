@@ -10,6 +10,8 @@ public class PathManager : MonoBehaviour
 
     public int coloredDots = 0;
 
+    public bool coloringFinished = false;
+
     private float delayInSeconds = 3.0f;
 
     //dodawanie kropki do listy 
@@ -56,6 +58,7 @@ public class PathManager : MonoBehaviour
     {
         if (coloredDots == dots.Count - 1)  // Sprawdzamy, czy to ostatnia kropka
         {
+            coloringFinished = true;
             StartCoroutine(RemoveDotsAfterDelay());  // Uruchamiamy coroutine, która poczeka 3 sekundy
         }
     }
@@ -75,6 +78,7 @@ public class PathManager : MonoBehaviour
         dots.Clear(); 
         nextDotIndex = 0;
         coloredDots = 0;
+        coloringFinished = false;
         Debug.Log("Wszystkie kropki zosta³y usuniête.");
     }
 

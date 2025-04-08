@@ -9,136 +9,144 @@ public class DrawingPath : MonoBehaviour
     [SerializeField] private Config config;
     [SerializeField] private PathManager pathManager;
     public InputActionReference primaryButtonAction;
- 
+
     private XRRayInteractor rayInteractor;
     private bool isHovering = false;
-
-    // maksymalna odleglosc miedzy kropkami
-    [SerializeField] private float maxDotSpacing = 0.03f;
-    private float detectionRadius = 0.0f;  // Promieñ wykrywania
+    [SerializeField] private float maxDotSpacing = 0.03f; // maksymalna odleglosc miedzy kropkami
     private Vector3 lastDotPosition = Vector3.zero; // pozycja ostatniej kropki
+
+    // zmienne do pomiaru czasu kolorowania
+    private bool coloringStarted = false;
+    private float coloringStartTime = 0f;
+
+    // zmienne do pomiaru dok³adnoœci
+    private int totalClicks = 0;
+    private int successfulClicks = 0;
+    private float coloredHoverTimer = 0f;
+    private DotRecolor lastColoredHit = null;
 
     private void Awake()
     {
         rayInteractor = FindObjectOfType<XRRayInteractor>();
-
     }
 
     private void Update()
     {
-
         //tryb rysowania
-        
         if (config.getDrawingMode())
         {
             //tryb usuwania
             if (config.getErasingMode())
             {
-                if (isHovering)
+                if (isHovering && primaryButtonAction.action.ReadValue<float>() > 0)
                 {
-                    if (primaryButtonAction.action.ReadValue<float>() > 0)
+                    if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
                     {
-                        if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
+                        DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
+                        if (dotRemoval != null)
                         {
-                            DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
-                            if (dotRemoval != null)
+                            // Usuwanie kropek od koñca
+                            int removalIndex = dotRemoval.dotIndex;
+                            for (int i = pathManager.dots.Count - 1; i >= removalIndex; i--)
                             {
-                                int removalIndex = dotRemoval.dotIndex;
-
-                                // Usuwanie kropek od koñca
-                                for (int i = pathManager.dots.Count - 1; i >= removalIndex; i--)
-                                {
-                                    // Zniszczenie obiektu kropki
-                                    Destroy(pathManager.dots[i]);
-
-                                    // Usuniêcie kropki z listy
-                                    pathManager.dots.RemoveAt(i);
-                                }
-
-                                // Aktualizacja lastDotPosition po usuniêciu kropek
-                                if (pathManager.dots.Count > 0)
-                                {
-                                    lastDotPosition = pathManager.dots[pathManager.dots.Count - 1].transform.position;
-                                }
-                                else
-                                {
-                                    lastDotPosition = Vector3.zero;
-                                }
+                                Destroy(pathManager.dots[i]);
+                                pathManager.dots.RemoveAt(i);
                             }
+                            // Aktualizacja lastDotPosition po usuniêciu kropek
+                            lastDotPosition = (pathManager.dots.Count > 0) ?
+                                              pathManager.dots[pathManager.dots.Count - 1].transform.position :
+                                              Vector3.zero;
                         }
                     }
                 }
             }
-        
             else
             {
                 //Debug.Log("Tryb rysowania wlaczony");
-                if (isHovering)
+                if (isHovering && primaryButtonAction.action.ReadValue<float>() > 0)
                 {
-                    if (primaryButtonAction.action.ReadValue<float>() > 0)
+                    if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit) && hit.collider.gameObject == whiteboard)
                     {
-                        if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit) && hit.collider.gameObject == whiteboard)
+                        Vector3 newPos = hit.point;
+                        Debug.Log($"Hit Point (rysowanie): {newPos}");
+
+                        // Jesli mamy zapisana poprzednia pozycje wypelniamy ewentualne luki
+                        if (lastDotPosition != Vector3.zero)
                         {
-                            Vector3 newPos = hit.point;
-                            Debug.Log($"Hit Point (rysowanie): {newPos}");
-
-                            // Jesli mamy zapisana poprzednia pozycje wypelniamy ewentualne luki
-                            if (lastDotPosition != Vector3.zero)
+                            float distance = Vector3.Distance(newPos, lastDotPosition);
+                            if (distance > maxDotSpacing)
                             {
-                                float distance = Vector3.Distance(newPos, lastDotPosition);
-                                if (distance > maxDotSpacing)
+                                int numInterpolated = Mathf.FloorToInt(distance * 2 / maxDotSpacing);
+                                for (int i = 1; i <= numInterpolated; i++)
                                 {
-                                    int numInterpolated = Mathf.FloorToInt(distance * 2 / maxDotSpacing);
-                                    for (int i = 1; i <= numInterpolated; i++)
-                                    {
-                                        // interpolacja liniowa miedzy lastDotPosition a newPos
-                                        float t = (float)i / (numInterpolated + 1);
-                                        Vector3 interpPos = Vector3.Lerp(lastDotPosition, newPos, t);
-                                        GameObject interpDot = Instantiate(dot, interpPos, Quaternion.Euler(0f, 0f, 90f));
-                                        interpDot.AddComponent<SphereCollider>();
-
-                                        if (pathManager != null)
-                                            pathManager.AddDot(interpDot);
-                                        else
-                                            Debug.LogWarning("PathManager jest null!");
-                                    }
+                                    // interpolacja liniowa miedzy lastDotPosition a newPos
+                                    float t = (float)i / (numInterpolated + 1);
+                                    Vector3 interpPos = Vector3.Lerp(lastDotPosition, newPos, t);
+                                    GameObject interpDot = Instantiate(dot, interpPos, Quaternion.Euler(0f, 0f, 90f));
+                                    interpDot.AddComponent<SphereCollider>();
+                                    if (pathManager != null)
+                                        pathManager.AddDot(interpDot);
+                                    else
+                                        Debug.LogWarning("PathManager jest null!");
                                 }
                             }
-
-                            // dodajemy glowna kropke na nowej pozycji
-                            GameObject newDot = Instantiate(dot, newPos, Quaternion.Euler(0f, 0f, 90f));
-                            newDot.AddComponent<SphereCollider>();
-                            if (pathManager != null)
-                                pathManager.AddDot(newDot);
-
-
-                            // aktualizacja pozycji ostatniej kropki
-                            lastDotPosition = newPos;
                         }
+                        // dodajemy glowna kropke na nowej pozycji
+                        GameObject newDot = Instantiate(dot, newPos, Quaternion.Euler(0f, 0f, 90f));
+                        newDot.AddComponent<SphereCollider>();
+                        if (pathManager != null)
+                            pathManager.AddDot(newDot);
+                        // aktualizacja pozycji ostatniej kropki
+                        lastDotPosition = newPos;
                     }
                 }
             }
         }
-        else
+        else  //tryb kolorowania
         {
-            //tryb kolorowania
-            if (isHovering)
+            if (pathManager.coloringFinished)
             {
-                if (primaryButtonAction.action.ReadValue<float>() > 0)
+                if (coloringStarted)
                 {
-                    if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
+                    float elapsedTime = Time.time - coloringStartTime;
+                    float accuracy = (totalClicks > 0) ? (successfulClicks / (float)totalClicks) * 100f : 0f;
+                    Debug.Log($"Koniec kolorowania. Ostateczny czas: {elapsedTime:F2}s, Trafieñ: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
+                    coloringStarted = false;
+                }
+                return;
+            }
+
+            // nacisniecie przycisku
+            if (isHovering && primaryButtonAction.action.ReadValue<float>() > 0)
+            {
+                // pobranie trafienia
+                if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
+                {
+                    Debug.Log($"Hit Point (kolorowanie): {hit.point} - Trafiono w: {hit.collider.gameObject.name}");
+                    DotRecolor dotRecolor = hit.collider.GetComponent<DotRecolor>();
+
+                    if (dotRecolor != null)
                     {
-                        Debug.Log($"Hit Point (kolorowanie): {hit.point} - Trafiono w: {hit.collider.gameObject.name}");
-                        DotRecolor dotRecolor = hit.collider.GetComponent<DotRecolor>();
-                        if (dotRecolor != null) { 
-                            Debug.Log("Klikniêto kropkê o indeksie: " + dotRecolor.dotIndex);
+                        //jesli kropka nie jest pokolorwana
+                        if (!dotRecolor.IsColored)
+                        {
+                            // start pomiaru czasu
+                            if (!coloringStarted)
+                            {
+                                coloringStartTime = Time.time;
+                                coloringStarted = true;
+                                Debug.Log("Rozpoczêto kolorowanie. Start time: " + coloringStartTime);
+                            }
+                            // zwiekszenie wszystkich klikniec i poprawnych
+                            totalClicks++;
+                            successfulClicks++;
+                            Debug.Log("Klikniêto now¹ kropkê o indeksie: " + dotRecolor.dotIndex);
                             dotRecolor.Recolor();
-                            int hitIndex = dotRecolor.dotIndex;
-                           
+
                             //Zmiana koloru poprzednich kropek - zapobiega przenikaniu i lukom
+                            int hitIndex = dotRecolor.dotIndex;
                             for (int i = 1; i <= 6; i++)
                             {
-                            
                                 if (hitIndex - i >= 0)
                                 {
                                     DotRecolor neighborDot = pathManager.GetDot(hitIndex - i);
@@ -147,28 +155,66 @@ public class DrawingPath : MonoBehaviour
                                         neighborDot.Recolor();
                                     }
                                 }
-
-
                             }
-
-
-                            //Sprawdzamy czy szlak zosta³ w pe³ni odwzorowany
                             pathManager.CheckAndRemoveDots();
+
+                            // reset wskaznika
+                            lastColoredHit = null;
+                            coloredHoverTimer = 0f;
+
                             if (lastDotPosition != Vector3.zero)
                                 lastDotPosition = Vector3.zero;
-
-
                         }
                         else
                         {
-                            Debug.Log("Trafiono obiekt, ktory nie jest kropka.");
+                            // trafienie w ju¿ pokolorowana kropke
+                            if (lastColoredHit == dotRecolor)
+                            {
+                                coloredHoverTimer += Time.deltaTime;
+                            }
+                            else
+                            {
+                                lastColoredHit = dotRecolor;
+                                coloredHoverTimer = 0f;
+                            }
+                            if (coloredHoverTimer >= 1f)
+                            {
+                                // dodanie kliniec gdy stoimi
+                                totalClicks++;
+                                Debug.Log("Stoisz na ju¿ pokolorowanej kropce d³u¿ej ni¿ 1s. Dodano totalClicks.");
+                                // reset czasu (do poprawy)
+                                coloredHoverTimer = 0f;
+                            }
                         }
                     }
-                    else
+                    else //nie trafienie w kropke
                     {
-                        Debug.Log("Laser nie trafi³ w zaden obiekt.");
+                        totalClicks++;
+                        Debug.Log("Trafiono obiekt, który nie jest kropk¹.");
+                        lastColoredHit = null;
+                        coloredHoverTimer = 0f;
                     }
                 }
+                else
+                {
+                    Debug.Log("Laser nie trafi³ w ¿aden obiekt.");
+                    lastColoredHit = null;
+                    coloredHoverTimer = 0f;
+                }
+
+                // wyswietlanie pomiarów
+                if (coloringStarted)
+                {
+                    float elapsedTime = Time.time - coloringStartTime;
+                    float accuracy = (totalClicks > 0) ? (successfulClicks / (float)totalClicks) * 100f : 0f;
+                    Debug.Log($"Czas od rozpoczêcia: {elapsedTime:F2}s, Trafieñ: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
+                }
+            }
+            else
+            {
+                // gdy nie trzymamy przycisku
+                lastColoredHit = null;
+                coloredHoverTimer = 0f;
             }
         }
     }
@@ -182,6 +228,8 @@ public class DrawingPath : MonoBehaviour
     public void OnHoverExit(HoverExitEventArgs args)
     {
         isHovering = false;
+        lastColoredHit = null;
+        coloredHoverTimer = 0f;
         //Debug.Log("isHovering ustawione na false");
     }
 }
