@@ -17,7 +17,7 @@ public class RecolorPath3D : MonoBehaviour
     private GameState currentGameState;
     private GameObject previousSegment = null;
     private GameObject currentSegment;
-    private HashSet<GameObject> currentCollisions = new HashSet<GameObject>();
+
 
 
     [SerializeField][Range(0f,1f)] private float hapticIntensity = 0.3f;
