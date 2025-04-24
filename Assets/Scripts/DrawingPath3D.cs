@@ -13,6 +13,8 @@ public class DrawingPath3D : MonoBehaviour
     public XRBaseController controller;
     public SplineContainer splineContainerPrefab;
 
+    [SerializeField] private RecoloringVisualHelper visualHelper;
+
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
 
@@ -121,6 +123,9 @@ public class DrawingPath3D : MonoBehaviour
             extruder.restoreSettings();
         }
 
+        //RecoloringVisualHelper.setSegments(extruder.getSegmentList());
+        visualHelper.setSegments(extruder.getSegmentList());
+        visualHelper.activateBlinkingSegment();
     }
 
 

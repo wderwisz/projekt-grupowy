@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     private void HandlePatientMode()
     {
         Debug.Log("Tryb pacjenta aktywny");
+        
     }
 
     private void Update()

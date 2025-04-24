@@ -5,7 +5,14 @@ using UnityEngine.UIElements;
 
 public class Segment3D : MonoBehaviour
 {
+    private enum MaterialType
+    {
+        DEFAULT = 0,
+        BLINKING = 1
+    }
+
     private bool colored = false;
+    private MaterialType materialType;
 
     public void initialize(string name)
     {
@@ -17,7 +24,22 @@ public class Segment3D : MonoBehaviour
         return colored;
     }
 
+    public int getMaterialType()
+    {
+        return (int)materialType;
+    } 
+
     public void setColored(bool x) {
         colored = x;
+    }
+
+    public void setMaterialTypeBlinking()
+    {
+        materialType = MaterialType.BLINKING;
+    }
+
+    public void setMaterialTypeDefault()
+    {
+        materialType = MaterialType.DEFAULT;
     }
 }
