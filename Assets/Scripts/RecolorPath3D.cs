@@ -75,6 +75,8 @@ public class RecolorPath3D : MonoBehaviour
 
             XRBaseController controller = other.GetComponentInParent<XRBaseController>();
             HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
+
+            
         }
      }
 
