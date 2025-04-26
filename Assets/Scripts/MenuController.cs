@@ -41,9 +41,9 @@ public class MenuController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //w³¹czanie menu poprzez dolny trigger lewego kontrolera shift + G 
+        //wï¿½ï¿½czanie menu poprzez dolny trigger lewego kontrolera shift + G 
         bool isPressed = controller.selectInteractionState.active;
-        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciœniêcia
+        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciï¿½niï¿½cia
         {
             isMenuActive = !isMenuActive;
             menu.SetActive(isMenuActive);
@@ -70,38 +70,38 @@ public class MenuController : MonoBehaviour
 
     void FollowPlayer()
     {
-        // Pobieramy kierunek w którym patrzy gracz (bez wp³ywu nachylenia góra/dó³)
+        // Pobieramy kierunek w ktï¿½rym patrzy gracz (bez wpï¿½ywu nachylenia gï¿½ra/dï¿½)
         Vector3 forward = player.forward;
-        forward.y = 0; // Ignorujemy nachylenie g³owy gracza
+        forward.y = 0; // Ignorujemy nachylenie gï¿½owy gracza
         forward.Normalize();
 
         // Ustawiamy menu w odpowiedniej pozycji przed graczem
         Vector3 targetPosition = player.position + forward * menuDistance;
         menu.transform.position = Vector3.Lerp(menu.transform.position, targetPosition, Time.deltaTime * 10f);
 
-        // Ustawiamy rotacjê menu, aby zawsze patrzy³o na gracza
+        // Ustawiamy rotacjï¿½ menu, aby zawsze patrzyï¿½o na gracza
         Quaternion targetRotation = Quaternion.LookRotation(forward);
         menu.transform.rotation = Quaternion.Slerp(menu.transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
     void PositionMenu()
     {
-        // Pozycjonowanie menu przed graczem na jego wysokoœci
+        // Pozycjonowanie menu przed graczem na jego wysokoï¿½ci
         Vector3 forward = player.forward;
-        forward.y = 0; // Usuwamy nachylenie w górê/dó³, aby menu by³o na równej wysokoœci
+        forward.y = 0; // Usuwamy nachylenie w gï¿½rï¿½/dï¿½, aby menu byï¿½o na rï¿½wnej wysokoï¿½ci
         forward.Normalize();
 
         Vector3 menuPosition = player.position + forward * menuDistance;
         menu.transform.position = menuPosition;
 
-        // Obracamy menu w stronê gracza
+        // Obracamy menu w stronï¿½ gracza
         Quaternion lookRotation = Quaternion.LookRotation(forward);
         menu.transform.rotation = lookRotation;
     }
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
 
-        drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
-        splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
+        drawingPathScript.listOfSplines.Clear();// czyszczenie Splinï¿½w
+        splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlakï¿½w
         if (splineExtruder != null)
         {
             foreach (SplineSegmentMeshExtruder extruder in splineExtruder)
