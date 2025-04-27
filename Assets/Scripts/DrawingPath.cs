@@ -19,11 +19,12 @@ public class DrawingPath : MonoBehaviour
     private bool coloringStarted = false;
     private float coloringStartTime = 0f;
 
-    // zmienne do pomiaru dok³adnoœci
+    // zmienne do pomiaru dokadnoci
     private int totalClicks = 0;
     private int successfulClicks = 0;
     private float coloredHoverTimer = 0f;
     private DotRecolor lastColoredHit = null;
+    private int consecutiveMisses = 0; // Licznik kolejnych nietrafieÅ„
 
     private void Awake()
     {
@@ -45,14 +46,14 @@ public class DrawingPath : MonoBehaviour
                         DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
                         if (dotRemoval != null)
                         {
-                            // Usuwanie kropek od koñca
+                            // Usuwanie kropek od koï¿½ca
                             int removalIndex = dotRemoval.dotIndex;
                             for (int i = pathManager.dots.Count - 1; i >= removalIndex; i--)
                             {
                                 Destroy(pathManager.dots[i]);
                                 pathManager.dots.RemoveAt(i);
                             }
-                            // Aktualizacja lastDotPosition po usuniêciu kropek
+                            // Aktualizacja lastDotPosition po usuniï¿½ciu kropek
                             lastDotPosition = (pathManager.dots.Count > 0) ?
                                               pathManager.dots[pathManager.dots.Count - 1].transform.position :
                                               Vector3.zero;
@@ -104,14 +105,19 @@ public class DrawingPath : MonoBehaviour
         }
         else  //tryb kolorowania
         {
+            // kolorowanie zakoÅ„czone
             if (pathManager.coloringFinished)
             {
                 if (coloringStarted)
                 {
                     float elapsedTime = Time.time - coloringStartTime;
                     float accuracy = (totalClicks > 0) ? (successfulClicks / (float)totalClicks) * 100f : 0f;
-                    Debug.Log($"Koniec kolorowania. Ostateczny czas: {elapsedTime:F2}s, Trafieñ: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
+                    Debug.Log($"Log {Time.frameCount}: Koniec kolorowania. Czas: {elapsedTime:F2}s, Trafienia: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
                     coloringStarted = false;
+                    // Resetowanie licznikow
+                    totalClicks = 0;
+                    successfulClicks = 0;
+                    consecutiveMisses = 0;
                 }
                 return;
             }
@@ -127,87 +133,119 @@ public class DrawingPath : MonoBehaviour
 
                     if (dotRecolor != null)
                     {
-                        //jesli kropka nie jest pokolorwana
-                        if (!dotRecolor.IsColored)
+                        //jak pokolorujemy kropke, zerujemy minusowe trafienia
+                        consecutiveMisses = 0;
+
+                        // Start kolorowania tylko przy pierwszej kropce
+                        if (!coloringStarted && dotRecolor.dotIndex == 0 && !dotRecolor.IsColored)
                         {
-                            // start pomiaru czasu
-                            if (!coloringStarted)
-                            {
-                                coloringStartTime = Time.time;
-                                coloringStarted = true;
-                                Debug.Log("Rozpoczêto kolorowanie. Start time: " + coloringStartTime);
-                            }
-                            // zwiekszenie wszystkich klikniec i poprawnych
+                            coloringStartTime = Time.time;
+                            coloringStarted = true;
+                            Debug.Log($"Log {Time.frameCount}: ZaczÄ™to kolorowanie!");
+
+
                             totalClicks++;
                             successfulClicks++;
-                            Debug.Log("Klikniêto now¹ kropkê o indeksie: " + dotRecolor.dotIndex);
-                            dotRecolor.Recolor();
 
-                            //Zmiana koloru poprzednich kropek - zapobiega przenikaniu i lukom
-                            int hitIndex = dotRecolor.dotIndex;
+                            Debug.Log($"Log {Time.frameCount}: Kliknieto nowa kropke o indeksie: " + dotRecolor.dotIndex);
+                            dotRecolor.Recolor();
+                        
+                            int hitIndex = dotRecolor.dotIndex; 
                             for (int i = 1; i <= 6; i++)
                             {
                                 if (hitIndex - i >= 0)
                                 {
                                     DotRecolor neighborDot = pathManager.GetDot(hitIndex - i);
-                                    if (neighborDot != null)
-                                    {
-                                        neighborDot.Recolor();
-                                    }
+                                    if (neighborDot != null) neighborDot.Recolor();
                                 }
                             }
                             pathManager.CheckAndRemoveDots();
-
-                            // reset wskaznika
                             lastColoredHit = null;
                             coloredHoverTimer = 0f;
-
-                            if (lastDotPosition != Vector3.zero)
-                                lastDotPosition = Vector3.zero;
                         }
-                        else
+                        // Podczas kolorowania
+                        else if (coloringStarted)
                         {
-                            // trafienie w ju¿ pokolorowana kropke
-                            if (lastColoredHit == dotRecolor)
+                            //jesli kropka nie jest pokolorwana (i nie jest to pierwsze trafienie rozpoczynajÄ…ce)
+                            if (!dotRecolor.IsColored)
                             {
-                                coloredHoverTimer += Time.deltaTime;
-                            }
-                            else
-                            {
-                                lastColoredHit = dotRecolor;
-                                coloredHoverTimer = 0f;
-                            }
-                            if (coloredHoverTimer >= 1f)
-                            {
-                                // dodanie kliniec gdy stoimi
+                                // zwiekszenie wszystkich klikniec i poprawnych
+                                Debug.Log($"Log {Time.frameCount}: Udane klikniÄ™cie! Kropka: {dotRecolor.dotIndex}. totalClicks wynosi {totalClicks + 1}, successfulClicks wynosi {successfulClicks + 1}");
                                 totalClicks++;
-                                Debug.Log("Stoisz na ju¿ pokolorowanej kropce d³u¿ej ni¿ 1s. Dodano totalClicks.");
-                                // reset czasu (do poprawy)
+                                successfulClicks++;
+                                Debug.Log("Kliknieto nowa kropke o indeksie: " + dotRecolor.dotIndex);
+                                dotRecolor.Recolor();
+
+                                //Zmiana koloru poprzednich kropek - zapobiega przenikaniu i lukom
+                                int hitIndex = dotRecolor.dotIndex;
+                                for (int i = 1; i <= 6; i++)
+                                {
+                                    if (hitIndex - i >= 0)
+                                    {
+                                        DotRecolor neighborDot = pathManager.GetDot(hitIndex - i);
+                                        if (neighborDot != null) neighborDot.Recolor();
+                                    }
+                                }
+                                pathManager.CheckAndRemoveDots();
+
+                                // reset wskaznika
+                                lastColoredHit = null;
                                 coloredHoverTimer = 0f;
+
+                                if (lastDotPosition != Vector3.zero)
+                                    lastDotPosition = Vector3.zero;
+                            }
+                            else // trafienie w juÅ¼ pokolorowanÄ… kropkÄ™ gdy trwa kolorowanie
+                            {
+                                if (lastColoredHit == dotRecolor)
+                                {
+                                    coloredHoverTimer += Time.deltaTime;
+                                }
+                                else
+                                {
+                                    lastColoredHit = dotRecolor;
+                                    coloredHoverTimer = 0f;
+                                }
                             }
                         }
+                    
+
                     }
                     else //nie trafienie w kropke
                     {
-                        totalClicks++;
-                        Debug.Log("Trafiono obiekt, który nie jest kropk¹.");
-                        lastColoredHit = null;
-                        coloredHoverTimer = 0f;
+                        if (coloringStarted)
+                        {
+                            consecutiveMisses++; // licznik nietrafien
+                            Debug.Log($"Log {Time.frameCount}: Nieudane klikniÄ™cie! Hit: {hit.collider.gameObject.name}. BÅ‚Ä™dne klikniÄ™cia: {consecutiveMisses}. (TotalClicks: {totalClicks})");
+                            
+                            if (consecutiveMisses >= 25) // manipulacja dokÅ‚adnoÅ›ciÄ… 25 nietrafien dopiero zmniejsza dokÅ‚adnoÅ›Ä‡
+                            {
+                                Debug.Log($"Log {Time.frameCount}: Zapisana niedokÅ‚adnoÅ›Ä‡. totalClicks wynosi {totalClicks + 1}");
+                                totalClicks++; // zwiÄ™kszamy totalClicks tylko po 25 nietrafieniach
+                                consecutiveMisses = 0; 
+                            }
+                            lastColoredHit = null;
+                            coloredHoverTimer = 0f;
+                        }
+                        
                     }
                 }
-                else
+                else // Laser nie trafil w nic
                 {
-                    Debug.Log("Laser nie trafi³ w ¿aden obiekt.");
-                    lastColoredHit = null;
-                    coloredHoverTimer = 0f;
+                   if (coloringStarted)
+                   {
+                        Debug.Log($"Log {Time.frameCount}: Laser nie trafil w nic!");
+                        lastColoredHit = null;
+                        coloredHoverTimer = 0f;
+                   }
                 }
 
-                // wyswietlanie pomiarów
+                // wyswietlanie pomiarow
                 if (coloringStarted)
                 {
                     float elapsedTime = Time.time - coloringStartTime;
                     float accuracy = (totalClicks > 0) ? (successfulClicks / (float)totalClicks) * 100f : 0f;
-                    Debug.Log($"Czas od rozpoczêcia: {elapsedTime:F2}s, Trafieñ: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
+                    Debug.Log($"Log {Time.frameCount}: Statystyki - Czas: {elapsedTime:F2}s, Trafienia: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
                 }
             }
             else
