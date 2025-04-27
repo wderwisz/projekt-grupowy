@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
+using System.IO;
 
 public class DrawingPath : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class DrawingPath : MonoBehaviour
     [SerializeField] private Config config;
     [SerializeField] private PathManager pathManager;
     public InputActionReference primaryButtonAction;
+    public InputActionReference savePathAction;
+    public InputActionReference loadPathAction;
+
+    [SerializeField] private string pathFileName = "namedPathsData.json";
 
     private XRRayInteractor rayInteractor;
     private bool isHovering = false;
@@ -24,15 +29,69 @@ public class DrawingPath : MonoBehaviour
     private int successfulClicks = 0;
     private float coloredHoverTimer = 0f;
     private DotRecolor lastColoredHit = null;
-    private int consecutiveMisses = 0; // Licznik kolejnych nietrafień
+    private int consecutiveMisses = 0;
 
     private void Awake()
     {
         rayInteractor = FindObjectOfType<XRRayInteractor>();
+        if (pathManager != null && pathManager.dotPrefab == null)
+        {
+            pathManager.dotPrefab = dot;
+        }
+
+        if (savePathAction != null)
+        {
+            savePathAction.action.performed += _ => 
+            {
+                if (config != null) SavePath(config.defaultSaveName);
+                else Debug.LogError("Config nieprzypisany w DrawingPath");
+            };
+        }
+        if (loadPathAction != null)
+        {
+            loadPathAction.action.performed += _ =>
+            {
+                 if (config != null) LoadPath(config.defaultLoadName);
+                 else Debug.LogError("Config nieprzypisany w DrawingPath");
+            };
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (savePathAction != null) savePathAction.action.Enable();
+        if (loadPathAction != null) loadPathAction.action.Enable();
+        primaryButtonAction?.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (savePathAction != null) savePathAction.action.Disable();
+        if (loadPathAction != null) loadPathAction.action.Disable();
+        primaryButtonAction?.action.Disable();
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.S)) // kliknięcie 'S' do zapisu
+        {
+            if (config != null)
+            {
+                 Debug.Log($"'S' naciśnięto - próba zapisu pod ścieżką '{config.defaultSaveName}'...");
+                 SavePath(config.defaultSaveName);
+            }
+             else { Debug.LogError("Config nieprzypisany w DrawingPath!"); }
+        }
+        if (Input.GetKeyDown(KeyCode.L)) // kliknięcie 'L' do wczytania
+        {
+             if (config != null)
+            {
+                Debug.Log($"'L' naciśnięto - próba odczytu pod ścieżką '{config.defaultLoadName}'...");
+                LoadPath(config.defaultLoadName);
+            }
+             else { Debug.LogError("Config nieprzypisany w DrawingPath!"); }
+        }
+
         //tryb rysowania
         if (config.getDrawingMode())
         {
@@ -46,14 +105,14 @@ public class DrawingPath : MonoBehaviour
                         DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
                         if (dotRemoval != null)
                         {
-                            // Usuwanie kropek od ko�ca
+                            // Usuwanie kropek od końca
                             int removalIndex = dotRemoval.dotIndex;
                             for (int i = pathManager.dots.Count - 1; i >= removalIndex; i--)
                             {
                                 Destroy(pathManager.dots[i]);
                                 pathManager.dots.RemoveAt(i);
                             }
-                            // Aktualizacja lastDotPosition po usuni�ciu kropek
+                            // Aktualizacja lastDotPosition po usunięciu kropek
                             lastDotPosition = (pathManager.dots.Count > 0) ?
                                               pathManager.dots[pathManager.dots.Count - 1].transform.position :
                                               Vector3.zero;
@@ -173,7 +232,6 @@ public class DrawingPath : MonoBehaviour
                                 Debug.Log($"Log {Time.frameCount}: Udane kliknięcie! Kropka: {dotRecolor.dotIndex}. totalClicks wynosi {totalClicks + 1}, successfulClicks wynosi {successfulClicks + 1}");
                                 totalClicks++;
                                 successfulClicks++;
-                                Debug.Log("Kliknieto nowa kropke o indeksie: " + dotRecolor.dotIndex);
                                 dotRecolor.Recolor();
 
                                 //Zmiana koloru poprzednich kropek - zapobiega przenikaniu i lukom
@@ -269,5 +327,58 @@ public class DrawingPath : MonoBehaviour
         lastColoredHit = null;
         coloredHoverTimer = 0f;
         //Debug.Log("isHovering ustawione na false");
+    }
+
+
+    // Funkcja zapisu
+    public void SavePath(string nameToSave)
+    {
+        if (pathManager == null)
+        {
+            Debug.LogError("PathManager jest nieprzypisany!");
+            return;
+        }
+         if (string.IsNullOrEmpty(nameToSave))
+        {
+            Debug.LogError("Nie można zapisać z pustą ścieżką.");
+            return;
+        }
+        string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
+        Debug.Log($"Zapisanie ścieżki '{nameToSave}' do: {fullPath}");
+
+        pathManager.SaveNamedPath(nameToSave, fullPath);
+    }
+
+    // Funkcja wczytania
+    public void LoadPath(string nameToLoad)
+    {
+        if (pathManager == null)
+        {
+            Debug.LogError("PathManager jest nieprzypisany!");
+            return;
+        }
+        if (string.IsNullOrEmpty(nameToLoad))
+        {
+            Debug.LogError("Nie można wczytać z pustą ścieżką.");
+            return;
+        }
+        string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
+        Debug.Log($"Ścieżka zapisu '{nameToLoad}' z: {fullPath}");
+
+        if (pathManager.LoadNamedPath(nameToLoad, fullPath))
+        {
+            lastDotPosition = Vector3.zero;
+            coloringStarted = false;
+            totalClicks = 0;
+            successfulClicks = 0;
+            consecutiveMisses = 0;
+            coloredHoverTimer = 0f;
+            lastColoredHit = null;
+            Debug.Log($"Ścieżka '{nameToLoad}' załadowana.");
+        }
+        else
+        {
+            Debug.LogWarning($"Nie udało się załadować ścieżki '{nameToLoad}'.");
+        }
     }
 }

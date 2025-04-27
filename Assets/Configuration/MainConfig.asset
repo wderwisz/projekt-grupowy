@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e835985bedf1934398dc0f45b53211f, type: 3}
   m_Name: MainConfig
   m_EditorClassIdentifier: 
-  liveDrawingMode: 0
+  liveDrawingMode: 1
   erasingMode: 0
+  defaultSaveName: sciezka1
+  defaultLoadName: sciezka1

@@ -6,16 +6,20 @@ using UnityEngine;
 [CreateAssetMenu]
 public class Config : ScriptableObject
 {
-    // Tryb rysowania w prototypie (do zmiany po implementacji prze³¹czania miêdzy trybami fizjo i pacjenta)
-    // true -> ekstrudowanie szlaku nastêpuje w trakcie kreœlenia krzywej - brak mo¿liwoœci kolorowania istniej¹cego szlaku
-    // false -> ekstrudowanie nastêpuje dopiero po skoñczeniu rysowania - kolorowanie po najechaniu na istniej¹cy szlak
+    // Tryb rysowania w prototypie (do zmiany po implementacji przeï¿½ï¿½czania miï¿½dzy trybami fizjo i pacjenta)
+    // true -> ekstrudowanie szlaku nastï¿½puje w trakcie kreï¿½lenia krzywej - brak moï¿½liwoï¿½ci kolorowania istniejï¿½cego szlaku
+    // false -> ekstrudowanie nastï¿½puje dopiero po skoï¿½czeniu rysowania - kolorowanie po najechaniu na istniejï¿½cy szlak
     // true gdy testujemy tworzenie szlaku; false gdy kolorowanie 
     [SerializeField] private bool liveDrawingMode = true;
 
-    //w³¹czenie opcji zmazywania w trybie fizjoterapeuty (narazie w 2d)
-    //pewnie lepiej by³oby ustawiæ na inny przycisk na kontolerze
-    // usuwanie linii jedynie od jej koñca
+    //wï¿½ï¿½czenie opcji zmazywania w trybie fizjoterapeuty (narazie w 2d)
+    //pewnie lepiej byï¿½oby ustawiï¿½ na inny przycisk na kontolerze
+    // usuwanie linii jedynie od jej koï¿½ca
     [SerializeField] private bool erasingMode = false;
+
+    [Header("ÅšcieÅ¼ki do zapisu/odczytu")]
+    [SerializeField] public string defaultSaveName = "DefaultPath";
+    [SerializeField] public string defaultLoadName = "DefaultPath";
 
     public bool getDrawingMode()
     {
