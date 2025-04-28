@@ -5,6 +5,7 @@ using UnityEngine.Splines;
 using System.IO;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
+using System.Linq;
 
 public class LoadController : MonoBehaviour
 {
@@ -109,13 +110,15 @@ public class LoadController : MonoBehaviour
     public void CreateSpline(List<Vector3> points)
     {
 
-
         Transform player = Camera.main.transform;
         Vector3 forward = player.forward;
         forward.y = 0;
         forward.Normalize();
         Vector3 newPosition = player.position + forward * 0.5f;
         newPosition.y = 0;
+        Vector3 middlePoint = points[points.Count / 2];
+
+        Vector3 up = Vector3.up;
 
         SplineContainer currentSpline = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         SplineSegmentMeshExtruder extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
@@ -123,16 +126,18 @@ public class LoadController : MonoBehaviour
         Debug.Log(extruder);
 
         currentSpline.Spline.Clear();
-
+        drawingPathScript.listOfSplines.Clear();
         foreach (var point in points)
         {
-            currentSpline.Spline.Add(new BezierKnot(point));
+            Vector3 mappedPoint= point - middlePoint;
+            Vector3 offsetVector = new Vector3(0.0f, player.position.y ,0.0f);
+            currentSpline.Spline.Add(new BezierKnot(Quaternion.LookRotation(forward, up) * mappedPoint + offsetVector) );
 
         }
         drawingPathScript.listOfSplines.Add(currentSpline.Spline);
-        //return splineContainer.Spline;
+       
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
-        currentSpline.transform.position = newPosition;
+        currentSpline.transform.position =  newPosition ;
     }
 
 }
