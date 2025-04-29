@@ -16,11 +16,13 @@ public class LoadController : MonoBehaviour
     [SerializeField] private XRRayInteractor rightRay;
     [SerializeField] private MenuController menuController;
 
-
+    private SplineSegmentMeshExtruder[] splineExtruder;
     public bool isMenuActive = false;
     public Transform player;
     public XRBaseController controller;
     public float menuDistance = 1.5f;
+
+    Vector3 lastPoint = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
@@ -96,15 +98,15 @@ public class LoadController : MonoBehaviour
 
    
     public void Load(string filePath)
-    {
-        
-        menuController.FindSplineExtruder();
+    {    
+        //menuController.FindSplineExtruder();
         List<List<Vector3>> list = SaveLoadSplinePoints.LoadVector3List(Path.Combine(Application.persistentDataPath,"saves", filePath));
+        menuController.FindSplineExtruder();
         foreach (var pointsList in list)
         {
             CreateSpline(pointsList);
         }
-
+        lastPoint = Vector3.zero;
     }
 
     public void CreateSpline(List<Vector3> points)
@@ -117,20 +119,29 @@ public class LoadController : MonoBehaviour
         Vector3 newPosition = player.position + forward * 0.5f;
         newPosition.y = 0;
         Vector3 middlePoint = points[points.Count / 2];
+        float distance = 0.0f;
+        if (lastPoint != Vector3.zero)
+        {
+            distance = Vector3.Distance(lastPoint, middlePoint);
 
+        }
+
+        Vector3 direction = player.right; // wektor kierunku rysowania kolejnych szlakow
+        Vector3 offset = direction.normalized * distance; 
+
+        lastPoint = middlePoint;
         Vector3 up = Vector3.up;
 
         SplineContainer currentSpline = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         SplineSegmentMeshExtruder extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
 
         Debug.Log(extruder);
-
-        currentSpline.Spline.Clear();
-        drawingPathScript.listOfSplines.Clear();
+        //currentSpline.Spline.Clear();
+      
         foreach (var point in points)
         {
             Vector3 mappedPoint= point - middlePoint;
-            Vector3 offsetVector = new Vector3(0.0f, player.position.y ,0.0f);
+            Vector3 offsetVector = new Vector3(0.0f, player.position.y ,0.0f) + offset;
             currentSpline.Spline.Add(new BezierKnot(Quaternion.LookRotation(forward, up) * mappedPoint + offsetVector) );
 
         }
