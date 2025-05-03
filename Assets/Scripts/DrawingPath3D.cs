@@ -24,7 +24,7 @@ public class DrawingPath3D : MonoBehaviour
 
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
-    private RecoloringVisualHelper visualHelper;
+    private FirstSegmentVisualHelper visualHelper;
 
     private Vector3 lastKnotPosition = Vector3.zero;
 
@@ -34,7 +34,7 @@ public class DrawingPath3D : MonoBehaviour
     void Awake()
     {
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
-        visualHelper = this.GetComponent<RecoloringVisualHelper>(); // Pobraine visual helpera
+        visualHelper = this.GetComponent<FirstSegmentVisualHelper>(); // Pobraine visual helpera
     }
 
     private void OnDestroy()
@@ -46,6 +46,16 @@ public class DrawingPath3D : MonoBehaviour
     {
         currentGameState = newState;
     }
+
+    public SplineContainer GetCurrentSpline()
+    {
+        return currentSpline;
+    }
+
+    public SplineContainer GetSplineContainerPrefab()
+    {
+        return splineContainerPrefab;
+    } 
 
     void Update()
     {

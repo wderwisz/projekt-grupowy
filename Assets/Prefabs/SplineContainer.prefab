@@ -104,7 +104,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -141,8 +141,9 @@ MonoBehaviour:
   segmentMaterials:
   - {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
   recolorMaterial: {fileID: 2100000, guid: 6703d98bf09b5894299aff0e03d0863c, type: 2}
-  vectorScale: 1.1028485
-  isSegmentation: 1
+  freeDrawingMaterial: {fileID: -876546973899608171, guid: 18d6ed8e205b4504784bd7668cd9ebf3, type: 3}
+  vectorScale: 1.46
+  isSegmentation: 0
 --- !u!64 &-8533230323690412426
 MeshCollider:
   m_ObjectHideFlags: 0

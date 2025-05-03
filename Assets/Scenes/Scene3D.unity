@@ -6379,6 +6379,7 @@ GameObject:
   - component: {fileID: 2103827845}
   - component: {fileID: 2103827846}
   - component: {fileID: 2103827847}
+  - component: {fileID: 2103827848}
   m_Layer: 0
   m_Name: Path3DController
   m_TagString: Untagged
@@ -6428,10 +6429,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 2103827844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d2ab1200b604c4fb8443a8584bd169, type: 3}
+  m_Script: {fileID: 11500000, guid: af63cb6a17145354c8a3bc8336270cc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   blinkingMaterial: {fileID: -876546973899608171, guid: f330bf3196514054a87186e31057ddd5, type: 3}
+--- !u!114 &2103827848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103827844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80a668396c9a4134f8071175acddffb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drawingPath3DComponent: {fileID: 0}
+  colors:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  - {r: 1, g: 0, b: 1, a: 1}
+  - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  - {r: 0, g: 0, b: 0, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  material: {fileID: -876546973899608171, guid: 18d6ed8e205b4504784bd7668cd9ebf3, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

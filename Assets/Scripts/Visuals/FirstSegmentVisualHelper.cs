@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
 
-public class RecoloringVisualHelper : MonoBehaviour 
+public class FirstSegmentVisualHelper : MonoBehaviour 
 {
     private List<GameObject> segments;
     [SerializeField] private Material blinkingMaterial;
@@ -34,3 +34,4 @@ public class RecoloringVisualHelper : MonoBehaviour
         renderer.sharedMaterial = blinkingMaterial;
     }
 }
+

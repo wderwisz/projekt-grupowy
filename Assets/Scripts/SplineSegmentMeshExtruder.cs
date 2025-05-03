@@ -12,6 +12,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 {
     public Material[] segmentMaterials; // Tablica materialow do roznych segmentow spline'a
     public Material recolorMaterial;
+    public Material freeDrawingMaterial;
 
     // Liczba wierzcholkow bryly ekstrudowanej na pojedynczym segmencie i liczba jej trojkatow
     private const int numberOfVertices = 8;
@@ -63,8 +64,15 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         MeshFilter meshFilter = segmentMesh.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = segmentMesh.AddComponent<MeshRenderer>();
 
-        // Przypisz material rotacyjnie
-        meshRenderer.material = segmentMaterials[index % segmentMaterials.Length];
+        // Przypisywanie meteriału do mesha w zależności od trybu segementacji
+        if (isSegmentation)
+        {
+            meshRenderer.material = segmentMaterials[index % segmentMaterials.Length];
+        }
+        else
+        {
+            meshRenderer.material = freeDrawingMaterial;
+        }
 
         // Generuj extrudowany mesh
         Mesh mesh = GenerateExtrudedMesh(startPoint, endPoint, isSegmentation);

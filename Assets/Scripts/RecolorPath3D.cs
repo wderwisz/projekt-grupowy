@@ -10,7 +10,7 @@ public class RecolorPath3D : MonoBehaviour
 {
     public Material newMaterial;
     public Material blinkingMaterial;
-    [SerializeField] private RecoloringVisualHelper visualHelper;
+    [SerializeField] private FirstSegmentVisualHelper visualHelper;
 
     private GameState currentGameState;
     private GameObject previousSegment = null;
