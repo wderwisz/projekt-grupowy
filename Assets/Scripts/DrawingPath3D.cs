@@ -13,8 +13,6 @@ public class DrawingPath3D : MonoBehaviour
     public XRBaseController controller;
     public SplineContainer splineContainerPrefab;
 
-    [SerializeField] private RecoloringVisualHelper visualHelper;
-
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
 
@@ -22,10 +20,11 @@ public class DrawingPath3D : MonoBehaviour
     [SerializeField] private float hapticDuration = 0.15f;
 
     private SplineContainer currentSpline;
-    private bool isDrawing = true;
+    private bool isDrawing = false;
 
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
+    private RecoloringVisualHelper visualHelper;
 
     private Vector3 lastKnotPosition = Vector3.zero;
 
@@ -35,6 +34,7 @@ public class DrawingPath3D : MonoBehaviour
     void Awake()
     {
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
+        visualHelper = this.GetComponent<RecoloringVisualHelper>(); // Pobraine visual helpera
     }
 
     private void OnDestroy()
@@ -123,9 +123,12 @@ public class DrawingPath3D : MonoBehaviour
             extruder.restoreSettings();
         }
 
-        //RecoloringVisualHelper.setSegments(extruder.getSegmentList());
-        visualHelper.setSegments(extruder.getSegmentList());
-        visualHelper.activateBlinkingSegment();
+        var list = extruder.getSegmentList();
+        if (list.Count >= 2)
+        {
+            visualHelper.setSegments(list);
+            visualHelper.activateBlinkingSegment();
+        }
     }
 
 
