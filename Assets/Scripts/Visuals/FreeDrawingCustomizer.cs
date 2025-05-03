@@ -9,7 +9,7 @@ using UnityEngine.Splines;
 /// </summary>
 public class FreeDrawingCustomizer : MonoBehaviour
 {
-    [SerializeField] private DrawingPath3D drawingPath3DComponent;
+    private DrawingPath3D drawingPath3DComponent;
     private SplineSegmentMeshExtruder extruder;
 
     [SerializeField]
@@ -24,6 +24,7 @@ public class FreeDrawingCustomizer : MonoBehaviour
         Color.white
     };
 
+    // Domyœlny materia³
     public Material material;
 
     private void Awake()

@@ -9,8 +9,8 @@ using System.Collections.Generic;
 
 public class DrawingPath3D : MonoBehaviour
 {
-    //public XRController controller; 
-    public XRBaseController controller;
+    public XRBaseController rightController;
+    public XRBaseController leftController;
     public SplineContainer splineContainerPrefab;
 
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
@@ -19,6 +19,7 @@ public class DrawingPath3D : MonoBehaviour
     [SerializeField][Range(0f, 1f)] private float hapticIntensity = 0.2f;
     [SerializeField] private float hapticDuration = 0.15f;
 
+    private XRBaseController activeController;
     private SplineContainer currentSpline;
     private bool isDrawing = false;
 
@@ -59,18 +60,24 @@ public class DrawingPath3D : MonoBehaviour
 
     void Update()
     {
-        //currentGameState = GameManager.instance.state;
         if (currentGameState != GameState.DOCTOR_MODE) return; //Sprawdzenie trybu gry
 
-        //if (controller.inputDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out bool isPressed) && isPressed)
-        if (controller.activateInteractionState.active)
+        // Dynamiczne ustawienie aktywnego kontrolera
+        if (!isDrawing)
+        {
+            if (rightController.activateInteractionState.active) activeController = rightController;
+            else if (leftController.activateInteractionState.active) activeController = leftController;
+        }
+
+        if (activeController == null) return;
+
+        if (activeController.activateInteractionState.active)
         {
             if (!isDrawing)
             {
                 StartDrawing();
             }
             AddPoint();
-      
         }
         else if (isDrawing)
         {
@@ -91,7 +98,7 @@ public class DrawingPath3D : MonoBehaviour
     void AddPoint()
     {
         // Wyznaczanie pozycji punktu
-        Vector3 newPosition = controller.transform.position;
+        Vector3 newPosition = activeController.transform.position;
         newPosition = currentSpline.transform.InverseTransformPoint(newPosition);
         BezierKnot knot = new BezierKnot(newPosition);
 
@@ -113,7 +120,7 @@ public class DrawingPath3D : MonoBehaviour
             {
                 // Ekstrudowanie pojedynczego segmentu miêdzy dwoma poprzednimi wêz³ami(currentNode - 1 i currentNode - 2)
                 extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
-                HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
+                HapticController.SendHaptics(activeController, hapticIntensity, hapticDuration);
             }
         }
     }

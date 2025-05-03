@@ -6414,7 +6414,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed1a3308ac466b04c830cff29d7dba03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 1789286848}
+  rightController: {fileID: 1789286848}
+  leftController: {fileID: 817923286}
   splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
   pointSpacing: 0.01
   config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
@@ -6445,7 +6446,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80a668396c9a4134f8071175acddffb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawingPath3DComponent: {fileID: 0}
   colors:
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 0, g: 1, b: 0, a: 1}

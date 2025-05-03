@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
 
+/// <summary>
+/// Klasa do oznaczania pierwszego segmentu po narysowaniu szlaku
+/// </summary>
 public class FirstSegmentVisualHelper : MonoBehaviour 
 {
     private List<GameObject> segments;
