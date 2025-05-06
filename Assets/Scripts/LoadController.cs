@@ -20,7 +20,6 @@ public class LoadController : MonoBehaviour
     public Transform player;
     public XRBaseController controller;
     public float menuDistance = 1.5f;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +29,7 @@ public class LoadController : MonoBehaviour
         player = mainCamera.transform;
         leftRay.enabled = false;
         rightRay.enabled = false;
+        
 
     }
 
@@ -40,6 +40,7 @@ public class LoadController : MonoBehaviour
         //bool isPressed = controller.selectInteractionState.active;
         if (isMenuActive)
         {
+            GameManager.instance.UpdateGameState(GameState.OPTIONS_MENU_OPENED);
             menu.SetActive(isMenuActive);
             PositionMenu();
             leftRay.enabled = true;
@@ -49,6 +50,7 @@ public class LoadController : MonoBehaviour
         }
         if (controller.selectInteractionState.active && isMenuActive)
         {
+
             CloseMenu();
             menuController.CloseMenu();
             
@@ -87,6 +89,15 @@ public class LoadController : MonoBehaviour
 
     public void CloseMenu() // Funkcja do zamykania menu
     {
+
+        if (menuController.modeToggle.value == 0)
+        {
+            GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
+        }
+        else
+        {
+            GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
+        }
         isMenuActive = false;
         menu.SetActive(false);
         leftRay.enabled = false;

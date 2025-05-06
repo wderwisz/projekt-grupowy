@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
 using UnityEngine.Splines;
+using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private SaveController saveController;
     [SerializeField] private LoadController loadController;
     [SerializeField] private GameObject saveFileMenu;
+    [SerializeField] public Slider modeToggle;
     private bool isMenuActive = false;
     private bool wasPressedLastFrame = false;
     public XRBaseController controller;
@@ -45,6 +47,7 @@ public class MenuController : MonoBehaviour
         bool isPressed = controller.selectInteractionState.active;
         if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciœniêcia
         {
+            GameManager.instance.UpdateGameState(GameState.OPTIONS_MENU_OPENED);
             isMenuActive = !isMenuActive;
             menu.SetActive(isMenuActive);
             if (isMenuActive)
@@ -55,8 +58,10 @@ public class MenuController : MonoBehaviour
             }
             else
             {
+                CloseMenu();
                 leftRay.enabled = false;
                 rightRay.enabled = false;
+
             }
         }
 
@@ -116,6 +121,16 @@ public class MenuController : MonoBehaviour
     }
     public void CloseMenu() // Funkcja do zamykania menu
     {
+        
+        if (modeToggle.value == 0)
+        {
+            GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
+        }
+        else
+        {
+            GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
+        }
+
         isMenuActive = false;
         menu.SetActive(false);
 

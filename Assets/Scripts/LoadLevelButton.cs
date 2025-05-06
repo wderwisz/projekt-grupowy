@@ -10,9 +10,11 @@ public class LoadLevelButton : MonoBehaviour
     public LoadController loadController;
     public TMP_Text levelText;
 
+
     public void LoadFromFile()
     {
         string path = Path.Combine(Application.persistentDataPath ,"saves", levelText.text +".json");
+        
         //Debug.Log(levelText.text);
         loadController.Load(path);
     }

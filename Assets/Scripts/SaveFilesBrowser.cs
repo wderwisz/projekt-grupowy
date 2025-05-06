@@ -22,6 +22,7 @@ public class SaveFilesBrowser : MonoBehaviour
         FileInfo[] saveFiles = directoryInfo.GetFiles();
         int fileNumber = saveFiles.Length;
         for (int i = 0; i < fileNumber; i++ ) {
+            string saveFileName = saveFiles[i].Name;
             GameObject newButton = Instantiate(buttonPrefab, buttonParent.transform);
             string name = saveFiles[i].Name;
             name = name.Substring(0,name.Length - 5);
@@ -29,7 +30,28 @@ public class SaveFilesBrowser : MonoBehaviour
             newButton.GetComponent<LoadLevelButton>().levelText.text = name;
             newButton.GetComponent<LoadLevelButton>().loadController = loadController;
             //newButton.GetComponent<Button>().onClick.AddListener(() => SelectSave(saveFiles[i].Name));
+
+            // Szukamy przycisku X w prefabie
+            Button deleteButton = newButton.transform.Find("DeleteButton").GetComponent<Button>();
+            deleteButton.onClick.AddListener(() => DeleteSave(saveFileName, newButton));
         }
+    }
+
+    private void DeleteSave(string saveName, GameObject buttonObject)
+    {
+        string path = Path.Combine(Application.persistentDataPath, "saves", saveName);
+
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+            Debug.Log("Plik usuniêty: " + saveName);
+        }
+        else
+        {
+            Debug.LogWarning("Nie znaleziono pliku do usuniêcia: " + saveName);
+        }
+
+        Destroy(buttonObject); // Usuñ te¿ przycisk z UI
     }
 
     private void SelectSave(string saveName)

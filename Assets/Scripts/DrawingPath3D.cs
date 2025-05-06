@@ -15,14 +15,15 @@ public class DrawingPath3D : MonoBehaviour
 
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
-
     [SerializeField][Range(0f, 1f)] private float hapticIntensity = 0.2f;
     [SerializeField] private float hapticDuration = 0.15f;
+    [SerializeField] private Material originalMaterial;
 
     private SplineContainer currentSpline;
     private bool isDrawing = true;
 
-   
+    [SerializeField] private Canvas optionsMenu;
+
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
     public List<Spline> listOfSplines = new List<Spline>();
@@ -51,7 +52,6 @@ public class DrawingPath3D : MonoBehaviour
     {
         //currentGameState = GameManager.instance.state;
         if (currentGameState != GameState.DOCTOR_MODE) return; //Sprawdzenie trybu gry
-
         //if (controller.inputDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out bool isPressed) && isPressed)
         if (controller.activateInteractionState.active)
         {
@@ -141,6 +141,34 @@ public class DrawingPath3D : MonoBehaviour
     {
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         //extruder.AddCollidersToSpline(currentSpline);
+    }
+
+
+
+    public void ClearRecoloring()
+    {
+        foreach (Spline spline in listOfSplines)
+        {
+            foreach (var knotIndex in System.Linq.Enumerable.Range(0, spline.Count - 1))
+            {
+                string segmentName = $"SplineSegmentMesh_{knotIndex}";
+                GameObject segmentObj = GameObject.Find(segmentName);
+
+                if (segmentObj != null)
+                {
+                    Segment3D segment = segmentObj.GetComponent<Segment3D>();
+                    MeshRenderer renderer = segmentObj.GetComponent<MeshRenderer>();
+
+                    if (segment != null && renderer != null)
+                    {
+                        segment.setColored(false);
+                        renderer.sharedMaterial = originalMaterial;
+                    }
+                }
+            }
+        }
+
+        Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
 
 }

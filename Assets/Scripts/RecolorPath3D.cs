@@ -20,10 +20,8 @@ public class RecolorPath3D : MonoBehaviour
     [SerializeField][Range(0f,1f)] private float hapticIntensity = 0.3f;
     [SerializeField] private float hapticDuration = 0.1f;
 
-
     private void Awake()
     {
-
         //currentGameState = GameManager.instance.state;
         //GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //RecolorPath subskrybuje GameManager
 

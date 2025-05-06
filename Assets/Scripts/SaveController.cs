@@ -13,7 +13,7 @@ public class SaveController : MonoBehaviour
     [SerializeField] private SplineContainer prefab;
     [SerializeField] private GameObject menu;
     [SerializeField] private DrawingPath3D drawingPathScript;
-
+    [SerializeField] private MenuController menuController;
     [SerializeField] private XRRayInteractor leftRay;
     [SerializeField] private XRRayInteractor rightRay;
     [SerializeField] private TMP_InputField inputField;
@@ -44,6 +44,7 @@ public class SaveController : MonoBehaviour
         //bool isPressed = controller.selectInteractionState.active;
         if (isMenuActive)
         {
+            GameManager.instance.UpdateGameState(GameState.OPTIONS_MENU_OPENED);
             menu.SetActive(isMenuActive);
             PositionMenu();
             leftRay.enabled = true;
@@ -65,6 +66,14 @@ public class SaveController : MonoBehaviour
 
     public void CloseMenu() // Funkcja do zamykania menu
     {
+        if (menuController.modeToggle.value == 0)
+        {
+            GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
+        }
+        else
+        {
+            GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
+        }
         isMenuActive = false;
         menu.SetActive(false);
         keyboard.gameObject.SetActive(false);
