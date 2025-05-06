@@ -11,10 +11,9 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class RecolorPath3D : MonoBehaviour
 {
     public Material newMaterial;
-    private Material originalMaterial;
-    private MeshRenderer[] meshRenderers;
-    private Config config;
-    private List<GameObject> segments;
+    public Material blinkingMaterial;
+    [SerializeField] private FirstSegmentVisualHelper visualHelper;
+
     private GameState currentGameState;
     private GameObject previousSegment = null;
     private GameObject currentSegment;
@@ -22,18 +21,6 @@ public class RecolorPath3D : MonoBehaviour
     [SerializeField][Range(0f,1f)] private float hapticIntensity = 0.3f;
     [SerializeField] private float hapticDuration = 0.1f;
 
-
-    private void Awake()
-    {
-
-        //currentGameState = GameManager.instance.state;
-        //GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //RecolorPath subskrybuje GameManager
-
-        // Dodawanie ScriptableObject z konfiguracj¹ do skryptu segmentu
-        //string[] configFile = AssetDatabase.FindAssets("MainConfig", new[] { "Assets/Configuration" });
-        //string path = AssetDatabase.GUIDToAssetPath(configFile[0]);
-        //config = AssetDatabase.LoadAssetAtPath<Config>(path);
-    }
 
     public void setPreviousSegment(GameObject segment)
     {
@@ -51,10 +38,9 @@ public class RecolorPath3D : MonoBehaviour
     }
 
 
-
-    // Funkcja wywo³ywana po dotkniêciu przez collider kontrolera 
+    // Funkcja wywoï¿½ywana po dotkniï¿½ciu przez collider kontrolera 
     private void OnTriggerEnter(Collider other)
-     {
+    {
 
         currentGameState = GameManager.instance.state;
 
@@ -65,7 +51,7 @@ public class RecolorPath3D : MonoBehaviour
             // Sprawdzenie czy poprzedni segment pokolorowany
             if(previousSegment != null && !previousSegment.GetComponent<Segment3D>().isColored()) return;
 
-            // Sprawdzenie czy obecny jest ju¿ pomalowany
+            // Sprawdzenie czy obecny jest juï¿½ pomalowany
             if(currentSegment.GetComponent<Segment3D>().isColored()) return;
 
             currentSegment.GetComponent<Segment3D>().setColored(true);
@@ -77,7 +63,9 @@ public class RecolorPath3D : MonoBehaviour
 
             XRBaseController controller = other.GetComponentInParent<XRBaseController>();
             HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
+
+            
         }
-     }
+    }
 
 }

@@ -9,30 +9,36 @@ using System.Collections.Generic;
 
 public class DrawingPath3D : MonoBehaviour
 {
-    //public XRController controller; 
-    public XRBaseController controller;
+    public XRBaseController rightController;
+    public XRBaseController leftController;
     public SplineContainer splineContainerPrefab;
 
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
-
     [SerializeField][Range(0f, 1f)] private float hapticIntensity = 0.2f;
     [SerializeField] private float hapticDuration = 0.15f;
+    [SerializeField] private Material originalMaterial;
 
+    private XRBaseController activeController;
     private SplineContainer currentSpline;
-    private bool isDrawing = true;
+    private bool isDrawing = false;
+
+    [SerializeField] private Canvas optionsMenu;
 
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
+    private FirstSegmentVisualHelper visualHelper;
+    public List<Spline> listOfSplines = new List<Spline>();
 
     private Vector3 lastKnotPosition = Vector3.zero;
 
     private GameState currentGameState;
 
-
+    public int counter = 0;
     void Awake()
     {
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
+        visualHelper = this.GetComponent<FirstSegmentVisualHelper>(); // Pobraine visual helpera
     }
 
     private void OnDestroy()
@@ -45,20 +51,36 @@ public class DrawingPath3D : MonoBehaviour
         currentGameState = newState;
     }
 
+    public SplineContainer GetCurrentSpline()
+    {
+        return currentSpline;
+    }
+
+    public SplineContainer GetSplineContainerPrefab()
+    {
+        return splineContainerPrefab;
+    } 
+
     void Update()
     {
-        //currentGameState = GameManager.instance.state;
         if (currentGameState != GameState.DOCTOR_MODE) return; //Sprawdzenie trybu gry
 
-        //if (controller.inputDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out bool isPressed) && isPressed)
-        if (controller.activateInteractionState.active)
+        // Dynamiczne ustawienie aktywnego kontrolera
+        if (!isDrawing)
+        {
+            if (rightController.activateInteractionState.active) activeController = rightController;
+            else if (leftController.activateInteractionState.active) activeController = leftController;
+        }
+
+        if (activeController == null) return;
+
+        if (activeController.activateInteractionState.active)
         {
             if (!isDrawing)
             {
                 StartDrawing();
             }
             AddPoint();
-      
         }
         else if (isDrawing)
         {
@@ -66,7 +88,7 @@ public class DrawingPath3D : MonoBehaviour
         }
     }
 
-    // Rozpoczêcie rysowania 
+    // Rozpoczï¿½cie rysowania 
     void StartDrawing()
     {
         currentSpline = Instantiate(splineContainerPrefab, Vector3.zero, Quaternion.identity);
@@ -75,11 +97,11 @@ public class DrawingPath3D : MonoBehaviour
     }
 
 
-    // Funkcja tworz¹ca pojedynczy wêze³ krzywej Beziera
+    // Funkcja tworzï¿½ca pojedynczy wï¿½zeï¿½ krzywej Beziera
     void AddPoint()
     {
         // Wyznaczanie pozycji punktu
-        Vector3 newPosition = controller.transform.position;
+        Vector3 newPosition = activeController.transform.position;
         newPosition = currentSpline.transform.InverseTransformPoint(newPosition);
         BezierKnot knot = new BezierKnot(newPosition);
 
@@ -90,18 +112,20 @@ public class DrawingPath3D : MonoBehaviour
             lastKnotPosition = (Vector3)lastKnot.Position;
         }
 
-        // Sprawdzenie czy punkt jest w odpowiedniej odleg³oœci
+        // Sprawdzenie czy punkt jest w odpowiedniej odlegï¿½oï¿½ci
         if (Vector3.Distance(newPosition, lastKnotPosition) > pointSpacing)
         {
             // Dodanie punktu do krzywej
             currentSpline.Spline.Add(knot);
+            //
+
             lastKnotPosition = newPosition;
 
             if (config.getDrawingMode() && currentSpline.Spline.Count > 2)
             {
-                // Ekstrudowanie pojedynczego segmentu miêdzy dwoma poprzednimi wêz³ami(currentNode - 1 i currentNode - 2)
+                // Ekstrudowanie pojedynczego segmentu miï¿½dzy dwoma poprzednimi wï¿½zï¿½ami(currentNode - 1 i currentNode - 2)
                 extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
-                HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
+                HapticController.SendHaptics(activeController, hapticIntensity, hapticDuration);
             }
         }
     }
@@ -113,23 +137,64 @@ public class DrawingPath3D : MonoBehaviour
         if (!config.getDrawingMode())
         {
             ExtrudeSpline();
+            
+            //extruder.Save(listOfSplines);
+            //extruder.Load();
+            //extruder.GenerateCirclePoints(0.1f,controller);
+            //extruder.GeneratePolygonPoints(5, 0.1f, controller);
         }
         else
         {
-            // Ekstrudowanie ostatniego segmentu natepuje po zakoñczoniu rysowania aby dorysowaæ œciane krañcow¹
+            // Ekstrudowanie ostatniego segmentu natepuje po zakoï¿½czoniu rysowania aby dorysowaï¿½ ï¿½ciane kraï¿½cowï¿½
             extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
             extruder.restoreSettings();
+           // listOfSplines.Add(currentSpline.Spline);
         }
+        listOfSplines.Add(currentSpline.Spline);
 
+        var list = extruder.getSegmentList();
+        if (list.Count >= 2)
+        {
+            visualHelper.setSegments(list);
+            visualHelper.activateBlinkingSegment();
+        }
     }
 
 
 
-    // Ekstrudowanie ca³ego spline'a po skoñczeniu rysowania (liveDrawingMode = false) do testowania kolorowania
+    // Ekstrudowanie caï¿½ego spline'a po skoï¿½czeniu rysowania (liveDrawingMode = false) do testowania kolorowania
     void ExtrudeSpline()
     {
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         //extruder.AddCollidersToSpline(currentSpline);
+    }
+
+
+
+    public void ClearRecoloring()
+    {
+        foreach (Spline spline in listOfSplines)
+        {
+            foreach (var knotIndex in System.Linq.Enumerable.Range(0, spline.Count - 1))
+            {
+                string segmentName = $"SplineSegmentMesh_{knotIndex}";
+                GameObject segmentObj = GameObject.Find(segmentName);
+
+                if (segmentObj != null)
+                {
+                    Segment3D segment = segmentObj.GetComponent<Segment3D>();
+                    MeshRenderer renderer = segmentObj.GetComponent<MeshRenderer>();
+
+                    if (segment != null && renderer != null)
+                    {
+                        segment.setColored(false);
+                        renderer.sharedMaterial = originalMaterial;
+                    }
+                }
+            }
+        }
+
+        Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
 
 }

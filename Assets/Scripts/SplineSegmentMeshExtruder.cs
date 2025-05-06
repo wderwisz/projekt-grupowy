@@ -7,11 +7,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines;
 using System.Linq;
+using UnityEditor;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.Experimental.Rendering;
+using System.IO;
 
 public class SplineSegmentMeshExtruder : MonoBehaviour
 {
     public Material[] segmentMaterials; // Tablica materialow do roznych segmentow spline'a
     public Material recolorMaterial;
+    public Material freeDrawingMaterial;
 
     // Liczba wierzcholkow bryly ekstrudowanej na pojedynczym segmencie i liczba jej trojkatow
     private const int numberOfVertices = 8;
@@ -19,12 +24,12 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
     private float width = 0.01f;  // Szerokosc segmentu
     private float hight = 0.01f;  // wysokosc segmentu
-    [SerializeField][Range(0.01f, 10.0f)] private float vectorScale = 1.0f;
+    [SerializeField] [Range(0.01f, 10.0f)] private float vectorScale = 1.0f;
 
     private Vector3 lastPerpendicularVector = Vector3.zero;
     [SerializeField] private bool isSegmentation = true;
     private List<GameObject> segments;
-    private GameObject lastSegment = null;      //ostatni sgegment ktoty nalzey usunac
+    private GameObject lastSegment = null;      //ostatni segment ktory nalezy usunac
 
     bool isFirstSegment = true;
     bool isLastSegment = false;
@@ -34,6 +39,8 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private List<int> trianglesList = new List<int>();         // Przechowywanie trojkatow
 
     private Vector3[] lastVertices = new Vector3[4];           // Wierzcholki konca poprzedniego segmentu
+
+
     public List<GameObject> getSegmentList()
     {
         return segments;
@@ -42,9 +49,10 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private void Awake()
     {
         segments = new List<GameObject>();
+
     }
 
-    public void setVectorScale(float v){
+    public void setVectorScale(float v) {
         vectorScale = v;
     }
 
@@ -63,8 +71,15 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         MeshFilter meshFilter = segmentMesh.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = segmentMesh.AddComponent<MeshRenderer>();
 
-        // Przypisz material rotacyjnie
-        meshRenderer.material = segmentMaterials[index % segmentMaterials.Length];
+        // Przypisywanie meteriału do mesha w zależności od trybu segementacji
+        if (isSegmentation)
+        {
+            meshRenderer.material = segmentMaterials[index % segmentMaterials.Length];
+        }
+        else
+        {
+            meshRenderer.material = freeDrawingMaterial;
+        }
 
         // Generuj extrudowany mesh
         Mesh mesh = GenerateExtrudedMesh(startPoint, endPoint, isSegmentation);
@@ -111,13 +126,14 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     //Dla rysowania live przed dodaniem kolejnej warstwy usuwamy poprzenia
     private void DeleteLastSegment()
     {
-        if (segments.Count>0 && lastSegment != null && !isSegmentation )
+        if (segments.Count > 0 && lastSegment != null && !isSegmentation)
         {
             Debug.Log(lastSegment);
             Destroy(lastSegment);
             segments.RemoveAt(segments.Count - 1);
 
         }
+
     }
 
     // Funkcja do ekstrudowania calego spline'a
@@ -128,7 +144,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         {
 
             isLastSegment = CheckIsLastSegment(spline, i);
-            
+
             Vector3 startPoint = (Vector3)spline[i].Position;
             Vector3 endPoint = (Vector3)spline[i + 1].Position;
 
@@ -141,12 +157,12 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
                 recolorPath3D.setCurrentSegment(segments[i]);
                 if (i > 0) recolorPath3D.setPreviousSegment(segments[i - 1]);
             }
-            else 
+            else
             {
                 Mesh mesh = GenerateExtrudedMesh(startPoint, endPoint, isSegmentation);
             }
         }
-        
+
         restoreSettings();
     }
 
@@ -159,14 +175,14 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     }
     public int numberOfLayers()
     {
-       return 1; 
+        return 1;
     }
     private bool CheckIsLastSegment(Spline spline, int index)
     {
         if (!isSegmentation && index == spline.Count - 2)
         {
             return true;
-           
+
         }
         return isLastSegment;
     }
@@ -229,17 +245,17 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     }
 
     private void updateTriangleList(int index)
-     {
-         if (index >= 0)
-             trianglesList.AddRange(trailBody(index));
+    {
+        if (index >= 0)
+            trianglesList.AddRange(trailBody(index));
 
-         if (isFirstSegment)
-             trianglesList.AddRange(initialSideWall(index));
+        if (isFirstSegment)
+            trianglesList.AddRange(initialSideWall(index));
 
-         if (isLastSegment)
-             trianglesList.AddRange(finalSideWall(index));
-     }
-    
+        if (isLastSegment)
+            trianglesList.AddRange(finalSideWall(index));
+    }
+
 
     private int[] trailBody(int index)
     {
@@ -411,6 +427,85 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
         segments.Clear();
     }
+
+
+
+    public void GenerateCirclePoints(float radius, XRBaseController controller)
+    {
+
+        int numberOfSegments = (int)(radius * 200);
+        Vector3 center = controller.transform.position;  // Pobierz pozycję obiektu
+        Vector3 normal = controller.transform.right;     // Normalna do płaszczyzny (prostopadła do X)
+
+        // Tworzenie lokalnego układu współrzędnych
+        Vector3 up = Vector3.up;
+        Vector3 tangent = Vector3.Cross(up, normal).normalized;  // Wektor poziomy
+        Vector3 bitangent = Vector3.Cross(normal, tangent).normalized; // Wektor pionowy
+        float angleOffset = 90;
+        Quaternion rotation = Quaternion.AngleAxis(angleOffset, up);
+        Spline spline = new Spline();
+
+        for (int i = 0; i < numberOfSegments; i++)
+        {
+
+            float angle = i * Mathf.PI * 2 / numberOfSegments;
+
+            BezierKnot knot = new BezierKnot(center + rotation *
+                tangent * (Mathf.Cos(angle) * radius) +
+                bitangent * (Mathf.Sin(angle) * radius));
+            spline.Add(knot);
+        }
+        spline.Add(spline[0]);
+        ExtrudeAndApplyMaterials(spline);
+    }
+
+    public void GeneratePolygonPoints(int sides, float radius, XRBaseController controller)
+    {
+        int numberOfSegments = (int)(radius * 200);
+        if (sides < 3) return; // Minimalna ilość boków to 3 (trójkąt)
+
+        Vector3 center = controller.transform.position;  // Środek wielokąta
+        Vector3 normal = controller.transform.right;     // Normalna do płaszczyzny
+        Vector3 up = Vector3.up;
+
+        // Układ współrzędnych dla wielokąta
+        Vector3 tangent = Vector3.Cross(up, normal).normalized;
+        Vector3 bitangent = Vector3.Cross(normal, tangent).normalized;
+
+        float angleOffset = 90; //Przesuniecie aby wielokat byl rysowany prostopadle do kontrolera
+        Quaternion rotation = Quaternion.AngleAxis(angleOffset, up);
+        //rotation = rotation * Quaternion.Euler(0, 0, 0);
+        Spline spline = new Spline();
+        float angle = 0;
+
+        // Obliczanie pozycji wierzchołka wielokąta
+        Vector3 lastLocalPoint = tangent * (Mathf.Cos(angle) * radius) +
+                             bitangent * (Mathf.Sin(angle) * radius);
+
+        for (int i = 1; i <= sides; i++)
+        {
+            int k = i % sides;
+            angle = k * Mathf.PI * 2 / sides;  // Kąt dla wierzchołka
+
+            // Obliczanie pozycji wierzchołka wielokąta
+            Vector3 localPoint = tangent * (Mathf.Cos(angle) * radius) +
+                                 bitangent * (Mathf.Sin(angle) * radius);
+
+            Vector3 lengthOfWall = localPoint - lastLocalPoint;
+            for (int j = 1; j <= numberOfSegments; j++)
+            {
+                Vector3 point = lastLocalPoint + j * lengthOfWall / numberOfSegments;
+                BezierKnot knot = new BezierKnot(center + rotation * point);
+                spline.Add(knot);
+            }
+            lastLocalPoint = localPoint;
+        }
+        spline.Add(spline[0]); // Zamknięcie wielokąta
+        ExtrudeAndApplyMaterials(spline);
+    }
+
+
+
 }
 
 
