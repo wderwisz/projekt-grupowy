@@ -18,6 +18,9 @@ public class SaveFilesBrowser : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        // TODO
+        // Sprawdziæ czy istnieje folder zanim wykonujemy na nim operacje
+
         DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(Application.persistentDataPath, "saves"));
         FileInfo[] saveFiles = directoryInfo.GetFiles();
         int fileNumber = saveFiles.Length;
