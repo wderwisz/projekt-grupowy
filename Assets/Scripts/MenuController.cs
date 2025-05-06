@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
+using UnityEngine.Splines;
+using UnityEngine.UI;
+
 public class MenuController : MonoBehaviour
 {
 
@@ -10,11 +13,18 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject menu;
     [SerializeField] private XRRayInteractor leftRay;
     [SerializeField] private XRRayInteractor rightRay;
+    [SerializeField] private DrawingPath3D drawingPathScript;
+    [SerializeField] private SaveController saveController;
+    [SerializeField] private LoadController loadController;
+    [SerializeField] private GameObject saveFileMenu;
+    [SerializeField] public Slider modeToggle;
     private bool isMenuActive = false;
     private bool wasPressedLastFrame = false;
     public XRBaseController controller;
     public Transform player;
     public float menuDistance = 1.5f;
+    private Spline spline;
+    private SplineSegmentMeshExtruder[] splineExtruder;
 
 
 
@@ -27,6 +37,7 @@ public class MenuController : MonoBehaviour
         player = mainCamera.transform;
         leftRay.enabled =  false;
         rightRay.enabled =  false;
+        
     }
 
     // Update is called once per frame
@@ -34,8 +45,9 @@ public class MenuController : MonoBehaviour
     {
         //w³¹czanie menu poprzez dolny trigger lewego kontrolera shift + G 
         bool isPressed = controller.selectInteractionState.active;
-        if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciœniêcia
+        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciœniêcia
         {
+            GameManager.instance.UpdateGameState(GameState.OPTIONS_MENU_OPENED);
             isMenuActive = !isMenuActive;
             menu.SetActive(isMenuActive);
             if (isMenuActive)
@@ -46,8 +58,10 @@ public class MenuController : MonoBehaviour
             }
             else
             {
+                CloseMenu();
                 leftRay.enabled = false;
                 rightRay.enabled = false;
+
             }
         }
 
@@ -88,13 +102,56 @@ public class MenuController : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(forward);
         menu.transform.rotation = lookRotation;
     }
+    public void FindSplineExtruder() //funkcja do usuwania szlaku
+    {
 
+        drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
+        splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
+        if (splineExtruder != null)
+        {
+            foreach (SplineSegmentMeshExtruder extruder in splineExtruder)
+            {
+                extruder.ClearTrail();
+            }
+        }
+        else
+        {
+            Debug.Log("Nie znaleziono szlaku");
+        }
+    }
     public void CloseMenu() // Funkcja do zamykania menu
     {
+        
+        if (modeToggle.value == 0)
+        {
+            GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
+        }
+        else
+        {
+            GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
+        }
+
         isMenuActive = false;
         menu.SetActive(false);
 
         leftRay.enabled = false;
         rightRay.enabled = false;
+    }
+
+
+    public void SaveSpline()
+    {
+        saveController.isMenuActive = true;
+        CloseMenu();
+
+    }
+
+
+    public void LoadSpline()
+    {
+        FindSplineExtruder();
+        loadController.isMenuActive = true;
+        CloseMenu();
+      
     }
 }

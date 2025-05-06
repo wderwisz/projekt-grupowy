@@ -36,7 +36,7 @@ public class RecolorPath3D : MonoBehaviour
     }
 
 
-    // Funkcja wywo³ywana po dotkniêciu przez collider kontrolera 
+    // Funkcja wywoï¿½ywana po dotkniï¿½ciu przez collider kontrolera 
     private void OnTriggerEnter(Collider other)
     {
 
@@ -49,7 +49,7 @@ public class RecolorPath3D : MonoBehaviour
             // Sprawdzenie czy poprzedni segment pokolorowany
             if(previousSegment != null && !previousSegment.GetComponent<Segment3D>().isColored()) return;
 
-            // Sprawdzenie czy obecny jest ju¿ pomalowany
+            // Sprawdzenie czy obecny jest juï¿½ pomalowany
             if(currentSegment.GetComponent<Segment3D>().isColored()) return;
 
             currentSegment.GetComponent<Segment3D>().setColored(true);
@@ -61,6 +61,8 @@ public class RecolorPath3D : MonoBehaviour
 
             XRBaseController controller = other.GetComponentInParent<XRBaseController>();
             HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
+
+            
         }
     }
 
