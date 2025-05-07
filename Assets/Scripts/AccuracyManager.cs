@@ -5,18 +5,22 @@ using UnityEngine;
 // Klasa licz¹ca dok³adnoœæ kolorowania 
 public class AccuracyManager : MonoBehaviour
 {
-    public static AccuracyManager instance {  get; private set; }
+    public static AccuracyManager instance { get; private set; }
 
     private bool startedRecoloring = false;
     private bool isRecoloring = false;
+    private bool isPaused = false;
+
     private float timeTotal = 0f;
+    private float timeInTotal = 0f;
     private float timeRecoloring = 0f;
-    private float timeOffPathThreshold = 0.3f; // czas w sekundach który musi zostaæ przekroczony, aby zacz¹æ naliczaæ czas poza lini¹
+    private float timeOffPathThreshold = 0.0f; // czas w sekundach który musi zostaæ przekroczony, aby zacz¹æ naliczaæ czas poza lini¹
+
     private TimeManager timeManager;
+    private TimeManager totalTimeManager;
 
     void Awake()
     {
-
         if (instance == null)
         {
             instance = this;
@@ -29,11 +33,12 @@ public class AccuracyManager : MonoBehaviour
         }
 
         timeManager = new TimeManager();
+        totalTimeManager = new TimeManager();
     }
 
     public void StartRecoloringTimer()
     {
-        if (!isRecoloring)
+        if (!isRecoloring && !isPaused)
         {
             timeManager.StartTimer();
             startedRecoloring = true;
@@ -43,7 +48,7 @@ public class AccuracyManager : MonoBehaviour
 
     public void StopRecoloringTimer()
     {
-        if (isRecoloring && startedRecoloring)
+        if (isRecoloring && startedRecoloring && !isPaused)
         {
             timeManager.StopTimer();
             float timeTaken = timeManager.GetTimeTaken();
@@ -55,7 +60,7 @@ public class AccuracyManager : MonoBehaviour
 
     public void StartIdleTimer()
     {
-        if (!isRecoloring && startedRecoloring)
+        if (!isRecoloring && startedRecoloring && !isPaused)
         {
             timeManager.StartTimer();
             isRecoloring = true;
@@ -64,12 +69,12 @@ public class AccuracyManager : MonoBehaviour
 
     public void StopIdleTimer()
     {
-        if (isRecoloring && startedRecoloring)
+        if (isRecoloring && startedRecoloring && !isPaused)
         {
             timeManager.StopTimer();
             float timeTaken = timeManager.GetTimeTaken();
             timeTotal += timeTaken;
-            if(timeTaken < timeOffPathThreshold)
+            if (timeTaken < timeOffPathThreshold)
             {
                 timeRecoloring += timeTaken;
             }
@@ -79,12 +84,17 @@ public class AccuracyManager : MonoBehaviour
 
     public float GetAccuracy()
     {
-        return timeTotal > 0 ? (timeRecoloring / timeTotal) * 100f : 99.9f;
+        return timeTotal > 0 ? (timeRecoloring / timeTotal) * 100f : 100f;
     }
 
     public float GetTimeTotal()
     {
         return timeTotal;
+    }
+
+    public float GetTimeInTotal()
+    {
+        return timeInTotal;
     }
 
     public float GetTimeRecoloring()
@@ -103,10 +113,54 @@ public class AccuracyManager : MonoBehaviour
         timeRecoloring = 0f;
         startedRecoloring = false;
         isRecoloring = false;
+        isPaused = false;
     }
 
-   //Stwórz obiekt je¿eli nie ma jeszcze na scenie
-   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public void StartRecoloring()
+    {
+        if (!isPaused)
+        {
+            totalTimeManager.StartTimer();
+        }
+    }
+
+    public void FinishRecoloring()
+    {
+        if (!isPaused)
+        {
+            totalTimeManager.StopTimer();
+            timeInTotal = totalTimeManager.GetTimeTaken();
+        }
+    }
+
+    public void Pause()
+    {
+        if (!isPaused)
+        {
+            isPaused = true;
+            if (isRecoloring)
+            {
+                timeManager.PauseTimer();
+            }
+            totalTimeManager.PauseTimer();
+        }
+    }
+
+    public void Resume()
+    {
+        if (isPaused)
+        {
+            isPaused = false;
+            if (isRecoloring)
+            {
+                timeManager.ResumeTimer();
+            }
+            totalTimeManager.ResumeTimer();
+        }
+    }
+
+    // Stwórz obiekt je¿eli nie ma jeszcze na scenie
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void CreateInstance()
     {
         if (instance == null)
@@ -116,7 +170,4 @@ public class AccuracyManager : MonoBehaviour
             DontDestroyOnLoad(accuracyManagerObj);
         }
     }
-
-
-
 }

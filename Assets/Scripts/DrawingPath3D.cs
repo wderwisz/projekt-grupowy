@@ -121,7 +121,7 @@ public class DrawingPath3D : MonoBehaviour
             extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
             extruder.restoreSettings();
         }
-
+        // tutaj przekazywaæ liste (optymalizacja)
     }
 
 

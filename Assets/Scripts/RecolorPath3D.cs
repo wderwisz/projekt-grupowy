@@ -18,12 +18,13 @@ public class RecolorPath3D : MonoBehaviour
     private GameObject previousSegment = null;
     private GameObject currentSegment;
 
-
+    private GameObject hitboxObject;
+    internal Collider controllerInZone = null;
+    private bool isTouchingSegment = false;
+    private bool isPaused = false;
 
     [SerializeField][Range(0f,1f)] private float hapticIntensity = 0.3f;
     [SerializeField] private float hapticDuration = 0.1f;
-
-
 
     // Zmienne do okreœlenia dok³adnoœci
     private float timeTakenToRecolor = 0f; // w sekundach
@@ -31,6 +32,7 @@ public class RecolorPath3D : MonoBehaviour
 
     private void Awake()
     {
+        setSegments(segments);
         
         //currentGameState = GameManager.instance.state;
         //GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //RecolorPath subskrybuje GameManager
@@ -40,6 +42,7 @@ public class RecolorPath3D : MonoBehaviour
         //string path = AssetDatabase.GUIDToAssetPath(configFile[0]);
         //config = AssetDatabase.LoadAssetAtPath<Config>(path);
     }
+
 
     public void setPreviousSegment(GameObject segment)
     {
@@ -54,6 +57,7 @@ public class RecolorPath3D : MonoBehaviour
     public void setSegments(List<GameObject> segmentList)
     {
         segments = segmentList;
+        CreateUnifiedHitbox();
     }
 
     private void GameManagerOnGameStateChanges(GameState newState)
@@ -73,6 +77,29 @@ public class RecolorPath3D : MonoBehaviour
         return false; // Brak kolizji z segmentami
     }
 
+    private void CreateUnifiedHitbox()
+    {
+        if (segments == null || segments.Count == 0) return;
+
+       
+        Bounds bounds = new Bounds(segments[0].transform.position, Vector3.zero);
+        foreach (GameObject segment in segments)
+        {
+            bounds.Encapsulate(segment.GetComponent<Renderer>().bounds);
+        }
+
+        
+        hitboxObject = new GameObject("UnifiedHitbox");
+        hitboxObject.transform.SetParent(this.transform); 
+        hitboxObject.transform.position = bounds.center;
+
+        BoxCollider collider = hitboxObject.AddComponent<BoxCollider>();
+        collider.size = bounds.size;
+        collider.isTrigger = true;
+
+        hitboxObject.AddComponent<HitboxListener>().Init(this);
+    }
+
 
     // Funkcja wywo³ywana po dotkniêciu przez collider kontrolera 
     private void OnTriggerEnter(Collider other)
@@ -80,14 +107,19 @@ public class RecolorPath3D : MonoBehaviour
 
         currentGameState = GameManager.instance.state;
 
-        if (currentGameState != GameState.PATIENT_MODE) return; //Sprawdzenie trybu gry
+        //Sprawdzenie trybu gry
+        if (currentGameState != GameState.PATIENT_MODE)
+        {
+            AccuracyManager.instance.Reset();
+            return; 
+        }
 
 
         if (other.CompareTag("Controller"))
         {
             // Rozpoczêcie liczenia czasu kolorowania do obliczania dok³adnoœci
-            AccuracyManager.instance.StopIdleTimer();
-            AccuracyManager.instance.StartRecoloringTimer();
+            //AccuracyManager.instance.StopIdleTimer();
+            //AccuracyManager.instance.StartRecoloringTimer();
             //Debug.Log("TRAFIASZ!");
 
             //Sprawdzenie czy pierwszy segment zosta³ pokolorowany
@@ -95,7 +127,8 @@ public class RecolorPath3D : MonoBehaviour
             {
                 //TimeManager.instance.StartTimer();
                 AccuracyManager.instance.Reset();
-                AccuracyManager.instance.StartRecoloringTimer();
+                AccuracyManager.instance.StartRecoloring();
+                //AccuracyManager.instance.StartRecoloringTimer();
             }
      
 
@@ -115,7 +148,8 @@ public class RecolorPath3D : MonoBehaviour
             {
                 // Liczenie dok³adnoœci i czasu trwania kolorowania
                 AccuracyManager.instance.StopRecoloringTimer();
-                timeTakenToRecolor = AccuracyManager.instance.GetTimeTotal();
+                AccuracyManager.instance.FinishRecoloring();
+                timeTakenToRecolor = AccuracyManager.instance.GetTimeInTotal();
                 accuracy = AccuracyManager.instance.GetAccuracy();
                 Debug.Log("DOK£ADNOŒÆ KOLOROWANIA " + accuracy + "%");
                 Debug.Log("CZAS KOLOROWANIA " + timeTakenToRecolor + "s");
@@ -138,17 +172,62 @@ public class RecolorPath3D : MonoBehaviour
 
         if (other.CompareTag("Controller"))
         {
-            AccuracyManager.instance.StopRecoloringTimer();
-            AccuracyManager.instance.StartIdleTimer();
-            Debug.Log("PUD£UJESZ!");
+            //AccuracyManager.instance.StopRecoloringTimer();
+            //AccuracyManager.instance.StartIdleTimer();
+            //Debug.Log("PUD£UJESZ!");
         }
 
     }
 
+    public void OnUnifiedTriggerEnter(Collider other)
+    {
+        currentGameState = GameManager.instance.state;
+        if (currentGameState != GameState.PATIENT_MODE) return;
+
+        if (IsControllerTouchingAnySegment(other))
+        {
+            AccuracyManager.instance.StopIdleTimer();
+            AccuracyManager.instance.StartRecoloringTimer();
+            Debug.Log("Trafiasz!");
+        }
+    }
+
+    public void OnUnifiedTriggerExit(Collider other)
+    {
+        currentGameState = GameManager.instance.state;
+        if (currentGameState != GameState.PATIENT_MODE) return;
+
+        AccuracyManager.instance.StopRecoloringTimer();
+        AccuracyManager.instance.StartIdleTimer();
+        Debug.Log("PUD£UJESZ!");
+    }
+
+    private void TogglePause()
+    {
+        isPaused = !isPaused;
+
+        if (isPaused)
+        {
+            AccuracyManager.instance?.Pause();
+            Debug.Log("Gra zatrzymana.");
+        }
+        else
+        {
+            AccuracyManager.instance?.Resume();
+            Debug.Log("Gra wznowiona.");
+        }
+    }
+
     private void Update()
     {
-        Debug.Log(AccuracyManager.instance.GetAccuracy() + " %");
-        //Debug.Log(AccuracyManager.instance.GetTimeTotal() + " s");
+        //Prosta symulacja pauzy
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            TogglePause();
+        }
+        //Debug.Log(AccuracyManager.instance.GetAccuracy() + " %");
+        ///Debug.Log(AccuracyManager.instance.GetTimeTotal() + " s");
+
     }
 
 
