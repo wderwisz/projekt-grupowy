@@ -56,7 +56,7 @@ public class RecolorPath3D : MonoBehaviour
 
             currentSegment.GetComponent<Segment3D>().setColored(true);
 
-            Debug.Log($"Kolorowanie segmentu spline'a: {gameObject.name}");
+            //Debug.Log($"Kolorowanie segmentu spline'a: {gameObject.name}");
 
             MeshRenderer renderer = gameObject.GetComponent<MeshRenderer>();
             renderer.sharedMaterial = newMaterial;

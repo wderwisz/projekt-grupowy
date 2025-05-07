@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class Segment3D : MonoBehaviour
 {
-
+    public static Action<Segment3D> OnSegmentColored;
     private bool colored = false;
 
     public void initialize(string name)
@@ -17,7 +18,11 @@ public class Segment3D : MonoBehaviour
     {
         return colored;
     }
-    public void setColored(bool x) {
-        colored = x;
+
+    public void setColored(bool value)
+    {
+        colored = value;
+        if (value)
+            OnSegmentColored?.Invoke(this);
     }
 }

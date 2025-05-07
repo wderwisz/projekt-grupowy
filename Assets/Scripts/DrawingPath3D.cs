@@ -6,6 +6,8 @@ using UnityEngine.UIElements;
 using Unity.VisualScripting;
 using System;
 using System.Collections.Generic;
+using System.Collections;
+using Unity.Mathematics;
 
 public class DrawingPath3D : MonoBehaviour
 {
@@ -34,6 +36,26 @@ public class DrawingPath3D : MonoBehaviour
 
     private GameState currentGameState;
 
+    //wykrycie ukonczenia
+    private int totalSegments = 0;
+    private int coloredSegments = 0;
+    private bool isHandlerSubscribed = false;
+
+    //celnosc
+    private Coroutine samplingCoroutine;
+    private int totalSamples = 0;
+    private int hitSamples = 0;
+    private float accuracy = 0f;
+    private bool isColoring = false;
+    private float maxAllowedDistance = 0.02f;
+    private float deltaMeasureTime = 0.3f;
+    private float waitInSecondsAfterFinishing = 1f;
+
+    //miara czasu
+    private float startTime = -1f; // Czas rozpoczęcia rysowania
+    private float totalDrawingTime = 0f; // Całkowity czas rysowania
+
+
     public int counter = 0;
     void Awake()
     {
@@ -44,6 +66,11 @@ public class DrawingPath3D : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.onGameStateChanged -= GameManagerOnGameStateChanges;
+        if (isHandlerSubscribed)
+        {
+            Segment3D.OnSegmentColored -= OnSegmentColoredHandler;
+            isHandlerSubscribed = false;
+        }
     }
 
     private void GameManagerOnGameStateChanges(GameState newState)
@@ -59,7 +86,7 @@ public class DrawingPath3D : MonoBehaviour
     public SplineContainer GetSplineContainerPrefab()
     {
         return splineContainerPrefab;
-    } 
+    }
 
     void Update()
     {
@@ -94,6 +121,115 @@ public class DrawingPath3D : MonoBehaviour
         currentSpline = Instantiate(splineContainerPrefab, Vector3.zero, Quaternion.identity);
         extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
         isDrawing = true;
+
+        coloredSegments = 0;
+        totalSamples = 0;
+        hitSamples = 0;
+        accuracy = 0f;
+        isColoring = false;
+        totalSegments = extruder.getSegmentList().Count;
+
+        if (!isHandlerSubscribed)
+        {
+            Segment3D.OnSegmentColored += OnSegmentColoredHandler;
+            isHandlerSubscribed = true;
+        }
+    }
+
+    private IEnumerator SampleAccuracyRoutine()
+    {
+        while (isColoring)
+        {
+            SampleAccuracyPoint();
+            yield return new WaitForSeconds(0.1f); 
+        }
+    }
+
+    private IEnumerator HandleFinishedColoring()
+    {
+        yield return new WaitForSeconds(waitInSecondsAfterFinishing);
+        isColoring = false;
+        if (samplingCoroutine != null)
+            StopCoroutine(samplingCoroutine);
+
+        accuracy = CalculateColoringAccuracy();
+
+        extruder.ClearTrail();
+        extruder.restoreSettings();
+    }
+
+    private void SampleAccuracyPoint()
+    {
+        if (activeController == null || currentSpline == null) return;
+
+        
+        Vector3 pos = activeController.transform.position;
+        //Debug.Log($"Controller position: {pos}");
+
+        float3 nearestPoint;
+        float t;
+
+        var spline = currentSpline.Spline;
+        SplineUtility.GetNearestPoint(spline, (float3)pos, out nearestPoint, out t);
+
+        
+        //Debug.Log($"Nearest point: {nearestPoint}");
+
+        float distance = Vector3.Distance(pos, (Vector3)nearestPoint);
+
+        
+        //Debug.Log($"Distance: {distance}");
+
+        totalSamples++;
+
+        if (distance <= maxAllowedDistance)
+        {
+            hitSamples++;
+            //Debug.Log("Hit sample!");
+        }
+    }
+
+
+    private float CalculateColoringAccuracy()
+    {
+        if (totalSamples == 0)
+        {
+            return 0f;
+        }
+
+        float acc = (float)hitSamples / totalSamples * 100f;
+        Debug.Log($"Celność: {acc}%");
+        return acc;
+    }
+
+    private void OnSegmentColoredHandler(Segment3D seg)
+    {
+        coloredSegments++;
+        totalSegments = extruder.getSegmentList().Count;
+
+        if(coloredSegments == 1)
+        {
+            isColoring = true;
+            samplingCoroutine = StartCoroutine(SampleAccuracyRoutine());
+            startTime = Time.time;
+        }
+        else if (coloredSegments >= totalSegments)
+        {
+            Debug.Log("Wszystkie segmenty pokolorowane – automatyczne zakończenie rysowania.");
+            Segment3D.OnSegmentColored -= OnSegmentColoredHandler;
+            isHandlerSubscribed = false;
+
+            StartCoroutine(HandleFinishedColoring());
+            if (startTime >= 0f)
+            {
+                totalDrawingTime = Time.time - startTime;
+                Debug.Log($"Czas rysowania: {totalDrawingTime} sekund.");
+            }
+        }
+        else
+        {
+            Debug.Log("Pokolorowano " + coloredSegments + "/" + totalSegments);
+        }
     }
 
 
@@ -137,7 +273,7 @@ public class DrawingPath3D : MonoBehaviour
         if (!config.getDrawingMode())
         {
             ExtrudeSpline();
-            
+
             //extruder.Save(listOfSplines);
             //extruder.Load();
             //extruder.GenerateCirclePoints(0.1f,controller);
@@ -148,7 +284,7 @@ public class DrawingPath3D : MonoBehaviour
             // Ekstrudowanie ostatniego segmentu natepuje po zako�czoniu rysowania aby dorysowa� �ciane kra�cow�
             extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
             extruder.restoreSettings();
-           // listOfSplines.Add(currentSpline.Spline);
+            // listOfSplines.Add(currentSpline.Spline);
         }
         listOfSplines.Add(currentSpline.Spline);
 
