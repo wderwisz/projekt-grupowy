@@ -44,7 +44,7 @@ public class RecolorPath3D : MonoBehaviour
 
         currentGameState = GameManager.instance.state;
 
-        if (currentGameState != GameState.PATIENT_MODE) return; //Sprawdzenie trybu gry
+        if (GameManager.instance.isPaused || currentGameState != GameState.PATIENT_MODE) return; //Sprawdzenie trybu gry
 
         if (other.CompareTag("Controller"))
         {

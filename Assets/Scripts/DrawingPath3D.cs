@@ -54,6 +54,9 @@ public class DrawingPath3D : MonoBehaviour
     //miara czasu
     private float startTime = -1f; // Czas rozpoczęcia rysowania
     private float totalDrawingTime = 0f; // Całkowity czas rysowania
+    private float pauseStartTime = 0f;
+    private float totalPauseDuration = 0f;
+    private bool isCurrentlyPaused = false;
 
 
     public int counter = 0;
@@ -90,7 +93,12 @@ public class DrawingPath3D : MonoBehaviour
 
     void Update()
     {
-        if (currentGameState != GameState.DOCTOR_MODE) return; //Sprawdzenie trybu gry
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            HandlePauseToggle();
+        }
+
+        if (GameManager.instance.isPaused || currentGameState != GameState.DOCTOR_MODE) return; // sprawdzenie trybu gry oraz pauzy
 
         // Dynamiczne ustawienie aktywnego kontrolera
         if (!isDrawing)
@@ -115,19 +123,35 @@ public class DrawingPath3D : MonoBehaviour
         }
     }
 
+    private void HandlePauseToggle()
+    {
+        GameManager.instance.isPaused = !GameManager.instance.isPaused;
+        Debug.Log($"Pauza: {(GameManager.instance.isPaused ? "Włączona" : "Wyłączona")}");
+
+        if (GameManager.instance.isPaused)
+        {
+            // Rozpocznij mierzenie czasu pauzy
+            pauseStartTime = Time.time;
+            isCurrentlyPaused = true;
+        }
+        else if (isCurrentlyPaused)
+        {
+            // Zakończ mierzenie czasu pauzy i dodaj do sumy
+            float pauseDuration = Time.time - pauseStartTime;
+            totalPauseDuration += pauseDuration;
+            isCurrentlyPaused = false;
+            Debug.Log($"Czas trwania pauzy: {pauseDuration} sekundy. Łącznie: {totalPauseDuration}");
+        }
+    }
+
     // Rozpocz�cie rysowania 
     void StartDrawing()
     {
+        //ClearRecoloring();
         currentSpline = Instantiate(splineContainerPrefab, Vector3.zero, Quaternion.identity);
         extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
         isDrawing = true;
-
-        coloredSegments = 0;
-        totalSamples = 0;
-        hitSamples = 0;
-        accuracy = 0f;
-        isColoring = false;
-        totalSegments = extruder.getSegmentList().Count;
+        
 
         if (!isHandlerSubscribed)
         {
@@ -141,7 +165,7 @@ public class DrawingPath3D : MonoBehaviour
         while (isColoring)
         {
             SampleAccuracyPoint();
-            yield return new WaitForSeconds(0.1f); 
+            yield return new WaitForSeconds(deltaMeasureTime); 
         }
     }
 
@@ -159,35 +183,24 @@ public class DrawingPath3D : MonoBehaviour
     }
 
     private void SampleAccuracyPoint()
+{
+    if (GameManager.instance.isPaused || activeController == null || currentSpline == null) return;
+
+    Vector3 pos = activeController.transform.position;
+    float3 nearestPoint;
+    float t;
+
+    var spline = currentSpline.Spline;
+    SplineUtility.GetNearestPoint(spline, (float3)pos, out nearestPoint, out t);
+
+    float distance = Vector3.Distance(pos, (Vector3)nearestPoint);
+    totalSamples++;
+
+    if (distance <= maxAllowedDistance)
     {
-        if (activeController == null || currentSpline == null) return;
-
-        
-        Vector3 pos = activeController.transform.position;
-        //Debug.Log($"Controller position: {pos}");
-
-        float3 nearestPoint;
-        float t;
-
-        var spline = currentSpline.Spline;
-        SplineUtility.GetNearestPoint(spline, (float3)pos, out nearestPoint, out t);
-
-        
-        //Debug.Log($"Nearest point: {nearestPoint}");
-
-        float distance = Vector3.Distance(pos, (Vector3)nearestPoint);
-
-        
-        //Debug.Log($"Distance: {distance}");
-
-        totalSamples++;
-
-        if (distance <= maxAllowedDistance)
-        {
-            hitSamples++;
-            //Debug.Log("Hit sample!");
-        }
+        hitSamples++;
     }
+}
 
 
     private float CalculateColoringAccuracy()
@@ -204,25 +217,36 @@ public class DrawingPath3D : MonoBehaviour
 
     private void OnSegmentColoredHandler(Segment3D seg)
     {
-        coloredSegments++;
-        totalSegments = extruder.getSegmentList().Count;
+        if (GameManager.instance.isPaused) return;
 
-        if(coloredSegments == 1)
+        coloredSegments++;
+        if(totalSegments == 0)
+            totalSegments = extruder.getSegmentList().Count;
+
+        if (coloredSegments == 1)
         {
             isColoring = true;
             samplingCoroutine = StartCoroutine(SampleAccuracyRoutine());
             startTime = Time.time;
+            pauseStartTime = 0f;
+            totalPauseDuration = 0f;
+            totalSamples = 0;
+            hitSamples = 0;
+            accuracy = 0f;
+            isColoring = false;
         }
-        else if (coloredSegments >= totalSegments)
+        else if (coloredSegments >= totalSegments && coloredSegments > 0)
         {
+            Debug.Log("Pokolorowano " + coloredSegments + "/" + totalSegments);
             Debug.Log("Wszystkie segmenty pokolorowane – automatyczne zakończenie rysowania.");
             Segment3D.OnSegmentColored -= OnSegmentColoredHandler;
             isHandlerSubscribed = false;
-
+            totalSegments = 0;
+            coloredSegments = 0;
             StartCoroutine(HandleFinishedColoring());
             if (startTime >= 0f)
             {
-                totalDrawingTime = Time.time - startTime;
+                totalDrawingTime = Time.time - startTime - totalPauseDuration;
                 Debug.Log($"Czas rysowania: {totalDrawingTime} sekund.");
             }
         }
@@ -309,6 +333,7 @@ public class DrawingPath3D : MonoBehaviour
 
     public void ClearRecoloring()
     {
+        
         foreach (Spline spline in listOfSplines)
         {
             foreach (var knotIndex in System.Linq.Enumerable.Range(0, spline.Count - 1))
@@ -329,6 +354,14 @@ public class DrawingPath3D : MonoBehaviour
                 }
             }
         }
+
+        coloredSegments = 0;
+        totalSegments = 0;
+        totalSamples = 0;
+        hitSamples = 0;
+        accuracy = 0f;
+        isColoring = false;
+
 
         Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
