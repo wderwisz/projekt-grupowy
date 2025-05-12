@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   liveDrawingMode: 1
   erasingMode: 0
-  defaultSaveName: sciezka1
-  defaultLoadName: sciezka1
+  defaultSaveName: sciezka3
+  defaultLoadName: sciezka3
