@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleOptionsMenuOpened()
     {
-        Debug.Log("Menu opcji zosta³o otwarte");
+        //Debug.Log("Menu opcji zosta³o otwarte");
     }
 
     private void HandleDoctorMode()

@@ -21,7 +21,8 @@ public class FreeDrawingCustomizer : MonoBehaviour
         Color.magenta,
         Color.yellow,
         Color.black,
-        Color.white
+        Color.white,
+        Color.gray,
     };
 
     // Domyœlny materia³
@@ -39,13 +40,13 @@ public class FreeDrawingCustomizer : MonoBehaviour
     {
         int randID = UnityEngine.Random.Range(0, colors.Count);
         Color color = colors[randID];  
-        setColor(color);
+        //setColor(color);
     }
 
     // Funkcja do zmiany koloru szlaku 
-    public void setColor(Color color) {
+    public void setColor(int i) {
         Material newMaterial = new Material(material);
-        newMaterial.color = color;
+        newMaterial.color = colors[i];
         extruder.freeDrawingMaterial = newMaterial;
     }
 }

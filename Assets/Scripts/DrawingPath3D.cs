@@ -25,6 +25,7 @@ public class DrawingPath3D : MonoBehaviour
 
     [SerializeField] private Canvas optionsMenu;
 
+    private SplineContainer[] listofSplinesContainers;
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
     private FirstSegmentVisualHelper visualHelper;
@@ -96,7 +97,10 @@ public class DrawingPath3D : MonoBehaviour
         isDrawing = true;
     }
 
-
+    public void ClearSplineList()
+    {
+        listOfSplines.Clear();
+    }
     // Funkcja tworz�ca pojedynczy w�ze� krzywej Beziera
     void AddPoint()
     {
@@ -167,34 +171,6 @@ public class DrawingPath3D : MonoBehaviour
     {
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         //extruder.AddCollidersToSpline(currentSpline);
-    }
-
-
-
-    public void ClearRecoloring()
-    {
-        foreach (Spline spline in listOfSplines)
-        {
-            foreach (var knotIndex in System.Linq.Enumerable.Range(0, spline.Count - 1))
-            {
-                string segmentName = $"SplineSegmentMesh_{knotIndex}";
-                GameObject segmentObj = GameObject.Find(segmentName);
-
-                if (segmentObj != null)
-                {
-                    Segment3D segment = segmentObj.GetComponent<Segment3D>();
-                    MeshRenderer renderer = segmentObj.GetComponent<MeshRenderer>();
-
-                    if (segment != null && renderer != null)
-                    {
-                        segment.setColored(false);
-                        renderer.sharedMaterial = originalMaterial;
-                    }
-                }
-            }
-        }
-
-        Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
 
 }

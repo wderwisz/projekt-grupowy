@@ -45,7 +45,7 @@ public class SwitchModeSlider : MonoBehaviour, IPointerClickHandler
 
     private void OnSliderChanged(float value)
     {
-        UpdateState((int)value);
+        //UpdateState((int)value);
     }
 
     private void UpdateState(int value)

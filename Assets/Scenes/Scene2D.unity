@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -264,7 +264,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4377,10 +4377,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed1a3308ac466b04c830cff29d7dba03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 408377156}
+  rightController: {fileID: 0}
+  leftController: {fileID: 0}
   splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
   pointSpacing: 0.001
   config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
+  hapticIntensity: 0.2
+  hapticDuration: 0.15
+  originalMaterial: {fileID: 0}
+  optionsMenu: {fileID: 0}
+  listOfSplines: []
+  counter: 0
 --- !u!64 &1420588399
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5575,8 +5582,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menu: {fileID: 2079049044}
-  leftRay: {fileID: 0}
-  rightRay: {fileID: 0}
+  leftRay: {fileID: 1031576133}
+  rightRay: {fileID: 460284178}
+  drawingPathScript: {fileID: 1420588398}
+  saveController: {fileID: 0}
+  loadController: {fileID: 0}
+  saveFileMenu: {fileID: 0}
+  modeToggle: {fileID: 0}
   controller: {fileID: 1611919295}
   player: {fileID: 0}
   menuDistance: 1.5
@@ -6007,7 +6019,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c347c26b5def5184aaddc6f700cd2398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clearButton: {fileID: 2023341152}
 --- !u!114 &2079049046
 MonoBehaviour:
   m_ObjectHideFlags: 0
