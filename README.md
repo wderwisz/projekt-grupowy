@@ -29,4 +29,4 @@ Projekt realizowany przez zespół studentów kierunku **Informatyka** na **Poli
 - **Julia Babiżewska**
 - **Mateusz Blach**
 - **Szymon Kaniewski**
-- **Kamil Świliński**
+- **Kamil Śliwiński**
