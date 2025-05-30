@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.Splines;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Simulation;
@@ -14,6 +15,7 @@ public class DrawingPath3D : MonoBehaviour
     public XRBaseController rightController;
     public XRBaseController leftController;
     public SplineContainer splineContainerPrefab;
+
 
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
@@ -36,12 +38,12 @@ public class DrawingPath3D : MonoBehaviour
 
     private GameState currentGameState;
 
-    //wykrycie ukonczenia
+    //wykrycie ukończenia
     private int totalSegments = 0;
     private int coloredSegments = 0;
     private bool isHandlerSubscribed = false;
 
-    //celnosc
+    //celność
     private Coroutine samplingCoroutine;
     private int totalSamples = 0;
     private int hitSamples = 0;
@@ -52,11 +54,14 @@ public class DrawingPath3D : MonoBehaviour
     private float waitInSecondsAfterFinishing = 1f;
 
     //miara czasu
-    private float startTime = -1f; // Czas rozpoczęcia rysowania
-    private float totalDrawingTime = 0f; // Całkowity czas rysowania
+    private float startTime = -1f; 
+    private float totalDrawingTime = 0f; 
     private float pauseStartTime = 0f;
     private float totalPauseDuration = 0f;
     private bool isCurrentlyPaused = false;
+
+    //pauza
+    private bool wasPressedLastFrame = false;
 
 
     public int counter = 0;
@@ -91,12 +96,18 @@ public class DrawingPath3D : MonoBehaviour
         return splineContainerPrefab;
     }
 
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        //włączanie menu poprzez dolny trigger prawego kontrolera space + G 
+        bool isPressed = rightController.selectInteractionState.active;
+        if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciśnięcia
         {
             HandlePauseToggle();
         }
+        wasPressedLastFrame = isPressed;
+
+
 
         if (GameManager.instance.isPaused || currentGameState != GameState.DOCTOR_MODE) return; // sprawdzenie trybu gry oraz pauzy
 
@@ -183,24 +194,54 @@ public class DrawingPath3D : MonoBehaviour
     }
 
     private void SampleAccuracyPoint()
-{
-    if (GameManager.instance.isPaused || activeController == null || currentSpline == null) return;
-
-    Vector3 pos = activeController.transform.position;
-    float3 nearestPoint;
-    float t;
-
-    var spline = currentSpline.Spline;
-    SplineUtility.GetNearestPoint(spline, (float3)pos, out nearestPoint, out t);
-
-    float distance = Vector3.Distance(pos, (Vector3)nearestPoint);
-    totalSamples++;
-
-    if (distance <= maxAllowedDistance)
     {
-        hitSamples++;
+        if (GameManager.instance.isPaused || currentSpline == null) return;
+
+        Vector3 posRight = rightController.transform.position;
+        Vector3 posLeft = leftController.transform.position;
+
+        float3 nearestRight;
+        float tRight;
+        float3 nearestLeft;
+        float tLeft;
+
+        var spline = currentSpline.Spline;
+
+        SplineUtility.GetNearestPoint(spline, (float3)posRight, out nearestRight, out tRight);
+        SplineUtility.GetNearestPoint(spline, (float3)posLeft, out nearestLeft, out tLeft);
+
+        float distanceRight = Vector3.Distance(posRight, (Vector3)nearestRight);
+        float distanceLeft = Vector3.Distance(posLeft, (Vector3)nearestLeft);
+
+        Vector3 selectedPos;
+        float distance;
+
+        if (distanceRight < distanceLeft)
+        {
+            selectedPos = posRight;
+            distance = distanceRight;
+            activeController = rightController;
+        }
+        else
+        {
+            selectedPos = posLeft;
+            distance = distanceLeft;
+            activeController = leftController;
+        }
+
+        totalSamples++;
+
+        if (distance <= maxAllowedDistance)
+        {
+            hitSamples++;
+        }
+
+        // haptics feedback za dokładne trafienie
+        if (distance <= maxAllowedDistance && hapticIntensity > 0f)
+        {
+            activeController.SendHapticImpulse(hapticIntensity, hapticDuration);
+        }
     }
-}
 
 
     private float CalculateColoringAccuracy()
@@ -210,6 +251,7 @@ public class DrawingPath3D : MonoBehaviour
             return 0f;
         }
 
+   
         float acc = (float)hitSamples / totalSamples * 100f;
         Debug.Log($"Celność: {acc}%");
         return acc;
@@ -233,7 +275,6 @@ public class DrawingPath3D : MonoBehaviour
             totalSamples = 0;
             hitSamples = 0;
             accuracy = 0f;
-            isColoring = false;
         }
         else if (coloredSegments >= totalSegments && coloredSegments > 0)
         {
