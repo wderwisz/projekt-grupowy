@@ -38,7 +38,11 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
+<<<<<<< Updated upstream
   m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+=======
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+>>>>>>> Stashed changes
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3347,8 +3351,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dots: []
+<<<<<<< Updated upstream
   nextDotIndex: 0
   coloredDots: 0
+=======
+  dotPrefab: {fileID: 0}
+  nextDotIndex: 0
+  coloredDots: 0
+  coloringFinished: 0
+>>>>>>> Stashed changes
 --- !u!54 &1328693253
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3537,11 +3548,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteboard: {fileID: 1328693250}
   dot: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
+<<<<<<< Updated upstream
   pathManager: {fileID: 1328693252}
   menuController: {fileID: 1807564216}
   primaryButtonActionXRI: {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   primaryButtonActionSimulator: {fileID: -2439264783773714294, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
   isSimulated: 0
+=======
+  config: {fileID: 0}
+  pathManager: {fileID: 1328693252}
+  primaryButtonAction: {fileID: 0}
+  savePathAction: {fileID: 0}
+  loadPathAction: {fileID: 0}
+  pathFileName: namedPathsData.json
+>>>>>>> Stashed changes
   maxDotSpacing: 0.1
 --- !u!23 &1328693257
 MeshRenderer:
@@ -3805,6 +3825,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed1a3308ac466b04c830cff29d7dba03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< Updated upstream
   rightController: {fileID: 0}
   leftController: {fileID: 0}
   splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
@@ -3816,6 +3837,12 @@ MonoBehaviour:
   optionsMenu: {fileID: 0}
   listOfSplines: []
   counter: 0
+=======
+  controller: {fileID: 0}
+  splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
+  pointSpacing: 0.001
+  config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
+>>>>>>> Stashed changes
 --- !u!64 &1420588399
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5257,9 +5284,34 @@ MonoBehaviour:
   modeToggle: {fileID: 969463438}
   ereaserButton: {fileID: 1560907077}
   buttonText: {fileID: 2112487517}
+<<<<<<< Updated upstream
   controller: {fileID: 1611919295}
   player: {fileID: 1470357960}
   menuDistance: 1.5
+=======
+  isMenuActive: 0
+  wasPressedLastFrame: 0
+  controller: {fileID: 1611919295}
+  player: {fileID: 1470357960}
+  menuDistance: 1.5
+  spline:
+    m_EditModeType: 1
+    m_Knots: []
+    m_Length: -1
+    m_MetaData: []
+    m_Closed: 0
+    m_IntData:
+      m_Data: []
+    m_FloatData:
+      m_Data: []
+    m_Float4Data:
+      m_Data: []
+    m_ObjectData:
+      m_Data: []
+  splineExtruder: []
+  splineContainer: []
+  isStateX: 1
+>>>>>>> Stashed changes
 --- !u!1 &1910818622
 GameObject:
   m_ObjectHideFlags: 0
@@ -5372,6 +5424,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   controller: {fileID: 1611919295}
+<<<<<<< Updated upstream
+=======
+  wasPressedLastFrame: 0
+>>>>>>> Stashed changes
 --- !u!1 &2023341151
 GameObject:
   m_ObjectHideFlags: 0
