@@ -6,13 +6,14 @@ public class DrawingPath : MonoBehaviour
 {
     [SerializeField] private GameObject whiteboard;
     [SerializeField] private GameObject dot;
-    [SerializeField] private Config config;
     [SerializeField] private PathManager pathManager;
+    [SerializeField] private MenuController2D menuController;
     private InputActionReference primaryButtonAction;
     public InputActionReference primaryButtonActionXRI;
     public InputActionReference primaryButtonActionSimulator;
     public bool isSimulated = true;
-
+    private GameState currentGameState;
+    
     private XRRayInteractor rayInteractor;
     private bool isHovering = false;
 
@@ -24,9 +25,15 @@ public class DrawingPath : MonoBehaviour
     private void Awake()
     {
         rayInteractor = FindObjectOfType<XRRayInteractor>();
-
+        GameManager.onGameStateChanged += GameManagerOnGameStateChanges;
         // Przypisujemy poprawn¹ akcjê w zale¿noœci od stanu checkboxa
         primaryButtonAction = isSimulated ? primaryButtonActionSimulator : primaryButtonActionXRI;
+    }
+
+
+    private void GameManagerOnGameStateChanges(GameState newState)
+    {
+        currentGameState = newState;
     }
 
     private void Update()
@@ -34,10 +41,10 @@ public class DrawingPath : MonoBehaviour
 
         //tryb rysowania
         
-        if (config.getDrawingMode())
+        if (GameManager.instance.GetGameState() == GameState.DOCTOR_MODE)
         {
             //tryb usuwania
-            if (config.getErasingMode())
+            if (!menuController.getEareserState())
             {
                 if (isHovering)
                 {
@@ -189,4 +196,10 @@ public class DrawingPath : MonoBehaviour
         isHovering = false;
         //Debug.Log("isHovering ustawione na false");
     }
+
+    private void OnDestroy()
+    {
+        GameManager.onGameStateChanged -= GameManagerOnGameStateChanges;
+    }
+
 }

@@ -2287,7 +2287,7 @@ GameObject:
   - component: {fileID: 623712640}
   - component: {fileID: 623712639}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Szary
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4817,10 +4817,12 @@ MonoBehaviour:
   menu: {fileID: 822670535}
   leftXRController: {fileID: 817923286}
   Xbuttonleft: {fileID: 6732634763312280479, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  Abuttonright: {fileID: 6732634763312280479, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  drawingPoint: {fileID: 754693431}
+  drawingCustomizer: {fileID: 2103827848}
   activationAngle: 60
   positionOffset: {x: 0.1, y: 0.05, z: 0.05}
   rotationOffset: {x: 30, y: 0, z: 0}
+  material: {fileID: 0}
 --- !u!1 &1218141644
 GameObject:
   m_ObjectHideFlags: 0
@@ -5974,7 +5976,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Wyjd\u017A"
+  m_text: Zamknij
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7432,6 +7434,7 @@ MonoBehaviour:
   - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
   material: {fileID: -876546973899608171, guid: 18d6ed8e205b4504784bd7668cd9ebf3, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

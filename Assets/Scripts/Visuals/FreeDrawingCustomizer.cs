@@ -9,9 +9,10 @@ using UnityEngine.Splines;
 /// </summary>
 public class FreeDrawingCustomizer : MonoBehaviour
 {
+    public event Action<Color> OnColorChanged;
     private DrawingPath3D drawingPath3DComponent;
     private SplineSegmentMeshExtruder extruder;
-
+    private Color activeColor;
     [SerializeField]
     private List<Color> colors = new List<Color>()
     {
@@ -48,5 +49,13 @@ public class FreeDrawingCustomizer : MonoBehaviour
         Material newMaterial = new Material(material);
         newMaterial.color = colors[i];
         extruder.freeDrawingMaterial = newMaterial;
+        activeColor = colors[i];
+        OnColorChanged?.Invoke(activeColor);
     }
+
+    public Color getActiveColor()
+    {
+        return activeColor;
+    }
+
 }
