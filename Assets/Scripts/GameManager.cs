@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
                 HandleOptionsMenuOpened();
                 break;
             default:
-                throw new System.ArgumentOutOfRangeException(nameof(newState), newState, null); //zobaczymy czy to dziala
+                throw new System.ArgumentOutOfRangeException(nameof(newState), newState, null); 
         }
 
         onGameStateChanged?.Invoke(newState); //Informowanie komponentów o zmianie stanu.
@@ -93,4 +93,5 @@ public enum GameState
     PATIENT_MODE, 
     DOCTOR_MODE,
     OPTIONS_MENU_OPENED,
+    PAUSE,
 }

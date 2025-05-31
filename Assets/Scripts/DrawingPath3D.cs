@@ -102,7 +102,7 @@ public class DrawingPath3D : MonoBehaviour
     {
         //włączanie menu poprzez dolny trigger prawego kontrolera space + G 
         bool isPressed = rightController.selectInteractionState.active;
-        if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciśnięcia
+        if ((isPressed && !wasPressedLastFrame) || GameManager.instance.GetGameState() == GameState.OPTIONS_MENU_OPENED) // Wykrycie momentu wciśnięcia 
         {
             HandlePauseToggle();
         }

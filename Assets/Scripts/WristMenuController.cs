@@ -17,10 +17,8 @@ public class WristMenuController : MonoBehaviour
     [SerializeField] private GameObject drawingPoint;
     [SerializeField] private FreeDrawingCustomizer drawingCustomizer;
     private bool isMenuActive = false;
-    private bool wasPressedLastFrame = false;
 
     private Color presentColor;
-    private Color prevColor;
 
     public float activationAngle = 60f; // k¹t, po którym menu siê pokazuje
     public Vector3 positionOffset = new Vector3(0.1f, 0.05f, 0.05f);
