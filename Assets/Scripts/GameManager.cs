@@ -47,6 +47,9 @@ public class GameManager : MonoBehaviour
             case GameState.OPTIONS_MENU_OPENED:
                 HandleOptionsMenuOpened();
                 break;
+            case GameState.PAUSE:
+                HandlePause();
+                break;
             default:
                 throw new System.ArgumentOutOfRangeException(nameof(newState), newState, null); //zobaczymy czy to dziala
         }
@@ -71,6 +74,11 @@ public class GameManager : MonoBehaviour
         
     }
 
+    private void HandlePause()
+    {
+        Debug.Log("Pauza w³¹czona - GAMEMANAGER");
+    }
+
     private void Update()
     {
         //bool isPressed = controller.selectInteractionState.active; // Sprawdzanie czy wciœniêto
@@ -93,4 +101,5 @@ public enum GameState
     PATIENT_MODE, 
     DOCTOR_MODE,
     OPTIONS_MENU_OPENED,
+    PAUSE
 }
