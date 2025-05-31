@@ -10,6 +10,11 @@ public class DotRecolor : MonoBehaviour
 
     // indeks kropek w sciezce
     [HideInInspector] public int dotIndex = 0;
+
+    public bool IsColored 
+    {
+        get { return isColored; }
+    }
     private bool isColored = false;
 
     private void Awake()

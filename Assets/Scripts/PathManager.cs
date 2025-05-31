@@ -1,14 +1,33 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using System.IO;
+using System.Linq;
 
 public class PathManager : MonoBehaviour
 {
+
+    [System.Serializable]
+    private class NamedPathData
+    {
+        public string name;
+        public List<Vector3> dotPositions = new List<Vector3>();
+    }
+
+    [System.Serializable]
+    private class SavedPathsCollection
+    {
+        public List<NamedPathData> savedPaths = new List<NamedPathData>();
+    }
+
     public List<GameObject> dots = new List<GameObject>();
+    public GameObject dotPrefab;
 
     public int nextDotIndex = 0;
 
     public int coloredDots = 0;
+
+    public bool coloringFinished = false;
 
     private float delayInSeconds = 3.0f;
 
@@ -16,7 +35,7 @@ public class PathManager : MonoBehaviour
     public void AddDot(GameObject dot)
     {
         dots.Add(dot);
-        Debug.Log("Liczba kropek w œcie¿ce: " + dots.Count);
+        Debug.Log("Liczba kropek w cieciu: " + dots.Count);
 
         // ustaw indeks kropki
         DotRecolor dotRecolor = dot.GetComponent<DotRecolor>();
@@ -54,27 +73,29 @@ public class PathManager : MonoBehaviour
     //sprawdzenie czy ukoñczono rysowanie szlaku
     public void CheckAndRemoveDots()
     {
-        if (coloredDots == dots.Count - 1)  // Sprawdzamy, czy to ostatnia kropka
+        if (coloredDots == dots.Count)
         {
-            StartCoroutine(RemoveDotsAfterDelay());  // Uruchamiamy coroutine, która poczeka 3 sekundy
+            coloringFinished = true;
+            StartCoroutine(RemoveDotsAfterDelay());  // Uruchamiamy coroutine, ktra poczeka 3 sekundy
         }
     }
 
     //usuwanie szlaku z opóŸnieniem
     private IEnumerator RemoveDotsAfterDelay()
     {
-        yield return new WaitForSeconds(delayInSeconds); 
+        yield return new WaitForSeconds(delayInSeconds);
 
         // Usuwamy wszystkie obiekty z listy ze sceny
         foreach (GameObject dot in dots)
         {
-            Destroy(dot);  
+            Destroy(dot);
         }
 
         // Teraz czyœcimy listê i zerujemy indeksy
-        dots.Clear(); 
+        dots.Clear();
         nextDotIndex = 0;
         coloredDots = 0;
+        coloringFinished = false;
         Debug.Log("Wszystkie kropki zosta³y usuniête.");
     }
 
@@ -237,5 +258,23 @@ public class PathManager : MonoBehaviour
             Debug.LogError($"B³¹d zapisania kolekcji na {filePath}: {e.Message}");
             return false;
         }
+    }
+
+    public void ClearPath()
+    {
+        StopAllCoroutines();
+
+        foreach (GameObject dot in dots)
+        {
+            if (dot != null)
+            {
+                Destroy(dot);
+            }
+        }
+        dots.Clear();
+        nextDotIndex = 0;
+        coloredDots = 0;
+        coloringFinished = false;
+        Debug.Log("Wyczyszczono œcie¿ke.");
     }
 }

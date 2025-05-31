@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SaveFilesBrowser : MonoBehaviour
 {
+    /*
     public GameObject buttonPrefab;
     public GameObject buttonParent;
     [SerializeField] private LoadController loadController;
@@ -63,5 +64,5 @@ public class SaveFilesBrowser : MonoBehaviour
     }
 
 
-
+    */
 }
