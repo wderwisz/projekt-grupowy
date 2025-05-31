@@ -64,6 +64,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private GameObject CreateSegmentMesh(Vector3 startPoint, Vector3 endPoint, int index)
     {
         GameObject segmentMesh = new GameObject($"SplineSegmentMesh_{index}");
+        segmentMesh.tag = "SplineSegment";
         segmentMesh.transform.parent = this.transform;
 
         Segment3D segmentComponent = segmentMesh.AddComponent<Segment3D>();

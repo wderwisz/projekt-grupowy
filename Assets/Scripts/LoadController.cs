@@ -40,7 +40,7 @@ public class LoadController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //w��czanie menu poprzez dolny trigger lewego kontrolera shift + G 
+        //włączanie menu poprzez dolny trigger lewego kontrolera shift + G 
         //bool isPressed = controller.selectInteractionState.active;
         if (isMenuActive)
         {

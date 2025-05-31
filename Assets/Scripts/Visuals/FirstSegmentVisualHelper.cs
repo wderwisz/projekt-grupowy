@@ -10,7 +10,7 @@ public class FirstSegmentVisualHelper : MonoBehaviour
 {
     private List<GameObject> segments;
     [SerializeField] private Material blinkingMaterial;
-
+    [SerializeField] private Material defaultMaterial;
     public void setSegments(List<GameObject> p_segments)
     {
         segments = p_segments;
@@ -35,6 +35,25 @@ public class FirstSegmentVisualHelper : MonoBehaviour
         if (segment == null) return;
         MeshRenderer renderer = segment.gameObject.GetComponent<MeshRenderer>();
         renderer.sharedMaterial = blinkingMaterial;
+    }
+
+    private GameObject[] getAllSegments()
+    {
+        GameObject[] allSegments = GameObject.FindGameObjectsWithTag("SplineSegment");
+
+        
+        return allSegments;
+    }
+
+    public void deleteRecolor()
+    {
+        GameObject[] allSegments = getAllSegments();
+
+        foreach (GameObject segment in allSegments)
+        {
+            segment.GetComponent<MeshRenderer>().sharedMaterial = defaultMaterial;
+            segment.GetComponent<Segment3D>().setColored(false);
+        }
     }
 }
 

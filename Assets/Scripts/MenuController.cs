@@ -25,6 +25,7 @@ public class MenuController : MonoBehaviour
     public float menuDistance = 1.5f;
     private Spline spline;
     private SplineSegmentMeshExtruder[] splineExtruder;
+    private SplineContainer[] splineContainer;
 
 
 
@@ -105,13 +106,18 @@ public class MenuController : MonoBehaviour
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
 
-        drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
+        //drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
         splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
+        splineContainer = FindObjectsByType<SplineContainer>(0);
         if (splineExtruder != null)
         {
-            foreach (SplineSegmentMeshExtruder extruder in splineExtruder)
+            foreach (SplineSegmentMeshExtruder mesh in splineExtruder)
             {
-                extruder.ClearTrail();
+                mesh.ClearTrail();
+            }
+            foreach (SplineContainer spline in splineContainer)
+            {
+                Destroy(spline.gameObject);
             }
         }
         else

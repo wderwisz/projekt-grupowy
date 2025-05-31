@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -7493627942173639113}
   - component: {fileID: -8533230323690412426}
   m_Layer: 0
-  m_Name: SplineContainer
+  m_Name: FreeDrawingSplineContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -142,8 +142,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
   recolorMaterial: {fileID: 2100000, guid: 6703d98bf09b5894299aff0e03d0863c, type: 2}
   freeDrawingMaterial: {fileID: -876546973899608171, guid: 18d6ed8e205b4504784bd7668cd9ebf3, type: 3}
-  vectorScale: 1.46
-  isSegmentation: 1
+  vectorScale: 1.4501396
+  isSegmentation: 0
 --- !u!64 &-8533230323690412426
 MeshCollider:
   m_ObjectHideFlags: 0
