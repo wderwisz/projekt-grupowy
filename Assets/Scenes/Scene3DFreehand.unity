@@ -1385,8 +1385,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1760703bbd54c04488a8d10600262ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlanePrefab: {fileID: 1585201990951412, guid: a6b7ca1d53c75490595d1f0d5f43be38, type: 3}
-  m_DetectionMode: -1
 --- !u!1 &256865293
 GameObject:
   m_ObjectHideFlags: 0
@@ -4088,8 +4086,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteboard: {fileID: 1123183019}
   dot: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
-  config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
   pathManager: {fileID: 1123183027}
+  menuController: {fileID: 0}
   primaryButtonActionXRI: {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   primaryButtonActionSimulator: {fileID: -2439264783773714294, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
   isSimulated: 0
@@ -4822,7 +4820,7 @@ MonoBehaviour:
   activationAngle: 60
   positionOffset: {x: 0.1, y: 0.05, z: 0.05}
   rotationOffset: {x: 30, y: 0, z: 0}
-  material: {fileID: 0}
+  material: {fileID: 2100000, guid: 80d674ef57a629f44ae34b4bf866f032, type: 2}
 --- !u!1 &1218141644
 GameObject:
   m_ObjectHideFlags: 0
@@ -7412,7 +7410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af63cb6a17145354c8a3bc8336270cc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkingMaterial: {fileID: -876546973899608171, guid: f330bf3196514054a87186e31057ddd5, type: 3}
+  blinkingMaterial: {fileID: 2100000, guid: bbf5c8d5e8d41f440bb8e9985bd5508b, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
 --- !u!114 &2103827848
 MonoBehaviour:
@@ -7435,7 +7433,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
-  material: {fileID: -876546973899608171, guid: 18d6ed8e205b4504784bd7668cd9ebf3, type: 3}
+  material: {fileID: 2100000, guid: 80d674ef57a629f44ae34b4bf866f032, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
