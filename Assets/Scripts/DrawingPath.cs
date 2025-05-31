@@ -189,4 +189,56 @@ public class DrawingPath : MonoBehaviour
         isHovering = false;
         //Debug.Log("isHovering ustawione na false");
     }
+
+    // Funkcja zapisu
+    public void SavePath(string nameToSave)
+    {
+        if (pathManager == null)
+        {
+            Debug.LogError("PathManager jest nieprzypisany!");
+            return;
+        }
+        if (string.IsNullOrEmpty(nameToSave))
+        {
+            Debug.LogError("Nie mo¿na zapisaæ z pust¹ œcie¿k¹.");
+            return;
+        }
+        string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
+        Debug.Log($"Zapisanie œcie¿ki '{nameToSave}' do: {fullPath}");
+
+        pathManager.SaveNamedPath(nameToSave, fullPath);
+    }
+
+    // Funkcja wczytania
+    public void LoadPath(string nameToLoad)
+    {
+        if (pathManager == null)
+        {
+            Debug.LogError("PathManager jest nieprzypisany!");
+            return;
+        }
+        if (string.IsNullOrEmpty(nameToLoad))
+        {
+            Debug.LogError("Nie mo¿na wczytaæ z pust¹ œcie¿k¹.");
+            return;
+        }
+        string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
+        Debug.Log($"Œcie¿ka zapisu '{nameToLoad}' z: {fullPath}");
+
+        if (pathManager.LoadNamedPath(nameToLoad, fullPath))
+        {
+            lastDotPosition = Vector3.zero;
+            coloringStarted = false;
+            totalClicks = 0;
+            successfulClicks = 0;
+            consecutiveMisses = 0;
+            coloredHoverTimer = 0f;
+            lastColoredHit = null;
+            Debug.Log($"Œcie¿ka '{nameToLoad}' za³adowana.");
+        }
+        else
+        {
+            Debug.LogWarning($"Nie uda³o siê za³adowaæ œcie¿ki '{nameToLoad}'.");
+        }
+    }
 }
