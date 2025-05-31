@@ -52,11 +52,11 @@ public class SwitchModeSlider : MonoBehaviour, IPointerClickHandler
     {
         if (value == 1)
         {
-            GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
+            //GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
         }
         else
         {
-            GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
+            //GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
         }
     }
 }

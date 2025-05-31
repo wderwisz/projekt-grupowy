@@ -47,17 +47,20 @@ public class GameManager : MonoBehaviour
             case GameState.OPTIONS_MENU_OPENED:
                 HandleOptionsMenuOpened();
                 break;
+            case GameState.PAUSE:
+                HandlePause();
+                break;
             default:
                 throw new System.ArgumentOutOfRangeException(nameof(newState), newState, null); 
         }
 
-        onGameStateChanged?.Invoke(newState); //Informowanie komponentów o zmianie stanu.
+        onGameStateChanged?.Invoke(newState); //Informowanie komponentï¿½w o zmianie stanu.
 
     }
 
     private void HandleOptionsMenuOpened()
     {
-        //Debug.Log("Menu opcji zosta³o otwarte");
+        //Debug.Log("Menu opcji zostaï¿½o otwarte");
     }
 
     private void HandleDoctorMode()
@@ -71,17 +74,22 @@ public class GameManager : MonoBehaviour
         
     }
 
+    private void HandlePause()
+    {
+        Debug.Log("Pauza wï¿½ï¿½czona - GAMEMANAGER");
+    }
+
     private void Update()
     {
-        //bool isPressed = controller.selectInteractionState.active; // Sprawdzanie czy wciœniêto
+        //bool isPressed = controller.selectInteractionState.active; // Sprawdzanie czy wciï¿½niï¿½to
 
-        //if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciœniêcia
+        //if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciï¿½niï¿½cia
         //{
         //    UpdateGameState(state == GameState.DOCTOR_MODE ? GameState.PATIENT_MODE : GameState.DOCTOR_MODE);
         //    Debug.Log("Tryb zmieniony na: " + state);
         //}
 
-        //wasPressedLastFrame = isPressed; // Zapamiêtanie stanu na kolejn¹ klatkê
+        //wasPressedLastFrame = isPressed; // Zapamiï¿½tanie stanu na kolejnï¿½ klatkï¿½
     }
 
 
@@ -93,5 +101,5 @@ public enum GameState
     PATIENT_MODE, 
     DOCTOR_MODE,
     OPTIONS_MENU_OPENED,
-    PAUSE,
+    PAUSE
 }

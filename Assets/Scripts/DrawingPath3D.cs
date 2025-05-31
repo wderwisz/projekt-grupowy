@@ -64,6 +64,7 @@ public class DrawingPath3D : MonoBehaviour
 
     //pauza
     private bool wasPressedLastFrame = false;
+    private bool wasMenuOnLastFrame = false;
 
 
     public int counter = 0;
@@ -101,15 +102,31 @@ public class DrawingPath3D : MonoBehaviour
 
     void Update()
     {
-        //włączanie menu poprzez dolny trigger prawego kontrolera space + G 
-        bool isPressed = rightController.selectInteractionState.active;
-        if ((isPressed && !wasPressedLastFrame) || GameManager.instance.GetGameState() == GameState.OPTIONS_MENU_OPENED) // Wykrycie momentu wciśnięcia 
+
+        if(currentGameState == GameState.OPTIONS_MENU_OPENED)
         {
-            HandlePauseToggle();
+            if(wasMenuOnLastFrame == false && GameManager.instance.isPaused == false)
+            {
+                HandlePauseToggle();
+            }
+            wasMenuOnLastFrame = true;
         }
-        wasPressedLastFrame = isPressed;
-
-
+        else
+        {
+            if(wasMenuOnLastFrame == true)
+            {
+                HandlePauseToggle();
+            }
+            //włączanie menu poprzez dolny trigger prawego kontrolera space + G 
+            bool isPressed = rightController.selectInteractionState.active;
+            if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciśnięcia
+            {
+                HandlePauseToggle();
+            }
+            wasPressedLastFrame = isPressed;
+            wasMenuOnLastFrame = false;
+        }
+       
 
         if (GameManager.instance.isPaused || currentGameState != GameState.DOCTOR_MODE) return; // sprawdzenie trybu gry oraz pauzy
 
