@@ -28,6 +28,7 @@ public class DrawingPath3D : MonoBehaviour
     private bool isDrawing = false;
 
     [SerializeField] private Canvas optionsMenu;
+    [SerializeField] private FinishBannerController bannerController;
 
     private SplineContainer[] listofSplinesContainers;
     private SplineSegmentMeshExtruder extruder;
@@ -190,7 +191,7 @@ public class DrawingPath3D : MonoBehaviour
 
         accuracy = CalculateColoringAccuracy();
 
-        extruder.ClearTrail();
+        bannerController?.ShowBanner(totalDrawingTime, accuracy);
         extruder.restoreSettings();
     }
 
