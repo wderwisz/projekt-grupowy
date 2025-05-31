@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     private bool wasPressedLastFrame = false;
 
-
+    public bool isPaused = false;
 
     void Awake()
     {

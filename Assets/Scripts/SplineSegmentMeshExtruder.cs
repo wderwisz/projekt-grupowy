@@ -419,10 +419,10 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
     public void ClearTrail() //usuwanie traila 
     {
-        Debug.Log(segments.Count);
+        //Debug.Log(segments.Count);
         foreach (GameObject segment in segments)
         {
-            Debug.Log(segment);
+            //Debug.Log(segment);
             Destroy(segment);
         }
 

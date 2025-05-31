@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.Splines;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Simulation;
@@ -6,12 +7,15 @@ using UnityEngine.UIElements;
 using Unity.VisualScripting;
 using System;
 using System.Collections.Generic;
+using System.Collections;
+using Unity.Mathematics;
 
 public class DrawingPath3D : MonoBehaviour
 {
     public XRBaseController rightController;
     public XRBaseController leftController;
     public SplineContainer splineContainerPrefab;
+
 
     [SerializeField][Range(0.0001f, 2.0f)] private float pointSpacing = 0.1f;
     [SerializeField] private Config config;
@@ -35,6 +39,32 @@ public class DrawingPath3D : MonoBehaviour
 
     private GameState currentGameState;
 
+    //wykrycie ukończenia
+    private int totalSegments = 0;
+    private int coloredSegments = 0;
+    private bool isHandlerSubscribed = false;
+
+    //celność
+    private Coroutine samplingCoroutine;
+    private int totalSamples = 0;
+    private int hitSamples = 0;
+    private float accuracy = 0f;
+    private bool isColoring = false;
+    private float maxAllowedDistance = 0.02f;
+    private float deltaMeasureTime = 0.3f;
+    private float waitInSecondsAfterFinishing = 1f;
+
+    //miara czasu
+    private float startTime = -1f; 
+    private float totalDrawingTime = 0f; 
+    private float pauseStartTime = 0f;
+    private float totalPauseDuration = 0f;
+    private bool isCurrentlyPaused = false;
+
+    //pauza
+    private bool wasPressedLastFrame = false;
+
+
     public int counter = 0;
     void Awake()
     {
@@ -45,6 +75,11 @@ public class DrawingPath3D : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.onGameStateChanged -= GameManagerOnGameStateChanges;
+        if (isHandlerSubscribed)
+        {
+            Segment3D.OnSegmentColored -= OnSegmentColoredHandler;
+            isHandlerSubscribed = false;
+        }
     }
 
     private void GameManagerOnGameStateChanges(GameState newState)
@@ -60,11 +95,22 @@ public class DrawingPath3D : MonoBehaviour
     public SplineContainer GetSplineContainerPrefab()
     {
         return splineContainerPrefab;
-    } 
+    }
+
 
     void Update()
     {
-        if (currentGameState != GameState.DOCTOR_MODE) return; //Sprawdzenie trybu gry
+        //włączanie menu poprzez dolny trigger prawego kontrolera space + G 
+        bool isPressed = rightController.selectInteractionState.active;
+        if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciśnięcia
+        {
+            HandlePauseToggle();
+        }
+        wasPressedLastFrame = isPressed;
+
+
+
+        if (GameManager.instance.isPaused || currentGameState != GameState.DOCTOR_MODE) return; // sprawdzenie trybu gry oraz pauzy
 
         // Dynamiczne ustawienie aktywnego kontrolera
         if (!isDrawing)
@@ -89,12 +135,167 @@ public class DrawingPath3D : MonoBehaviour
         }
     }
 
+    private void HandlePauseToggle()
+    {
+        GameManager.instance.isPaused = !GameManager.instance.isPaused;
+        Debug.Log($"Pauza: {(GameManager.instance.isPaused ? "Włączona" : "Wyłączona")}");
+
+        if (GameManager.instance.isPaused)
+        {
+            // Rozpocznij mierzenie czasu pauzy
+            pauseStartTime = Time.time;
+            isCurrentlyPaused = true;
+        }
+        else if (isCurrentlyPaused)
+        {
+            // Zakończ mierzenie czasu pauzy i dodaj do sumy
+            float pauseDuration = Time.time - pauseStartTime;
+            totalPauseDuration += pauseDuration;
+            isCurrentlyPaused = false;
+            Debug.Log($"Czas trwania pauzy: {pauseDuration} sekundy. Łącznie: {totalPauseDuration}");
+        }
+    }
+
     // Rozpocz�cie rysowania 
     void StartDrawing()
     {
+        //ClearRecoloring();
         currentSpline = Instantiate(splineContainerPrefab, Vector3.zero, Quaternion.identity);
         extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
         isDrawing = true;
+        
+
+        if (!isHandlerSubscribed)
+        {
+            Segment3D.OnSegmentColored += OnSegmentColoredHandler;
+            isHandlerSubscribed = true;
+        }
+    }
+
+    private IEnumerator SampleAccuracyRoutine()
+    {
+        while (isColoring)
+        {
+            SampleAccuracyPoint();
+            yield return new WaitForSeconds(deltaMeasureTime); 
+        }
+    }
+
+    private IEnumerator HandleFinishedColoring()
+    {
+        yield return new WaitForSeconds(waitInSecondsAfterFinishing);
+        isColoring = false;
+        if (samplingCoroutine != null)
+            StopCoroutine(samplingCoroutine);
+
+        accuracy = CalculateColoringAccuracy();
+
+        extruder.ClearTrail();
+        extruder.restoreSettings();
+    }
+
+    private void SampleAccuracyPoint()
+    {
+        if (GameManager.instance.isPaused || currentSpline == null) return;
+
+        Vector3 posRight = rightController.transform.position;
+        Vector3 posLeft = leftController.transform.position;
+
+        float3 nearestRight;
+        float tRight;
+        float3 nearestLeft;
+        float tLeft;
+
+        var spline = currentSpline.Spline;
+
+        SplineUtility.GetNearestPoint(spline, (float3)posRight, out nearestRight, out tRight);
+        SplineUtility.GetNearestPoint(spline, (float3)posLeft, out nearestLeft, out tLeft);
+
+        float distanceRight = Vector3.Distance(posRight, (Vector3)nearestRight);
+        float distanceLeft = Vector3.Distance(posLeft, (Vector3)nearestLeft);
+
+        Vector3 selectedPos;
+        float distance;
+
+        if (distanceRight < distanceLeft)
+        {
+            selectedPos = posRight;
+            distance = distanceRight;
+            activeController = rightController;
+        }
+        else
+        {
+            selectedPos = posLeft;
+            distance = distanceLeft;
+            activeController = leftController;
+        }
+
+        totalSamples++;
+
+        if (distance <= maxAllowedDistance)
+        {
+            hitSamples++;
+        }
+
+        // haptics feedback za dokładne trafienie
+        if (distance <= maxAllowedDistance && hapticIntensity > 0f)
+        {
+            activeController.SendHapticImpulse(hapticIntensity, hapticDuration);
+        }
+    }
+
+
+    private float CalculateColoringAccuracy()
+    {
+        if (totalSamples == 0)
+        {
+            return 0f;
+        }
+
+   
+        float acc = (float)hitSamples / totalSamples * 100f;
+        Debug.Log($"Celność: {acc}%");
+        return acc;
+    }
+
+    private void OnSegmentColoredHandler(Segment3D seg)
+    {
+        if (GameManager.instance.isPaused) return;
+
+        coloredSegments++;
+        if(totalSegments == 0)
+            totalSegments = extruder.getSegmentList().Count;
+
+        if (coloredSegments == 1)
+        {
+            isColoring = true;
+            samplingCoroutine = StartCoroutine(SampleAccuracyRoutine());
+            startTime = Time.time;
+            pauseStartTime = 0f;
+            totalPauseDuration = 0f;
+            totalSamples = 0;
+            hitSamples = 0;
+            accuracy = 0f;
+        }
+        else if (coloredSegments >= totalSegments && coloredSegments > 0)
+        {
+            Debug.Log("Pokolorowano " + coloredSegments + "/" + totalSegments);
+            Debug.Log("Wszystkie segmenty pokolorowane – automatyczne zakończenie rysowania.");
+            Segment3D.OnSegmentColored -= OnSegmentColoredHandler;
+            isHandlerSubscribed = false;
+            totalSegments = 0;
+            coloredSegments = 0;
+            StartCoroutine(HandleFinishedColoring());
+            if (startTime >= 0f)
+            {
+                totalDrawingTime = Time.time - startTime - totalPauseDuration;
+                Debug.Log($"Czas rysowania: {totalDrawingTime} sekund.");
+            }
+        }
+        else
+        {
+            Debug.Log("Pokolorowano " + coloredSegments + "/" + totalSegments);
+        }
     }
 
     public void ClearSplineList()
@@ -141,7 +342,7 @@ public class DrawingPath3D : MonoBehaviour
         if (!config.getDrawingMode())
         {
             ExtrudeSpline();
-            
+
             //extruder.Save(listOfSplines);
             //extruder.Load();
             //extruder.GenerateCirclePoints(0.1f,controller);
@@ -152,7 +353,7 @@ public class DrawingPath3D : MonoBehaviour
             // Ekstrudowanie ostatniego segmentu natepuje po zako�czoniu rysowania aby dorysowa� �ciane kra�cow�
             extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 1, true);
             extruder.restoreSettings();
-           // listOfSplines.Add(currentSpline.Spline);
+            // listOfSplines.Add(currentSpline.Spline);
         }
         listOfSplines.Add(currentSpline.Spline);
 
@@ -171,6 +372,43 @@ public class DrawingPath3D : MonoBehaviour
     {
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         //extruder.AddCollidersToSpline(currentSpline);
+    }
+
+
+
+    public void ClearRecoloring()
+    {
+        
+        foreach (Spline spline in listOfSplines)
+        {
+            foreach (var knotIndex in System.Linq.Enumerable.Range(0, spline.Count - 1))
+            {
+                string segmentName = $"SplineSegmentMesh_{knotIndex}";
+                GameObject segmentObj = GameObject.Find(segmentName);
+
+                if (segmentObj != null)
+                {
+                    Segment3D segment = segmentObj.GetComponent<Segment3D>();
+                    MeshRenderer renderer = segmentObj.GetComponent<MeshRenderer>();
+
+                    if (segment != null && renderer != null)
+                    {
+                        segment.setColored(false);
+                        renderer.sharedMaterial = originalMaterial;
+                    }
+                }
+            }
+        }
+
+        coloredSegments = 0;
+        totalSegments = 0;
+        totalSamples = 0;
+        hitSamples = 0;
+        accuracy = 0f;
+        isColoring = false;
+
+
+        Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
 
 }
