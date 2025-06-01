@@ -26,7 +26,6 @@ public class DrawingPath3D : MonoBehaviour
     private XRBaseController activeController;
     private SplineContainer currentSpline;
     private bool isDrawing = false;
-
     [SerializeField] private Canvas optionsMenu;
     [SerializeField] private FinishBannerController bannerController;
 
@@ -207,8 +206,11 @@ public class DrawingPath3D : MonoBehaviour
             StopCoroutine(samplingCoroutine);
 
         accuracy = CalculateColoringAccuracy();
-
-        bannerController?.ShowBanner(totalDrawingTime, accuracy);
+        if (optionsMenu.gameObject.activeInHierarchy == false)
+        {
+            bannerController?.ShowBanner(totalDrawingTime, accuracy);
+        }
+        
         extruder.restoreSettings();
     }
 
