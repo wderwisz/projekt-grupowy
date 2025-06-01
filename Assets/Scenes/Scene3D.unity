@@ -7779,7 +7779,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2050484257}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9998999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11374,6 +11374,9 @@ MonoBehaviour:
   head: {fileID: 169858461}
   leftController: {fileID: 817923281}
   leftXRController: {fileID: 0}
+  mainMenu: {fileID: 1576014493}
+  saveMenu: {fileID: 2088294736}
+  loadMenu: {fileID: 1428187955}
   positionOffset: {x: 0.1, y: 0.05, z: 0.05}
   rotationOffset: {x: 30, y: 0, z: 0}
   pauseBanner: {fileID: 698811265}
@@ -12508,6 +12511,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blinkingMaterial: {fileID: 2100000, guid: bbf5c8d5e8d41f440bb8e9985bd5508b, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
+  drawingPath3D: {fileID: 0}
 --- !u!114 &2103827848
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1424,13 +1424,7 @@ MonoBehaviour:
   m_Name: Standalone
   m_EditorClassIdentifier: 
   features:
-  - {fileID: 4077072175182378566}
-  - {fileID: 2049789865676377950}
-  - {fileID: 6377261660246323730}
-  - {fileID: -2408697019594629747}
-  - {fileID: 8919738349524424284}
   - {fileID: 1154115881642604566}
-  - {fileID: -8404010411041872687}
   - {fileID: -3132064666236799719}
   - {fileID: -7604838837864128635}
   - {fileID: -6101698487383190783}

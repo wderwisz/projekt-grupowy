@@ -31,6 +31,8 @@ public class FinishBannerController : MonoBehaviour
     public void HideBanner()
     {
         bannerPanel.SetActive(false);
+
+
     }
 
     

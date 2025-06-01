@@ -17,7 +17,10 @@ public class MenuController : MonoBehaviour
     [SerializeField] private SaveController saveController;
     [SerializeField] private LoadController loadController;
     [SerializeField] private GameObject saveFileMenu;
+    [SerializeField] private GameObject loadMenu;
+    [SerializeField] private GameObject endMenu;
     [SerializeField] public Slider modeToggle;
+
     private bool isMenuActive = false;
     private bool wasPressedLastFrame = false;
     public XRBaseController controller;
@@ -46,7 +49,7 @@ public class MenuController : MonoBehaviour
     {
         //w³¹czanie menu poprzez dolny trigger lewego kontrolera shift + G 
         bool isPressed = controller.selectInteractionState.active;
-        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciœniêcia
+        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive && !loadController.isMenuActive && !endMenu.activeSelf) // Wykrycie momentu wciœniêcia
         {
             GameManager.instance.UpdateGameState(GameState.OPTIONS_MENU_OPENED);
             isMenuActive = !isMenuActive;

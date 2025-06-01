@@ -63,9 +63,10 @@ public class FirstSegmentVisualHelper : MonoBehaviour
             segment.GetComponent<MeshRenderer>().sharedMaterial = defaultMaterial;
             segment.GetComponent<Segment3D>().setColored(false);
         }
-
+        Debug.Log("recolor deleted");
         if (drawingPath3D != null)
         {
+            Debug.Log("Start recolor again");
             drawingPath3D.RestartRecoloring();
         }
         else
