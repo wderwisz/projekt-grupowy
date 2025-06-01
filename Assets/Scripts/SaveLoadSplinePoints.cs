@@ -1,12 +1,8 @@
-﻿using Palmmedia.ReportGenerator.Core.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using UnityEngine;
 using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using UnityEngine;
 using System.Globalization;
 using UnityEngine.Splines;
