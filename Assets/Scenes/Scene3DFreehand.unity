@@ -2022,6 +2022,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   controller: {fileID: 817923286}
+  isPaused: 0
 --- !u!1001 &603643827
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4815,7 +4816,8 @@ MonoBehaviour:
   menu: {fileID: 822670535}
   leftXRController: {fileID: 817923286}
   Xbuttonleft: {fileID: 6732634763312280479, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  drawingPoint: {fileID: 754693431}
+  drawingPointLeft: {fileID: 518815945}
+  drawingPointRight: {fileID: 754693431}
   drawingCustomizer: {fileID: 2103827848}
   activationAngle: 60
   positionOffset: {x: 0.1, y: 0.05, z: 0.05}
@@ -7396,6 +7398,7 @@ MonoBehaviour:
   hapticDuration: 0.1
   originalMaterial: {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
   optionsMenu: {fileID: 1576014496}
+  bannerController: {fileID: 0}
   listOfSplines: []
   counter: 0
 --- !u!114 &2103827847
@@ -7412,6 +7415,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blinkingMaterial: {fileID: 2100000, guid: bbf5c8d5e8d41f440bb8e9985bd5508b, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
+  drawingPath3D: {fileID: 0}
 --- !u!114 &2103827848
 MonoBehaviour:
   m_ObjectHideFlags: 0
