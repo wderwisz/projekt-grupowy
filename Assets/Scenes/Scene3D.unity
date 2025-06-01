@@ -2343,6 +2343,8 @@ MonoBehaviour:
   saveController: {fileID: 1002167266}
   loadController: {fileID: 612499911}
   saveFileMenu: {fileID: 2088294736}
+  loadMenu: {fileID: 1428187955}
+  endMenu: {fileID: 1677174101}
   modeToggle: {fileID: 68659398}
   controller: {fileID: 817923286}
   player: {fileID: 0}
@@ -2754,7 +2756,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 365148763}
   sliderText: {fileID: 501690158}
-  splineExtruder: {fileID: -7493627942173639113, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
+  splineExtruder: {fileID: -7493627942173639113, guid: d59a24d1915915e4488dbc56bfae766c, type: 3}
   sizeValue: 0
 --- !u!1 &380591940
 GameObject:
@@ -4587,7 +4589,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000030517578, y: 0.00057789317}
+  m_AnchoredPosition: {x: 0.00018310547, y: 0.00057789317}
   m_SizeDelta: {x: -251.29999, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &747662235
@@ -7779,7 +7781,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2050484257}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9998999
+  m_Size: 0.99999547
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
