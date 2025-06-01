@@ -215,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   controller: {fileID: 224929791}
+  isPaused: 0
 --- !u!1 &222197810
 GameObject:
   m_ObjectHideFlags: 0
@@ -975,12 +976,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed1a3308ac466b04c830cff29d7dba03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 848944056}
+  rightController: {fileID: 0}
+  leftController: {fileID: 0}
   splineContainerPrefab: {fileID: 2952728830405023682, guid: 32fe9f948ae58064d85b2a05d1b611f7, type: 3}
   pointSpacing: 0.01
   config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
   hapticIntensity: 0.4
   hapticDuration: 0.1
+  originalMaterial: {fileID: 0}
+  optionsMenu: {fileID: 0}
+  bannerController: {fileID: 0}
+  listOfSplines: []
+  counter: 0
 --- !u!1 &396446871
 GameObject:
   m_ObjectHideFlags: 0
@@ -1064,6 +1071,13 @@ MonoBehaviour:
   menu: {fileID: 1656720414}
   leftRay: {fileID: 1129593494}
   rightRay: {fileID: 630026231}
+  drawingPathScript: {fileID: 0}
+  saveController: {fileID: 0}
+  loadController: {fileID: 0}
+  saveFileMenu: {fileID: 0}
+  loadMenu: {fileID: 0}
+  endMenu: {fileID: 0}
+  modeToggle: {fileID: 0}
   controller: {fileID: 224929791}
   player: {fileID: 0}
   menuDistance: 1.5
@@ -4393,7 +4407,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5647,6 +5661,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   segmentMaterials: []
   recolorMaterial: {fileID: 0}
+  freeDrawingMaterial: {fileID: 0}
   vectorScale: 1
   isSegmentation: 1
 --- !u!64 &2077171752

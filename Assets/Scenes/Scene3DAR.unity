@@ -2064,7 +2064,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1123227872}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99999547
+  m_Size: 0.9999391
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2956,7 +2956,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0001373291, y: 0.00057789317}
+  m_AnchoredPosition: {x: 0.0002593994, y: 0.00057789317}
   m_SizeDelta: {x: -251.29999, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &663896691
@@ -4136,6 +4136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blinkingMaterial: {fileID: 2100000, guid: 16d3f5cdf94827449933a1a2f3989989, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
+  drawingPath3D: {fileID: 0}
 --- !u!114 &778680536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4178,6 +4179,7 @@ MonoBehaviour:
   hapticDuration: 0.1
   originalMaterial: {fileID: 2100000, guid: 6df50ef58432a8c4095427fb4edb5e51, type: 2}
   optionsMenu: {fileID: 1531860335}
+  bannerController: {fileID: 0}
   listOfSplines: []
   counter: 0
 --- !u!4 &778680538
@@ -6336,6 +6338,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   controller: {fileID: 1821024163}
+  isPaused: 0
 --- !u!1 &1661537189
 GameObject:
   m_ObjectHideFlags: 0
@@ -8361,6 +8364,8 @@ MonoBehaviour:
   saveController: {fileID: 127066906}
   loadController: {fileID: 1815356215}
   saveFileMenu: {fileID: 38626549}
+  loadMenu: {fileID: 0}
+  endMenu: {fileID: 0}
   modeToggle: {fileID: 281820112}
   controller: {fileID: 1821024163}
   player: {fileID: 0}
