@@ -10,6 +10,10 @@ public class PauseBannerController : MonoBehaviour
     public Transform leftController;
     public XRBaseController leftXRController;
 
+    [SerializeField] public GameObject mainMenu;
+    [SerializeField] public GameObject saveMenu;
+    [SerializeField] public GameObject loadMenu;
+
     public Vector3 positionOffset = new Vector3(0.1f, 0.05f, 0.05f);
     public Vector3 rotationOffset = new Vector3(30f, 0f, 0f);
 
@@ -33,11 +37,13 @@ public class PauseBannerController : MonoBehaviour
 
     private void Update()
     {
+
+        bool isAnyMenuOpen = saveMenu.activeSelf|| loadMenu.activeSelf|| mainMenu.activeSelf;
         // W razie, gdyby pauza zmienia³a siê bez zmiany GameState
-        if (pauseBanner.activeSelf != GameManager.instance.isPaused)
-        {
-            pauseBanner.SetActive(GameManager.instance.isPaused);
-        }
+        //if (pauseBanner.activeSelf != GameManager.instance.isPaused)
+        //{
+            pauseBanner.SetActive(GameManager.instance.isPaused && !isAnyMenuOpen);
+        //}
     }
 
 

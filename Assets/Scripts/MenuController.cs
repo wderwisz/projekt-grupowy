@@ -148,7 +148,12 @@ public class MenuController : MonoBehaviour
     public void SaveSpline()
     {
         saveController.isMenuActive = true;
-        CloseMenu();
+        //CloseMenu();
+        isMenuActive = false;
+        menu.SetActive(false);
+
+        leftRay.enabled = false;
+        rightRay.enabled = false;
 
     }
 
@@ -157,7 +162,12 @@ public class MenuController : MonoBehaviour
     {
         FindSplineExtruder();
         loadController.isMenuActive = true;
-        CloseMenu();
-      
+        isMenuActive = false;
+        menu.SetActive(false);
+
+        leftRay.enabled = false;
+        rightRay.enabled = false;
+        //CloseMenu();
+
     }
 }
