@@ -13,6 +13,8 @@ public class PauseBannerController : MonoBehaviour
     [SerializeField] public GameObject mainMenu;
     [SerializeField] public GameObject saveMenu;
     [SerializeField] public GameObject loadMenu;
+    public Transform player;
+    public float menuDistance = 1.5f;
 
     public Vector3 positionOffset = new Vector3(0.1f, 0.05f, 0.05f);
     public Vector3 rotationOffset = new Vector3(30f, 0f, 0f);
@@ -43,16 +45,41 @@ public class PauseBannerController : MonoBehaviour
         //if (pauseBanner.activeSelf != GameManager.instance.isPaused)
         //{
             pauseBanner.SetActive(GameManager.instance.isPaused && !isAnyMenuOpen);
+            if (pauseBanner.activeSelf)
+        {
+            FollowPlayer(); 
+        }
         //}
     }
 
 
-    private void PositionMenu()
+    void FollowPlayer()
     {
-        transform.position = leftController.position +
-                             leftController.right * positionOffset.x +
-                             leftController.up * positionOffset.y +
-                             leftController.forward * positionOffset.z;
-        transform.rotation = leftController.rotation * Quaternion.Euler(rotationOffset);
+        // Pobieramy kierunek w którym patrzy gracz (bez wp³ywu nachylenia góra/dó³)
+        Vector3 forward = player.forward;
+        forward.y = 0; // Ignorujemy nachylenie g³owy gracza
+        forward.Normalize();
+
+        // Ustawiamy menu w odpowiedniej pozycji przed graczem
+        Vector3 targetPosition = player.position + forward * menuDistance;
+        pauseBanner.transform.position = Vector3.Lerp(pauseBanner.transform.position, targetPosition, Time.deltaTime * 10f);
+
+        // Ustawiamy rotacjê menu, aby zawsze patrzy³o na gracza
+        Quaternion targetRotation = Quaternion.LookRotation(forward);
+        pauseBanner.transform.rotation = Quaternion.Slerp(pauseBanner.transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
+    void PositionMenu()
+    {
+        // Pozycjonowanie menu przed graczem na jego wysokoœci
+        Vector3 forward = player.forward;
+        forward.y = 0; // Usuwamy nachylenie w górê/dó³, aby menu by³o na równej wysokoœci
+        forward.Normalize();
+
+        Vector3 menuPosition = player.position + forward * menuDistance;
+        pauseBanner.transform.position = menuPosition;
+
+        // Obracamy menu w stronê gracza
+        Quaternion lookRotation = Quaternion.LookRotation(forward);
+        pauseBanner.transform.rotation = lookRotation;
     }
 }
