@@ -146,11 +146,9 @@ public class DrawingPath : MonoBehaviour
                             Debug.Log("Klikniêto kropkê o indeksie: " + dotRecolor.dotIndex);
                             dotRecolor.Recolor();
                             int hitIndex = dotRecolor.dotIndex;
-                           
                             //Zmiana koloru poprzednich kropek - zapobiega przenikaniu i lukom
                             for (int i = 1; i <= 6; i++)
-                            {
-                            
+                            {                          
                                 if (hitIndex - i >= 0)
                                 {
                                     DotRecolor neighborDot = pathManager.GetDot(hitIndex - i);
@@ -159,11 +157,7 @@ public class DrawingPath : MonoBehaviour
                                         neighborDot.Recolor();
                                     }
                                 }
-
-
                             }
-
-
                             //Sprawdzamy czy szlak zosta³ w pe³ni odwzorowany
                             pathManager.CheckAndRemoveDots();
                             if (lastDotPosition != Vector3.zero)

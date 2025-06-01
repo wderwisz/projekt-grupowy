@@ -108,8 +108,6 @@ public class MenuController : MonoBehaviour
     }
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
-
-        //drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
         splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
         splineContainer = FindObjectsByType<SplineContainer>(0);
         if (splineExtruder != null)
@@ -151,7 +149,6 @@ public class MenuController : MonoBehaviour
     public void SaveSpline()
     {
         saveController.isMenuActive = true;
-        //CloseMenu();
         isMenuActive = false;
         menu.SetActive(false);
 
@@ -170,7 +167,6 @@ public class MenuController : MonoBehaviour
 
         leftRay.enabled = false;
         rightRay.enabled = false;
-        //CloseMenu();
 
     }
 }

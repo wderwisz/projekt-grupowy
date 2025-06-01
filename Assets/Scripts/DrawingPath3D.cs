@@ -69,7 +69,7 @@ public class DrawingPath3D : MonoBehaviour
     void Awake()
     {
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
-        visualHelper = this.GetComponent<FirstSegmentVisualHelper>(); // Pobraine visual helpera
+        visualHelper = this.GetComponent<FirstSegmentVisualHelper>(); 
     }
 
     private void OnDestroy()

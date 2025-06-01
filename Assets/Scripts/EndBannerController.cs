@@ -9,9 +9,16 @@ public class FinishBannerController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI accuracyText;
     [SerializeField] private XRRayInteractor leftRay;
     [SerializeField] private XRRayInteractor rightRay;
+    public Transform player;
+    public float menuDistance = 1.5f;
     public void Awake()
     {
         bannerPanel.SetActive(false);
+    }
+
+    public void Update()
+    {
+        PositionMenu();
     }
     public void ShowBanner(float time, float accuracy)
     {
@@ -35,5 +42,19 @@ public class FinishBannerController : MonoBehaviour
 
     }
 
-    
+    void PositionMenu()
+    {
+        // Pozycjonowanie menu przed graczem na jego wysokoœci
+        Vector3 forward = player.forward;
+        forward.y = 0; // Usuwamy nachylenie w górê/dó³, aby menu by³o na równej wysokoœci
+        forward.Normalize();
+
+        Vector3 menuPosition = player.position + forward * menuDistance;
+        bannerPanel.transform.position = menuPosition;
+
+        // Obracamy menu w stronê gracza
+        Quaternion lookRotation = Quaternion.LookRotation(forward);
+        bannerPanel.transform.rotation = lookRotation;
+    }
+
 }

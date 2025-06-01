@@ -122,16 +122,6 @@ public class MenuController2D : MonoBehaviour
     {
         isStateX = !isStateX;
         UpdateButtonText();
-
-        // Tu mo¿esz dodaæ inne akcje w zale¿noœci od stanu
-        if (isStateX)
-        {
-            Debug.Log("Stan X aktywowany");
-        }
-        else
-        {
-            Debug.Log("Stan Y aktywowany");
-        }
     }
 
     void UpdateButtonText()
