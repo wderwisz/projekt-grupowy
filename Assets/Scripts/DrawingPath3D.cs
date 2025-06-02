@@ -49,8 +49,8 @@ public class DrawingPath3D : MonoBehaviour
     private int hitSamples = 0;
     private float accuracy = 0f;
     private bool isColoring = false;
-    private float maxAllowedDistance = 0.02f;
-    private float deltaMeasureTime = 0.3f;
+    private float maxAllowedDistance = 0.05f;
+    private float deltaMeasureTime = 0.5f;
     private float waitInSecondsAfterFinishing = 1f;
 
     //miara czasu
@@ -300,6 +300,7 @@ public class DrawingPath3D : MonoBehaviour
         {
             Debug.Log("Pokolorowano " + coloredSegments + "/" + totalSegments);
             Debug.Log("Wszystkie segmenty pokolorowane – automatyczne zakończenie rysowania.");
+            isColoring = false;
             Segment3D.OnSegmentColored -= OnSegmentColoredHandler;
             isHandlerSubscribed = false;
             totalSegments = 0;
