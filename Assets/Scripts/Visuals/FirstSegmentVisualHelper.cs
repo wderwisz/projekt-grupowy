@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -23,6 +24,7 @@ public class FirstSegmentVisualHelper : MonoBehaviour
         {
             drawingPath3D = FindObjectOfType<DrawingPath3D>();
         }
+        FirstSegment.material = blinkingMaterial;
     }
 
     private GameObject findFirstToRecolor()
@@ -63,16 +65,38 @@ public class FirstSegmentVisualHelper : MonoBehaviour
             segment.GetComponent<MeshRenderer>().sharedMaterial = defaultMaterial;
             segment.GetComponent<Segment3D>().setColored(false);
         }
-        Debug.Log("recolor deleted");
         if (drawingPath3D != null)
         {
-            Debug.Log("Start recolor again");
             drawingPath3D.RestartRecoloring();
         }
         else
         {
             Debug.LogWarning("drawingPath3D nie zosta³ przypisany!");
         }
+        FirstSegment.FindAndRecolor(1);
+    }
+
+    [ContextMenu("TestFirstSegmentRecolor")]
+    public void TestRecolor()
+    {
+        FirstSegment.FindAndRecolor(1);
     }
 }
 
+
+public static class FirstSegment
+{
+    public static Material material;
+    public static void FindAndRecolor(int segmentID)
+    {
+        string name1 = "SplineSegmentMesh_" + segmentID;
+        var firstSegments = GameObject.FindObjectsOfType<GameObject>().Where(
+            obj => obj.name == name1 
+        ).ToList();
+        foreach (GameObject segment in firstSegments)
+        {
+            segment.GetComponent<MeshRenderer>().material = material;
+        }
+        Debug.Log("First segment recolored");
+    }
+}

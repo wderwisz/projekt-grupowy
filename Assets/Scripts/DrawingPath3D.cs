@@ -422,7 +422,7 @@ public class DrawingPath3D : MonoBehaviour
         hitSamples = 0;
         accuracy = 0f;
         isColoring = false;
-
+        FirstSegment.FindAndRecolor(1);
 
         Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
