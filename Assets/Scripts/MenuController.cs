@@ -108,6 +108,7 @@ public class MenuController : MonoBehaviour
     }
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
+
         splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
         splineContainer = FindObjectsByType<SplineContainer>(0);
         if (splineExtruder != null)
@@ -120,6 +121,7 @@ public class MenuController : MonoBehaviour
             {
                 Destroy(spline.gameObject);
             }
+            drawingPathScript.listOfSplines.Clear();
         }
         else
         {

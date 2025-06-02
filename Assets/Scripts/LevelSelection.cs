@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.XR.ARFoundation;
+//using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Management;
 public class LevelSelection : MonoBehaviour
 {
     public void LoadLevel(int level)
     {
         // Zniszcz komponenty AR, jeœli s¹
-        Destroy(FindObjectOfType<ARSession>()?.gameObject);
-        Destroy(FindObjectOfType<ARCameraManager>()?.gameObject);
+        //Destroy(FindObjectOfType<ARSession>()?.gameObject);
+        //Destroy(FindObjectOfType<ARCameraManager>()?.gameObject);
 
         // Subskrypcja eventu, ¿eby funkcja wykona³a siê ju¿ po za³adowaniu nowej sceny
         SceneManager.sceneLoaded += OnSceneLoaded;

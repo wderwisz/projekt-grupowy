@@ -970,13 +970,7 @@ MonoBehaviour:
   m_Name: Android
   m_EditorClassIdentifier: 
   features:
-  - {fileID: -4646983951378509565}
-  - {fileID: 2400214628161220151}
-  - {fileID: -5252425027800470663}
-  - {fileID: -5437236785447791088}
-  - {fileID: -2318824312268383705}
   - {fileID: -9166992243455229712}
-  - {fileID: -2432551751971478688}
   - {fileID: -5463856962956788524}
   - {fileID: 1671675152169198513}
   - {fileID: -2758771244542697766}
@@ -1672,13 +1666,7 @@ MonoBehaviour:
   m_Name: Standalone
   m_EditorClassIdentifier: 
   features:
-  - {fileID: -8862730538502143378}
-  - {fileID: 5907491980142042282}
-  - {fileID: -5927578262416820843}
-  - {fileID: -6019970284401275087}
-  - {fileID: -640785770312598797}
   - {fileID: 1154115881642604566}
-  - {fileID: 8200737087469945329}
   - {fileID: -3132064666236799719}
   - {fileID: -7604838837864128635}
   - {fileID: -6101698487383190783}
