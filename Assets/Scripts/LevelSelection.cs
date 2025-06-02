@@ -8,23 +8,23 @@ public class LevelSelection : MonoBehaviour
 {
     public void LoadLevel(int level)
     {
-        // Zniszcz komponenty AR, jeï¿½li sï¿½
+        // Zniszcz komponenty AR, jeœli s¹
         //Destroy(FindObjectOfType<ARSession>()?.gameObject);
         //Destroy(FindObjectOfType<ARCameraManager>()?.gameObject);
 
-        // Subskrypcja eventu, ï¿½eby funkcja wykonaï¿½a siï¿½ juï¿½ po zaï¿½adowaniu nowej sceny
+        // Subskrypcja eventu, ¿eby funkcja wykona³a siê ju¿ po za³adowaniu nowej sceny
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.LoadScene(level);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Odsubskrybuj, by nie wykonaï¿½o siï¿½ wielokrotnie
+        // Odsubskrybuj, by nie wykona³o siê wielokrotnie
         SceneManager.sceneLoaded -= OnSceneLoaded;
 
-        // Jeï¿½li przechodzimy na StartMenu to robimy restart systemï¿½w XR
-        // Dlatego, ï¿½e w obecnej wersji mamy sytuacjï¿½ przejï¿½cia AR -> VR
-        // Jeï¿½li aplikacja bï¿½dzie full AR to moï¿½na siï¿½ pozbyc (chyba)
+        // Jeœli przechodzimy na StartMenu to robimy restart systemów XR
+        // Dlatego, ¿e w obecnej wersji mamy sytuacjê przejœcia AR -> VR
+        // Jeœli aplikacja bêdzie full AR to mo¿na siê pozbyc (chyba)
         if(scene.name == "StartMenu")
         {
             XRGeneralSettings.Instance.Manager.StopSubsystems();

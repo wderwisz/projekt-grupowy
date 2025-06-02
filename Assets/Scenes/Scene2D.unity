@@ -2178,6 +2178,53 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 719c46dce70d691408acec8a4cea50da, type: 3}
+--- !u!1 &933795184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 933795185}
+  - component: {fileID: 933795186}
+  m_Layer: 0
+  m_Name: PathManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &933795185
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933795184}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1910818623}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &933795186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933795184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14178188f158bd44aab486f3fb40b6e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dots: []
+  nextDotIndex: 0
+  coloredDots: 0
 --- !u!1 &969463435
 GameObject:
   m_ObjectHideFlags: 0
@@ -5470,6 +5517,7 @@ Transform:
   m_Children:
   - {fileID: 1807564215}
   - {fileID: 483785304}
+  - {fileID: 933795185}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1970030911
@@ -5616,9 +5664,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1807564216}
-        m_TargetAssemblyTypeName: MenuController2D, Assembly-CSharp
-        m_MethodName: DeleteDrawings
+      - m_Target: {fileID: 933795186}
+        m_TargetAssemblyTypeName: PathManager, Assembly-CSharp
+        m_MethodName: removeDots
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
