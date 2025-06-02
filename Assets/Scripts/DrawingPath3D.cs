@@ -38,6 +38,8 @@ public class DrawingPath3D : MonoBehaviour
 
     private GameState currentGameState;
 
+    private int maxAmountOfSplines = 1;
+
     //wykrycie ukończenia
     private int totalSegments = 0;
     private int coloredSegments = 0;
@@ -134,8 +136,11 @@ public class DrawingPath3D : MonoBehaviour
             if (rightController.activateInteractionState.active) activeController = rightController;
             else if (leftController.activateInteractionState.active) activeController = leftController;
         }
-
+        
         if (activeController == null) return;
+
+
+        if(listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
 
         if (activeController.activateInteractionState.active)
         {
@@ -319,7 +324,7 @@ public class DrawingPath3D : MonoBehaviour
     }
 
 
-    // Funkcja tworz�ca pojedynczy w�ze� krzywej Beziera
+    // Funkcja tworzoca pojedynczy wezel krzywej Beziera
     void AddPoint()
     {
         // Wyznaczanie pozycji punktu
@@ -339,13 +344,12 @@ public class DrawingPath3D : MonoBehaviour
         {
             // Dodanie punktu do krzywej
             currentSpline.Spline.Add(knot);
-            //
 
             lastKnotPosition = newPosition;
 
             if (config.getDrawingMode() && currentSpline.Spline.Count > 2)
             {
-                // Ekstrudowanie pojedynczego segmentu mi�dzy dwoma poprzednimi w�z�ami(currentNode - 1 i currentNode - 2)
+                // Ekstrudowanie pojedynczego segmentu miedzy dwoma poprzednimi wezlami(currentNode - 1 i currentNode - 2)
                 extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
                 HapticController.SendHaptics(activeController, hapticIntensity, hapticDuration);
             }
@@ -359,11 +363,6 @@ public class DrawingPath3D : MonoBehaviour
         if (!config.getDrawingMode())
         {
             ExtrudeSpline();
-
-            //extruder.Save(listOfSplines);
-            //extruder.Load();
-            //extruder.GenerateCirclePoints(0.1f,controller);
-            //extruder.GeneratePolygonPoints(5, 0.1f, controller);
         }
         else
         {
