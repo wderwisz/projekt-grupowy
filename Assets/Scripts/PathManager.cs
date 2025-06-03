@@ -10,7 +10,7 @@ public class PathManager : MonoBehaviour
 
     public int coloredDots = 0;
 
-    private float delayInSeconds = 3.0f;
+    private float delayInSeconds = 1.0f;
 
     //dodawanie kropki do listy 
     public void AddDot(GameObject dot)
@@ -59,9 +59,23 @@ public class PathManager : MonoBehaviour
             StartCoroutine(RemoveDotsAfterDelay());  // Uruchamiamy coroutine, która poczeka 3 sekundy
         }
     }
+    public void removeDots() //TODO sprawdziæ czemy siê doty nie usuwaj¹
+    {
+
+        foreach (GameObject dot in dots)
+        {
+            Destroy(dot);
+        }
+        // Teraz czyœcimy listê i zerujemy indeksy
+        dots.Clear();
+        nextDotIndex = 0;
+        coloredDots = 0;
+        Debug.Log("Wszystkie kropki zosta³y usuniête.");
+
+    }
 
     //usuwanie szlaku z opóŸnieniem
-    private IEnumerator RemoveDotsAfterDelay()
+    public IEnumerator RemoveDotsAfterDelay()
     {
         yield return new WaitForSeconds(delayInSeconds); 
 

@@ -2,27 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelMenuController : MonoBehaviour
+public class AuthorsControler : MonoBehaviour
 {
+    // Start is called before the first frame update
+    [SerializeField] private GameObject menu;
     public Transform player;
     public float menuDistance = 1.5f;
-    [SerializeField] private GameObject menu;
-    [SerializeField] private GameObject authorsBanner;
-    private bool isMenuActive;
 
-    // Start is called before the first frame update
     void Start()
     {
-        Camera mainCamera = Camera.main;
-        player = mainCamera.transform;
-        isMenuActive = true;
-        authorsBanner.SetActive(false);
+        menu.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isMenuActive)
+        if (menu.activeSelf)
         {
             FollowPlayer();
         }
@@ -59,20 +54,4 @@ public class LevelMenuController : MonoBehaviour
     }
 
 
-    public void doExitGame()
-    {
-        Application.Quit();
-    }
-
-    public void openAuthors()
-    {
-        menu.SetActive(false);
-        authorsBanner.SetActive(true);
-    }
-
-    public void goBack()
-    {
-        authorsBanner.SetActive(false);
-        menu.SetActive(true);
-    }
 }
