@@ -6,14 +6,13 @@ public class DrawingPath : MonoBehaviour
 {
     [SerializeField] private GameObject whiteboard;
     [SerializeField] private GameObject dot;
+    [SerializeField] private Config config;
     [SerializeField] private PathManager pathManager;
-    [SerializeField] private MenuController2D menuController;
     private InputActionReference primaryButtonAction;
     public InputActionReference primaryButtonActionXRI;
     public InputActionReference primaryButtonActionSimulator;
     public bool isSimulated = true;
-    private GameState currentGameState;
-    
+
     private XRRayInteractor rayInteractor;
     private bool isHovering = false;
 
@@ -25,15 +24,9 @@ public class DrawingPath : MonoBehaviour
     private void Awake()
     {
         rayInteractor = FindObjectOfType<XRRayInteractor>();
-        GameManager.onGameStateChanged += GameManagerOnGameStateChanges;
+
         // Przypisujemy poprawn¹ akcjê w zale¿noœci od stanu checkboxa
         primaryButtonAction = isSimulated ? primaryButtonActionSimulator : primaryButtonActionXRI;
-    }
-
-
-    private void GameManagerOnGameStateChanges(GameState newState)
-    {
-        currentGameState = newState;
     }
 
     private void Update()
@@ -41,10 +34,10 @@ public class DrawingPath : MonoBehaviour
 
         //tryb rysowania
         
-        if (GameManager.instance.GetGameState() == GameState.DOCTOR_MODE)
+        if (config.getDrawingMode())
         {
             //tryb usuwania
-            if (!menuController.getEareserState())
+            if (config.getErasingMode())
             {
                 if (isHovering)
                 {
@@ -146,9 +139,11 @@ public class DrawingPath : MonoBehaviour
                             Debug.Log("Klikniêto kropkê o indeksie: " + dotRecolor.dotIndex);
                             dotRecolor.Recolor();
                             int hitIndex = dotRecolor.dotIndex;
+                           
                             //Zmiana koloru poprzednich kropek - zapobiega przenikaniu i lukom
                             for (int i = 1; i <= 6; i++)
-                            {                          
+                            {
+                            
                                 if (hitIndex - i >= 0)
                                 {
                                     DotRecolor neighborDot = pathManager.GetDot(hitIndex - i);
@@ -157,7 +152,11 @@ public class DrawingPath : MonoBehaviour
                                         neighborDot.Recolor();
                                     }
                                 }
+
+
                             }
+
+
                             //Sprawdzamy czy szlak zosta³ w pe³ni odwzorowany
                             pathManager.CheckAndRemoveDots();
                             if (lastDotPosition != Vector3.zero)
@@ -190,10 +189,4 @@ public class DrawingPath : MonoBehaviour
         isHovering = false;
         //Debug.Log("isHovering ustawione na false");
     }
-
-    private void OnDestroy()
-    {
-        GameManager.onGameStateChanged -= GameManagerOnGameStateChanges;
-    }
-
 }

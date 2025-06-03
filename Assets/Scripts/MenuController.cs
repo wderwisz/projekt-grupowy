@@ -17,10 +17,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private SaveController saveController;
     [SerializeField] private LoadController loadController;
     [SerializeField] private GameObject saveFileMenu;
-    [SerializeField] private GameObject loadMenu;
-    [SerializeField] private GameObject endMenu;
     [SerializeField] public Slider modeToggle;
-
     private bool isMenuActive = false;
     private bool wasPressedLastFrame = false;
     public XRBaseController controller;
@@ -28,7 +25,6 @@ public class MenuController : MonoBehaviour
     public float menuDistance = 1.5f;
     private Spline spline;
     private SplineSegmentMeshExtruder[] splineExtruder;
-    private SplineContainer[] splineContainer;
 
 
 
@@ -49,7 +45,7 @@ public class MenuController : MonoBehaviour
     {
         //w³¹czanie menu poprzez dolny trigger lewego kontrolera shift + G 
         bool isPressed = controller.selectInteractionState.active;
-        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive && !loadController.isMenuActive && !endMenu.activeSelf) // Wykrycie momentu wciœniêcia
+        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciœniêcia
         {
             GameManager.instance.UpdateGameState(GameState.OPTIONS_MENU_OPENED);
             isMenuActive = !isMenuActive;
@@ -109,19 +105,14 @@ public class MenuController : MonoBehaviour
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
 
+        drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
         splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
-        splineContainer = FindObjectsByType<SplineContainer>(0);
         if (splineExtruder != null)
         {
-            foreach (SplineSegmentMeshExtruder mesh in splineExtruder)
+            foreach (SplineSegmentMeshExtruder extruder in splineExtruder)
             {
-                mesh.ClearTrail();
+                extruder.ClearTrail();
             }
-            foreach (SplineContainer spline in splineContainer)
-            {
-                Destroy(spline.gameObject);
-            }
-            drawingPathScript.listOfSplines.Clear();
         }
         else
         {
@@ -151,11 +142,7 @@ public class MenuController : MonoBehaviour
     public void SaveSpline()
     {
         saveController.isMenuActive = true;
-        isMenuActive = false;
-        menu.SetActive(false);
-
-        leftRay.enabled = false;
-        rightRay.enabled = false;
+        CloseMenu();
 
     }
 
@@ -164,11 +151,7 @@ public class MenuController : MonoBehaviour
     {
         FindSplineExtruder();
         loadController.isMenuActive = true;
-        isMenuActive = false;
-        menu.SetActive(false);
-
-        leftRay.enabled = false;
-        rightRay.enabled = false;
-
+        CloseMenu();
+      
     }
 }

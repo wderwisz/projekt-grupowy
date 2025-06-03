@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     private bool wasPressedLastFrame = false;
 
-    public bool isPaused = false;
+
 
     void Awake()
     {
@@ -47,20 +47,17 @@ public class GameManager : MonoBehaviour
             case GameState.OPTIONS_MENU_OPENED:
                 HandleOptionsMenuOpened();
                 break;
-            case GameState.PAUSE:
-                HandlePause();
-                break;
             default:
-                throw new System.ArgumentOutOfRangeException(nameof(newState), newState, null); 
+                throw new System.ArgumentOutOfRangeException(nameof(newState), newState, null); //zobaczymy czy to dziala
         }
 
-        onGameStateChanged?.Invoke(newState); //Informowanie komponentï¿½w o zmianie stanu.
+        onGameStateChanged?.Invoke(newState); //Informowanie komponentów o zmianie stanu.
 
     }
 
     private void HandleOptionsMenuOpened()
     {
-        //Debug.Log("Menu opcji zostaï¿½o otwarte");
+        Debug.Log("Menu opcji zosta³o otwarte");
     }
 
     private void HandleDoctorMode()
@@ -74,22 +71,17 @@ public class GameManager : MonoBehaviour
         
     }
 
-    private void HandlePause()
-    {
-        Debug.Log("Pauza wï¿½ï¿½czona - GAMEMANAGER");
-    }
-
     private void Update()
     {
-        //bool isPressed = controller.selectInteractionState.active; // Sprawdzanie czy wciï¿½niï¿½to
+        //bool isPressed = controller.selectInteractionState.active; // Sprawdzanie czy wciœniêto
 
-        //if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciï¿½niï¿½cia
+        //if (isPressed && !wasPressedLastFrame) // Wykrycie momentu wciœniêcia
         //{
         //    UpdateGameState(state == GameState.DOCTOR_MODE ? GameState.PATIENT_MODE : GameState.DOCTOR_MODE);
         //    Debug.Log("Tryb zmieniony na: " + state);
         //}
 
-        //wasPressedLastFrame = isPressed; // Zapamiï¿½tanie stanu na kolejnï¿½ klatkï¿½
+        //wasPressedLastFrame = isPressed; // Zapamiêtanie stanu na kolejn¹ klatkê
     }
 
 
@@ -101,5 +93,4 @@ public enum GameState
     PATIENT_MODE, 
     DOCTOR_MODE,
     OPTIONS_MENU_OPENED,
-    PAUSE
 }

@@ -40,7 +40,7 @@ public class LoadController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //włączanie menu poprzez dolny trigger lewego kontrolera shift + G 
+        //w��czanie menu poprzez dolny trigger lewego kontrolera shift + G 
         //bool isPressed = controller.selectInteractionState.active;
         if (isMenuActive)
         {
@@ -161,9 +161,6 @@ public class LoadController : MonoBehaviour
        
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         currentSpline.transform.position =  newPosition ;
-        
-        //Zmiana koloru pierwszego segmentu
-        FirstSegment.FindAndRecolor(0);
     }
 
 }

@@ -9,10 +9,9 @@ using UnityEngine.Splines;
 /// </summary>
 public class FreeDrawingCustomizer : MonoBehaviour
 {
-    public event Action<Color> OnColorChanged;
     private DrawingPath3D drawingPath3DComponent;
     private SplineSegmentMeshExtruder extruder;
-    private Color activeColor;
+
     [SerializeField]
     private List<Color> colors = new List<Color>()
     {
@@ -22,8 +21,7 @@ public class FreeDrawingCustomizer : MonoBehaviour
         Color.magenta,
         Color.yellow,
         Color.black,
-        Color.white,
-        Color.gray,
+        Color.white
     };
 
     // Domyœlny materia³
@@ -41,21 +39,13 @@ public class FreeDrawingCustomizer : MonoBehaviour
     {
         int randID = UnityEngine.Random.Range(0, colors.Count);
         Color color = colors[randID];  
-        //setColor(color);
+        setColor(color);
     }
 
     // Funkcja do zmiany koloru szlaku 
-    public void setColor(int i) {
+    public void setColor(Color color) {
         Material newMaterial = new Material(material);
-        newMaterial.color = colors[i];
+        newMaterial.color = color;
         extruder.freeDrawingMaterial = newMaterial;
-        activeColor = colors[i];
-        OnColorChanged?.Invoke(activeColor);
     }
-
-    public Color getActiveColor()
-    {
-        return activeColor;
-    }
-
 }

@@ -7,16 +7,13 @@ public class LevelMenuController : MonoBehaviour
     public Transform player;
     public float menuDistance = 1.5f;
     [SerializeField] private GameObject menu;
-    [SerializeField] private GameObject authorsBanner;
     private bool isMenuActive;
-
     // Start is called before the first frame update
     void Start()
     {
         Camera mainCamera = Camera.main;
         player = mainCamera.transform;
         isMenuActive = true;
-        authorsBanner.SetActive(false);
     }
 
     // Update is called once per frame
@@ -56,23 +53,5 @@ public class LevelMenuController : MonoBehaviour
         // Obracamy menu w stronê gracza
         Quaternion lookRotation = Quaternion.LookRotation(forward);
         menu.transform.rotation = lookRotation;
-    }
-
-
-    public void doExitGame()
-    {
-        Application.Quit();
-    }
-
-    public void openAuthors()
-    {
-        menu.SetActive(false);
-        authorsBanner.SetActive(true);
-    }
-
-    public void goBack()
-    {
-        authorsBanner.SetActive(false);
-        menu.SetActive(true);
     }
 }
