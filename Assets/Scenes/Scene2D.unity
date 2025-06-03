@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2223,8 +2223,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dots: []
+  dotPrefab: {fileID: 0}
   nextDotIndex: 0
   coloredDots: 0
+  coloringFinished: 0
 --- !u!1 &969463435
 GameObject:
   m_ObjectHideFlags: 0
@@ -3572,8 +3574,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dots: []
+  dotPrefab: {fileID: 0}
   nextDotIndex: 0
   coloredDots: 0
+  coloringFinished: 0
 --- !u!54 &1328693253
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3762,11 +3766,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteboard: {fileID: 1328693250}
   dot: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
+  config: {fileID: 0}
   pathManager: {fileID: 1328693252}
   menuController: {fileID: 1807564216}
-  primaryButtonActionXRI: {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  primaryButtonActionXRI: {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   primaryButtonActionSimulator: {fileID: -2439264783773714294, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
+  savePathAction: {fileID: 0}
+  loadPathAction: {fileID: 0}
   isSimulated: 0
+  pathFileName: namedPathsData.json
   maxDotSpacing: 0.1
 --- !u!23 &1328693257
 MeshRenderer:
