@@ -17,6 +17,9 @@ public class Config : ScriptableObject
     // usuwanie linii jedynie od jej koñca
     [SerializeField] private bool erasingMode = false;
 
+    [SerializeField] public string defaultSaveName = "DefaultPath";
+    [SerializeField] public string defaultLoadName = "DefaultPath";
+
     public bool getDrawingMode()
     {
         return liveDrawingMode;

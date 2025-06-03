@@ -12,6 +12,8 @@ public class DotRecolor : MonoBehaviour
     [HideInInspector] public int dotIndex = 0;
     private bool isColored = false;
 
+    public bool IsColored => isColored;
+
     private void Awake()
     {
         meshRenderer = gameObject.GetComponent<MeshRenderer>();
