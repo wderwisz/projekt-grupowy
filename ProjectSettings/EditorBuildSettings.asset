@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Scene3DFreehand.unity
     guid: c3f79eb2d8d0c5b42a6d2dc123103acd
+  - enabled: 1
+    path: Assets/Scenes/Scene3DAR.unity
+    guid: 4f15decfa145a40478f5969d5898a56f
+  - enabled: 1
+    path: Assets/Scenes/Scene3DFreehandAR.unity
+    guid: a7b1eb18adc38c14fa5140a23ed9975b
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 461c870c73508944aacc3afb16838aec, type: 2}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: edc810281dc88d84daf65610da6e5798, type: 2}

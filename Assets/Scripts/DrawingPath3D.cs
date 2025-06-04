@@ -26,7 +26,6 @@ public class DrawingPath3D : MonoBehaviour
     private XRBaseController activeController;
     private SplineContainer currentSpline;
     private bool isDrawing = false;
-
     [SerializeField] private Canvas optionsMenu;
     [SerializeField] private FinishBannerController bannerController;
 
@@ -52,9 +51,12 @@ public class DrawingPath3D : MonoBehaviour
     private int hitSamples = 0;
     private float accuracy = 0f;
     private bool isColoring = false;
+
     private float maxAllowedDistance = 0.04f;
     private float deltaMeasureTime = 0.3f;
     private float waitInSecondsAfterFinishing = 0.1f;
+
+
 
     //miara czasu
     private float startTime = -1f; 
@@ -72,7 +74,7 @@ public class DrawingPath3D : MonoBehaviour
     void Awake()
     {
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
-        visualHelper = this.GetComponent<FirstSegmentVisualHelper>(); // Pobraine visual helpera
+        visualHelper = this.GetComponent<FirstSegmentVisualHelper>(); 
     }
 
     private void OnDestroy()
@@ -140,7 +142,9 @@ public class DrawingPath3D : MonoBehaviour
         
         if (activeController == null) return;
 
+
         if (listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
+
 
         if(listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
 
@@ -213,8 +217,11 @@ public class DrawingPath3D : MonoBehaviour
             StopCoroutine(samplingCoroutine);
 
         accuracy = CalculateColoringAccuracy();
-
-        extruder.ClearTrail();
+        if (optionsMenu.gameObject.activeInHierarchy == false)
+        {
+            bannerController?.ShowBanner(totalDrawingTime, accuracy);
+        }
+        
         extruder.restoreSettings();
     }
 
@@ -345,6 +352,7 @@ public class DrawingPath3D : MonoBehaviour
         {
             Debug.Log("Pokolorowano " + coloredSegments + "/" + totalSegments);
             Debug.Log("Wszystkie segmenty pokolorowane – automatyczne zakończenie rysowania.");
+            isColoring = false;
             Segment3D.OnSegmentColored -= OnSegmentColoredHandler;
             isHandlerSubscribed = false;
             totalSegments = 0;
@@ -363,7 +371,7 @@ public class DrawingPath3D : MonoBehaviour
     }
 
 
-    // Funkcja tworz�ca pojedynczy w�ze� krzywej Beziera
+    // Funkcja tworzoca pojedynczy wezel krzywej Beziera
     void AddPoint()
     {
         // Wyznaczanie pozycji punktu
@@ -383,13 +391,12 @@ public class DrawingPath3D : MonoBehaviour
         {
             // Dodanie punktu do krzywej
             currentSpline.Spline.Add(knot);
-            //
 
             lastKnotPosition = newPosition;
 
             if (config.getDrawingMode() && currentSpline.Spline.Count > 2)
             {
-                // Ekstrudowanie pojedynczego segmentu mi�dzy dwoma poprzednimi w�z�ami(currentNode - 1 i currentNode - 2)
+                // Ekstrudowanie pojedynczego segmentu miedzy dwoma poprzednimi wezlami(currentNode - 1 i currentNode - 2)
                 extruder.ExtrudeSingleSegment(currentSpline.Spline, currentSpline.Spline.Count - 2);
                 HapticController.SendHaptics(activeController, hapticIntensity, hapticDuration);
             }
@@ -403,11 +410,6 @@ public class DrawingPath3D : MonoBehaviour
         if (!config.getDrawingMode())
         {
             ExtrudeSpline();
-
-            //extruder.Save(listOfSplines);
-            //extruder.Load();
-            //extruder.GenerateCirclePoints(0.1f,controller);
-            //extruder.GeneratePolygonPoints(5, 0.1f, controller);
         }
         else
         {
@@ -470,6 +472,7 @@ public class DrawingPath3D : MonoBehaviour
 
         isDrawing = false;
         FirstSegment.FindAndRecolor(1);
+
 
 
         Debug.Log("Wyczyszczono pokolorowane segmenty.");

@@ -163,6 +163,9 @@ public class LoadController : MonoBehaviour
 
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         currentSpline.transform.position =  newPosition ;
+        
+        //Zmiana koloru pierwszego segmentu
+        FirstSegment.FindAndRecolor(0);
     }
 
 }

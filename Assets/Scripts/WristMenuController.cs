@@ -14,13 +14,12 @@ public class WristMenuController : MonoBehaviour
     public GameObject menu;
     public XRBaseController leftXRController;
     [SerializeField] private  InputActionReference Xbuttonleft;
-    [SerializeField] private GameObject drawingPoint;
+    [SerializeField] private GameObject drawingPointLeft;
+    [SerializeField] private GameObject drawingPointRight;
     [SerializeField] private FreeDrawingCustomizer drawingCustomizer;
     private bool isMenuActive = false;
-    private bool wasPressedLastFrame = false;
 
     private Color presentColor;
-    private Color prevColor;
 
     public float activationAngle = 60f; // k¹t, po którym menu siê pokazuje
     public Vector3 positionOffset = new Vector3(0.1f, 0.05f, 0.05f);
@@ -76,10 +75,13 @@ public class WristMenuController : MonoBehaviour
             Debug.Log("zmiana koloru");
             presentColor = newColor;
 
-            Renderer renderer = drawingPoint.GetComponent<Renderer>();
-            if (renderer != null && renderer.material != null)
+            Renderer rendererLeft = drawingPointLeft.GetComponent<Renderer>();
+            Renderer rendererRight = drawingPointRight.GetComponent<Renderer>();
+
+            if (rendererLeft != null && rendererLeft.material != null && rendererRight != null && rendererRight.material != null)
             {
-                renderer.material.color = presentColor;
+                rendererLeft.material.color = presentColor;
+                rendererRight.material.color = presentColor;
             }
     }
 
