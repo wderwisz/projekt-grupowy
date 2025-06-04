@@ -122,6 +122,7 @@ public class MenuController : MonoBehaviour
                 Destroy(spline.gameObject);
             }
             drawingPathScript.listOfSplines.Clear();
+            drawingPathScript.ClearRecoloring();
         }
         else
         {
