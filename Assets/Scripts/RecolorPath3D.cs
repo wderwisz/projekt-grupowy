@@ -22,6 +22,20 @@ public class RecolorPath3D : MonoBehaviour
     [SerializeField] private float hapticDuration = 0.1f;
 
     public DrawingPath3D drawingPath3D;
+<<<<<<< Updated upstream
+=======
+
+    void Start()
+    {
+        drawingPath3D = GetComponent<DrawingPath3D>();
+
+        // Jeśli nie znaleziono, spróbuj znaleźć go w obiekcie nadrzędnym lub innych obiektach
+        if (drawingPath3D == null)
+        {
+            drawingPath3D = FindObjectOfType<DrawingPath3D>();
+        }
+    }
+>>>>>>> Stashed changes
 
 
     void Start()
@@ -73,16 +87,22 @@ public class RecolorPath3D : MonoBehaviour
             // Sprawdzenie, czy to pierwszy segment i czy nie jest pokolorowany
             if (currentIndex == expectedFirstIndex && !segment.isColored())
             {
+<<<<<<< Updated upstream
                 Debug.Log("TAK TO JA JESTEM NUMERO UNO!");
                 drawingPath3D.StartDrawing();
             }
             
+=======
+                drawingPath3D.StartDrawing();
+            }
+
+>>>>>>> Stashed changes
 
             // Sprawdzenie czy poprzedni segment pokolorowany
             if (previousSegment != null && !previousSegment.GetComponent<Segment3D>().isColored()) return;
 
             // Sprawdzenie czy obecny jest ju� pomalowany
-            if(currentSegment.GetComponent<Segment3D>().isColored()) return;
+            if (currentSegment.GetComponent<Segment3D>().isColored()) return;
 
             currentSegment.GetComponent<Segment3D>().setColored(true);
 
@@ -94,8 +114,7 @@ public class RecolorPath3D : MonoBehaviour
             XRBaseController controller = other.GetComponentInParent<XRBaseController>();
             HapticController.SendHaptics(controller, hapticIntensity, hapticDuration);
 
-            
+
         }
     }
-
 }

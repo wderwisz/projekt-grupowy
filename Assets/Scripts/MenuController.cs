@@ -123,6 +123,9 @@ public class MenuController : MonoBehaviour
 =======
             drawingPathScript.listOfSplines.Clear();
             drawingPathScript.ClearRecoloring();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         }
         else

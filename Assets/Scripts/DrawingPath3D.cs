@@ -50,9 +50,15 @@ public class DrawingPath3D : MonoBehaviour
     private float accuracy = 0f;
     private bool isColoring = false;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     private float maxAllowedDistance = 0.02f;
     private float deltaMeasureTime = 0.3f;
     private float waitInSecondsAfterFinishing = 1f;
+=======
+    private float maxAllowedDistance = 0.04f;
+    private float deltaMeasureTime = 0.3f;
+    private float waitInSecondsAfterFinishing = 0.1f;
+>>>>>>> Stashed changes
 =======
     private float maxAllowedDistance = 0.04f;
     private float deltaMeasureTime = 0.3f;
@@ -151,14 +157,18 @@ public class DrawingPath3D : MonoBehaviour
 >>>>>>> Stashed changes
         if (activeController.activateInteractionState.active)
         {
+            Debug.Log("essa1");
             if (!isDrawing)
             {
                 StartDrawing();
+                Debug.Log("essa2");
             }
             AddPoint();
+            Debug.Log("essa3");
         }
         else if (isDrawing)
         {
+            Debug.Log("essa4");
             StopDrawing();
         }
     }
@@ -192,7 +202,7 @@ public class DrawingPath3D : MonoBehaviour
         currentSpline = Instantiate(splineContainerPrefab, Vector3.zero, Quaternion.identity);
         extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
         isDrawing = true;
-        
+
 
         if (!isHandlerSubscribed)
         {
@@ -287,6 +297,7 @@ public class DrawingPath3D : MonoBehaviour
         float acc = (float)hitSamples / totalSamples * 100f;
         Debug.Log($"Celność: {acc}%");
     }
+
 
 
     private float CalculateColoringAccuracy()
@@ -458,7 +469,12 @@ public class DrawingPath3D : MonoBehaviour
         hitSamples = 0;
         accuracy = 0f;
         isColoring = false;
+<<<<<<< Updated upstream
 
+=======
+        isDrawing = false;
+        FirstSegment.FindAndRecolor(1);
+>>>>>>> Stashed changes
 
         Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
