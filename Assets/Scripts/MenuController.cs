@@ -119,6 +119,11 @@ public class MenuController : MonoBehaviour
             {
                 Destroy(spline.gameObject);
             }
+<<<<<<< Updated upstream
+=======
+            drawingPathScript.listOfSplines.Clear();
+            drawingPathScript.ClearRecoloring();
+>>>>>>> Stashed changes
         }
         else
         {
