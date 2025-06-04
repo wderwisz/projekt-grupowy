@@ -159,8 +159,8 @@ public class LoadController : MonoBehaviour
 
         }
         drawingPathScript.listOfSplines.Add(currentSpline.Spline);
+        drawingPathScript.ClearRecoloring();
 
-       
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         currentSpline.transform.position =  newPosition ;
     }

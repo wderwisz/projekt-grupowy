@@ -28,6 +28,7 @@ public class DrawingPath3D : MonoBehaviour
     private bool isDrawing = false;
 
     [SerializeField] private Canvas optionsMenu;
+    [SerializeField] private FinishBannerController bannerController;
 
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
@@ -38,6 +39,8 @@ public class DrawingPath3D : MonoBehaviour
 
     private GameState currentGameState;
 
+    private int maxAmountOfSplines = 1;
+
     //wykrycie ukończenia
     private int totalSegments = 0;
     private int coloredSegments = 0;
@@ -45,25 +48,13 @@ public class DrawingPath3D : MonoBehaviour
 
     //celność
     private Coroutine samplingCoroutine;
-    public int totalSamples = 0;
+    private int totalSamples = 0;
     private int hitSamples = 0;
     private float accuracy = 0f;
     private bool isColoring = false;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    private float maxAllowedDistance = 0.02f;
-    private float deltaMeasureTime = 0.3f;
-    private float waitInSecondsAfterFinishing = 1f;
-=======
     private float maxAllowedDistance = 0.04f;
     private float deltaMeasureTime = 0.3f;
     private float waitInSecondsAfterFinishing = 0.1f;
->>>>>>> Stashed changes
-=======
-    private float maxAllowedDistance = 0.04f;
-    private float deltaMeasureTime = 0.3f;
-    private float waitInSecondsAfterFinishing = 0.1f;
->>>>>>> Stashed changes
 
     //miara czasu
     private float startTime = -1f; 
@@ -146,29 +137,23 @@ public class DrawingPath3D : MonoBehaviour
             if (rightController.activateInteractionState.active) activeController = rightController;
             else if (leftController.activateInteractionState.active) activeController = leftController;
         }
-
+        
         if (activeController == null) return;
 
-<<<<<<< Updated upstream
-=======
         if (listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
 
+        if(listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
 
->>>>>>> Stashed changes
         if (activeController.activateInteractionState.active)
         {
-            Debug.Log("essa1");
             if (!isDrawing)
             {
                 StartDrawing();
-                Debug.Log("essa2");
             }
             AddPoint();
-            Debug.Log("essa3");
         }
         else if (isDrawing)
         {
-            Debug.Log("essa4");
             StopDrawing();
         }
     }
@@ -250,6 +235,20 @@ public class DrawingPath3D : MonoBehaviour
             return;
         }
 
+        if (GameManager.instance.isPaused) return;
+
+        Spline firstSpline = null;
+
+        if (listOfSplines != null && listOfSplines.Count > 0)
+        {
+            Debug.Log("ILOSC SPLINOW NA LISCIE " + listOfSplines.Count);
+            firstSpline = listOfSplines[0];
+        }
+        else
+        {
+            return;
+        }
+
         Vector3 posRight = rightController.transform.position;
         Vector3 posLeft = leftController.transform.position;
 
@@ -297,7 +296,6 @@ public class DrawingPath3D : MonoBehaviour
         float acc = (float)hitSamples / totalSamples * 100f;
         Debug.Log($"Celność: {acc}%");
     }
-
 
 
     private float CalculateColoringAccuracy()
@@ -469,12 +467,10 @@ public class DrawingPath3D : MonoBehaviour
         hitSamples = 0;
         accuracy = 0f;
         isColoring = false;
-<<<<<<< Updated upstream
 
-=======
         isDrawing = false;
         FirstSegment.FindAndRecolor(1);
->>>>>>> Stashed changes
+
 
         Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }
