@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class MenuController : MonoBehaviour
 {
 
+    [SerializeField] public XRBaseController leftController;
+    [SerializeField] private XRBaseController rightController;
     //public InputActionProperty showMenuAction;
     [SerializeField] private GameObject menu;
     [SerializeField] private XRRayInteractor leftRay;
@@ -170,5 +172,22 @@ public class MenuController : MonoBehaviour
         leftRay.enabled = false;
         rightRay.enabled = false;
 
+    }
+
+
+    public void ControllerModelOnOff(Toggle toogle)
+    {
+        bool isVisible = toogle.isOn;
+        foreach (var renderer in leftController.model.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = isVisible;
+            Debug.Log("zmiana");
+
+        }
+
+        foreach (var renderer in rightController.model.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = isVisible;
+        }
     }
 }

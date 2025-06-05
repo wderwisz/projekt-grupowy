@@ -3931,7 +3931,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -7, y: -411}
+  m_AnchoredPosition: {x: -7, y: -469}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1111137945
@@ -4370,7 +4370,7 @@ RectTransform:
   m_GameObject: {fileID: 1241604142}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2475, y: 1.2475, z: 1.2475}
+  m_LocalScale: {x: 1.3798597, y: 1.3798597, z: 1.3798597}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1499000774}
@@ -5076,7 +5076,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543655423}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.000012136}
   m_LocalScale: {x: 2.5998, y: 2.5998, z: 2.5998}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5084,7 +5084,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 77, y: 322}
+  m_AnchoredPosition: {x: 81, y: 341.5}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1543655425
@@ -5688,16 +5688,16 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1662951792}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0}
-  m_LocalScale: {x: 0.89478946, y: 0.89478946, z: 0.89478946}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.84733874, y: 0.84733874, z: 0.84733874}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1499000774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 9, y: -9}
-  m_SizeDelta: {x: 992.6, y: 565.8}
+  m_AnchoredPosition: {x: 12, y: -98}
+  m_SizeDelta: {x: 1215.6, y: 825.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1662951794
 MonoBehaviour:
@@ -5720,9 +5720,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Projekt realizowany w ramach przedmiotu Projekt Grupowy na Politechnice
-    Gda\u0144skiej.\n\nZesp\xF3\u0142 projektowy:\nJulia Babi\u017Cewska    Mateusz
-    Blach\nWojciech Derwisz   Szymon Kaniewski\nKamil \u015Aliwi\u0144ski\n\nOpiekun
-    projektu: dr in\u017C. Jacek Lebied\u017A\n\nKontakt: derwisz.wojciech@gmail.com"
+    Gda\u0144skiej w roku 2024/2025 na zlecenie dr. n. med i n. o zdr. Paw\u0142a
+    Sipa. \n\nZesp\xF3\u0142 projektowy:\nJulia Babi\u017Cewska    Mateusz Blach\nWojciech
+    Derwisz   Szymon Kaniewski\nKamil \u015Aliwi\u0144ski\n\nOpiekun projektu: dr
+    in\u017C. Jacek Lebied\u017A\n\nKontakt: derwisz.wojciech@gmail.com"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5756,7 +5757,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 8
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
