@@ -2227,6 +2227,7 @@ MonoBehaviour:
   nextDotIndex: 0
   coloredDots: 0
   coloringFinished: 0
+  drawingPathInstance: {fileID: 0}
 --- !u!1 &969463435
 GameObject:
   m_ObjectHideFlags: 0
@@ -3578,6 +3579,7 @@ MonoBehaviour:
   nextDotIndex: 0
   coloredDots: 0
   coloringFinished: 0
+  drawingPathInstance: {fileID: 0}
 --- !u!54 &1328693253
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3766,7 +3768,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteboard: {fileID: 1328693250}
   dot: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
-  config: {fileID: 0}
+  config: {fileID: 11400000, guid: 14984efa171ae014f8f204a09cbdee73, type: 2}
   pathManager: {fileID: 1328693252}
   menuController: {fileID: 1807564216}
   primaryButtonActionXRI: {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f, type: 3}
@@ -4149,6 +4151,7 @@ GameObject:
   - component: {fileID: 1470357963}
   - component: {fileID: 1470357962}
   - component: {fileID: 1470357961}
+  - component: {fileID: 1470357964}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4339,6 +4342,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1470357964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1470357959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e85ba35008e7d104cb1e4fcf140e2bc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whiteboardTarget: {fileID: 1328693251}
 --- !u!1 &1482729851
 GameObject:
   m_ObjectHideFlags: 0
@@ -5674,7 +5690,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 933795186}
         m_TargetAssemblyTypeName: PathManager, Assembly-CSharp
-        m_MethodName: removeDots
+        m_MethodName: ForceClearAllDotsInScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
