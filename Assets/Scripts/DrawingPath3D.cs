@@ -51,9 +51,12 @@ public class DrawingPath3D : MonoBehaviour
     private int hitSamples = 0;
     private float accuracy = 0f;
     private bool isColoring = false;
-    private float maxAllowedDistance = 0.05f;
-    private float deltaMeasureTime = 0.5f;
-    private float waitInSecondsAfterFinishing = 1f;
+
+    private float maxAllowedDistance = 0.04f;
+    private float deltaMeasureTime = 0.3f;
+    private float waitInSecondsAfterFinishing = 0.1f;
+
+
 
     //miara czasu
     private float startTime = -1f; 
@@ -140,6 +143,9 @@ public class DrawingPath3D : MonoBehaviour
         if (activeController == null) return;
 
 
+        if (listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
+
+
         if(listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
 
         if (activeController.activateInteractionState.active)
@@ -178,13 +184,14 @@ public class DrawingPath3D : MonoBehaviour
     }
 
     // Rozpocz�cie rysowania 
-    void StartDrawing()
+    public void StartDrawing()
     {
         ClearRecoloring();
+        coloredSegments = 0;
         currentSpline = Instantiate(splineContainerPrefab, Vector3.zero, Quaternion.identity);
         extruder = currentSpline.gameObject.GetComponent<SplineSegmentMeshExtruder>();
         isDrawing = true;
-        
+
 
         if (!isHandlerSubscribed)
         {
@@ -220,7 +227,34 @@ public class DrawingPath3D : MonoBehaviour
 
     private void SampleAccuracyPoint()
     {
-        if (GameManager.instance.isPaused || currentSpline == null) return;
+
+        if (GameManager.instance.isPaused) return;
+
+        Spline firstSpline = null;
+
+        if (listOfSplines != null && listOfSplines.Count > 0)
+        {
+            Debug.Log("ILOSC SPLINOW NA LISCIE " + listOfSplines.Count);
+            firstSpline = listOfSplines[0];
+        }
+        else
+        {
+            return;
+        }
+
+        if (GameManager.instance.isPaused) return;
+
+        Spline firstSpline = null;
+
+        if (listOfSplines != null && listOfSplines.Count > 0)
+        {
+            Debug.Log("ILOSC SPLINOW NA LISCIE " + listOfSplines.Count);
+            firstSpline = listOfSplines[0];
+        }
+        else
+        {
+            return;
+        }
 
         Vector3 posRight = rightController.transform.position;
         Vector3 posLeft = leftController.transform.position;
@@ -230,7 +264,7 @@ public class DrawingPath3D : MonoBehaviour
         float3 nearestLeft;
         float tLeft;
 
-        var spline = currentSpline.Spline;
+        var spline = firstSpline;
 
         SplineUtility.GetNearestPoint(spline, (float3)posRight, out nearestRight, out tRight);
         SplineUtility.GetNearestPoint(spline, (float3)posLeft, out nearestLeft, out tLeft);
@@ -260,12 +294,14 @@ public class DrawingPath3D : MonoBehaviour
         {
             hitSamples++;
         }
-
+        Debug.Log("Distance!! " + distance);
         // haptics feedback za dokładne trafienie
         if (distance <= maxAllowedDistance && hapticIntensity > 0f)
         {
             activeController.SendHapticImpulse(hapticIntensity, hapticDuration);
         }
+        float acc = (float)hitSamples / totalSamples * 100f;
+        Debug.Log($"Celność: {acc}%");
     }
 
 
@@ -282,13 +318,24 @@ public class DrawingPath3D : MonoBehaviour
         return acc;
     }
 
-    private void OnSegmentColoredHandler(Segment3D seg)
+    public void OnSegmentColoredHandler(Segment3D seg)
     {
         if (GameManager.instance.isPaused) return;
 
         coloredSegments++;
-        if(totalSegments == 0)
-            totalSegments = extruder.getSegmentList().Count;
+        if (totalSegments == 0)
+        {
+            //totalSegments = extruder.getSegmentList().Count;
+            GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
+
+            foreach (GameObject obj in allObjects)
+            {
+                if (obj.name.StartsWith("SplineSegmentMesh_"))
+                {
+                    totalSegments++;
+                }
+            }
+        }
 
         if (coloredSegments == 1)
         {
@@ -301,7 +348,7 @@ public class DrawingPath3D : MonoBehaviour
             hitSamples = 0;
             accuracy = 0f;
         }
-        else if (coloredSegments >= totalSegments && coloredSegments > 0)
+        else if (coloredSegments >= totalSegments && coloredSegments > 0 && totalSegments > 0)
         {
             Debug.Log("Pokolorowano " + coloredSegments + "/" + totalSegments);
             Debug.Log("Wszystkie segmenty pokolorowane – automatyczne zakończenie rysowania.");
@@ -422,7 +469,11 @@ public class DrawingPath3D : MonoBehaviour
         hitSamples = 0;
         accuracy = 0f;
         isColoring = false;
+
+        isDrawing = false;
         FirstSegment.FindAndRecolor(1);
+
+
 
         Debug.Log("Wyczyszczono pokolorowane segmenty.");
     }

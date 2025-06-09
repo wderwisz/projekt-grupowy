@@ -119,6 +119,7 @@ public class LoadController : MonoBehaviour
             CreateSpline(pointsList);
         }
         lastPoint = Vector3.zero;
+
     }
 
     public void CreateSpline(List<Vector3> points)
@@ -158,7 +159,8 @@ public class LoadController : MonoBehaviour
 
         }
         drawingPathScript.listOfSplines.Add(currentSpline.Spline);
-       
+        drawingPathScript.ClearRecoloring();
+
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         currentSpline.transform.position =  newPosition ;
         
