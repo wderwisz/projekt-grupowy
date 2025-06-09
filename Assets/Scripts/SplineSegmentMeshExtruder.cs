@@ -64,6 +64,7 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
     private GameObject CreateSegmentMesh(Vector3 startPoint, Vector3 endPoint, int index)
     {
         GameObject segmentMesh = new GameObject($"SplineSegmentMesh_{index}");
+        segmentMesh.tag = "SplineSegment";
         segmentMesh.transform.parent = this.transform;
 
         Segment3D segmentComponent = segmentMesh.AddComponent<Segment3D>();
@@ -418,10 +419,10 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
 
     public void ClearTrail() //usuwanie traila 
     {
-        Debug.Log(segments.Count);
+        //Debug.Log(segments.Count);
         foreach (GameObject segment in segments)
         {
-            Debug.Log(segment);
+            //Debug.Log(segment);
             Destroy(segment);
         }
 

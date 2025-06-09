@@ -45,18 +45,18 @@ public class SwitchModeSlider : MonoBehaviour, IPointerClickHandler
 
     private void OnSliderChanged(float value)
     {
-        UpdateState((int)value);
+        //UpdateState((int)value);
     }
 
     private void UpdateState(int value)
     {
         if (value == 1)
         {
-            GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
+            //GameManager.instance.UpdateGameState(GameState.PATIENT_MODE);
         }
         else
         {
-            GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
+            //GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
         }
     }
 }

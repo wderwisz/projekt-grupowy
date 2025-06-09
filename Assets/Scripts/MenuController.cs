@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class MenuController : MonoBehaviour
 {
 
+    [SerializeField] public XRBaseController leftController;
+    [SerializeField] private XRBaseController rightController;
     //public InputActionProperty showMenuAction;
     [SerializeField] private GameObject menu;
     [SerializeField] private XRRayInteractor leftRay;
@@ -17,7 +19,10 @@ public class MenuController : MonoBehaviour
     [SerializeField] private SaveController saveController;
     [SerializeField] private LoadController loadController;
     [SerializeField] private GameObject saveFileMenu;
+    [SerializeField] private GameObject loadMenu;
+    [SerializeField] private GameObject endMenu;
     [SerializeField] public Slider modeToggle;
+
     private bool isMenuActive = false;
     private bool wasPressedLastFrame = false;
     public XRBaseController controller;
@@ -25,6 +30,7 @@ public class MenuController : MonoBehaviour
     public float menuDistance = 1.5f;
     private Spline spline;
     private SplineSegmentMeshExtruder[] splineExtruder;
+    private SplineContainer[] splineContainer;
 
 
 
@@ -45,7 +51,7 @@ public class MenuController : MonoBehaviour
     {
         //w³¹czanie menu poprzez dolny trigger lewego kontrolera shift + G 
         bool isPressed = controller.selectInteractionState.active;
-        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive) // Wykrycie momentu wciœniêcia
+        if (isPressed && !wasPressedLastFrame && !saveController.isMenuActive && !loadController.isMenuActive && !endMenu.activeSelf) // Wykrycie momentu wciœniêcia
         {
             GameManager.instance.UpdateGameState(GameState.OPTIONS_MENU_OPENED);
             isMenuActive = !isMenuActive;
@@ -105,14 +111,19 @@ public class MenuController : MonoBehaviour
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
 
-        drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
         splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
+        splineContainer = FindObjectsByType<SplineContainer>(0);
         if (splineExtruder != null)
         {
-            foreach (SplineSegmentMeshExtruder extruder in splineExtruder)
+            foreach (SplineSegmentMeshExtruder mesh in splineExtruder)
             {
-                extruder.ClearTrail();
+                mesh.ClearTrail();
             }
+            foreach (SplineContainer spline in splineContainer)
+            {
+                Destroy(spline.gameObject);
+            }
+            drawingPathScript.listOfSplines.Clear();
         }
         else
         {
@@ -142,7 +153,11 @@ public class MenuController : MonoBehaviour
     public void SaveSpline()
     {
         saveController.isMenuActive = true;
-        CloseMenu();
+        isMenuActive = false;
+        menu.SetActive(false);
+
+        leftRay.enabled = false;
+        rightRay.enabled = false;
 
     }
 
@@ -151,7 +166,28 @@ public class MenuController : MonoBehaviour
     {
         FindSplineExtruder();
         loadController.isMenuActive = true;
-        CloseMenu();
-      
+        isMenuActive = false;
+        menu.SetActive(false);
+
+        leftRay.enabled = false;
+        rightRay.enabled = false;
+
+    }
+
+
+    public void ControllerModelOnOff(Toggle toogle)
+    {
+        bool isVisible = toogle.isOn;
+        foreach (var renderer in leftController.model.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = isVisible;
+            Debug.Log("zmiana");
+
+        }
+
+        foreach (var renderer in rightController.model.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = isVisible;
+        }
     }
 }

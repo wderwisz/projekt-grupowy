@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: wderwisz
-  productName: ARTest
+  productName: TKG_VR
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -135,11 +135,8 @@ PlayerSettings:
   vulkanEnableLateAcquireNextImage: 0
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
-  bundleVersion: 0.1
-  preloadedAssets:
-  - {fileID: 3891209328665189235, guid: 900e91be2dc2ea348bf5537dc6a5335e, type: 2}
-  - {fileID: 11400000, guid: edc810281dc88d84daf65610da6e5798, type: 2}
-  - {fileID: 703509547344039093, guid: 31da9f57745a717439eece8c16164580, type: 2}
+  bundleVersion: 0.2
+  preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -285,7 +282,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 0265e2b6afccd49de9c1f0b3a1fb4285, type: 3}
+      m_Icon: {fileID: 0}
       m_Width: 128
       m_Height: 128
       m_Kind: 0

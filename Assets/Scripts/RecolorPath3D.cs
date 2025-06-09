@@ -21,6 +21,8 @@ public class RecolorPath3D : MonoBehaviour
     [SerializeField][Range(0f,1f)] private float hapticIntensity = 0.3f;
     [SerializeField] private float hapticDuration = 0.1f;
 
+    
+
 
     public void setPreviousSegment(GameObject segment)
     {
@@ -44,7 +46,7 @@ public class RecolorPath3D : MonoBehaviour
 
         currentGameState = GameManager.instance.state;
 
-        if (currentGameState != GameState.PATIENT_MODE) return; //Sprawdzenie trybu gry
+        if (GameManager.instance.isPaused || currentGameState != GameState.PATIENT_MODE) return; //Sprawdzenie trybu gry
 
         if (other.CompareTag("Controller"))
         {
@@ -56,7 +58,7 @@ public class RecolorPath3D : MonoBehaviour
 
             currentSegment.GetComponent<Segment3D>().setColored(true);
 
-            Debug.Log($"Kolorowanie segmentu spline'a: {gameObject.name}");
+            //Debug.Log($"Kolorowanie segmentu spline'a: {gameObject.name}");
 
             MeshRenderer renderer = gameObject.GetComponent<MeshRenderer>();
             renderer.sharedMaterial = newMaterial;
