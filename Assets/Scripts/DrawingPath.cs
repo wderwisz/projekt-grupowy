@@ -25,14 +25,16 @@ public class DrawingPath : MonoBehaviour
 
     // maksymalna odleglosc miedzy kropkami
     [SerializeField] private float maxDotSpacing = 0.03f;
-    private float detectionRadius = 0.0f;  // Promieñ wykrywania
+    private float detectionRadius = 0.0f;  // Promien wykrywania
     private Vector3 lastDotPosition = Vector3.zero; // pozycja ostatniej kropki
+
+    private bool blockDrawingForOneFrame = false; // Flaga blokujaca rysowanie
 
     // zmienne do pomiaru czasu kolorowania
     private bool coloringStarted = false;
     private float coloringStartTime = 0f;
 
-    // zmienne do pomiaru dokadnoci
+    // zmienne do pomiaru dokladnosci
     private int totalClicks = 0;
     private int successfulClicks = 0;
     private float coloredHoverTimer = 0f;
@@ -43,8 +45,17 @@ public class DrawingPath : MonoBehaviour
     {
         rayInteractor = FindObjectOfType<XRRayInteractor>();
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges;
-        // Przypisujemy poprawn¹ akcjê w zale¿noœci od stanu checkboxa
+
         primaryButtonAction = isSimulated ? primaryButtonActionSimulator : primaryButtonActionXRI;
+
+        if (pathManager != null)
+        {
+            pathManager.drawingPathInstance = this; // przypisanie instancji DrawingPath do PathManager
+        }
+        else
+        {
+            Debug.Log("PathManager nie jest przypisany w DrawingPath. Nie moÅ¼na ustawiÄ‡ drawingPathInstance w PathManager.");
+        }
     }
 
 
@@ -55,12 +66,17 @@ public class DrawingPath : MonoBehaviour
 
     private void Update()
     {
+        if (blockDrawingForOneFrame)
+        {
+            blockDrawingForOneFrame = false;
+            return; 
+        }
 
         //tryb rysowania
-        if (config.getDrawingMode())
+        if (GameManager.instance.GetGameState() == GameState.DOCTOR_MODE)
         {
             //tryb usuwania
-            if (config.getErasingMode())
+            if (!menuController.getEareserState())
             {
                 if (isHovering && primaryButtonAction.action.ReadValue<float>() > 0)
                 {
@@ -69,14 +85,14 @@ public class DrawingPath : MonoBehaviour
                         DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
                         if (dotRemoval != null)
                         {
-                            // Usuwanie kropek od koñca
+                            // Usuwanie kropek od koÅ„ca
                             int removalIndex = dotRemoval.dotIndex;
                             for (int i = pathManager.dots.Count - 1; i >= removalIndex; i--)
                             {
                                 Destroy(pathManager.dots[i]);
                                 pathManager.dots.RemoveAt(i);
                             }
-                            // Aktualizacja lastDotPosition po usuniêciu kropek
+                            // Aktualizacja lastDotPosition po usuniÄ™ciu kropek
                             lastDotPosition = (pathManager.dots.Count > 0) ?
                                               pathManager.dots[pathManager.dots.Count - 1].transform.position :
                                               Vector3.zero;
@@ -111,7 +127,7 @@ public class DrawingPath : MonoBehaviour
                                     if (pathManager != null)
                                         pathManager.AddDot(interpDot);
                                     else
-                                        Debug.LogWarning("PathManager jest null!");
+                                        Debug.Log("PathManager jest null!");
                                 }
                             }
                         }
@@ -128,7 +144,7 @@ public class DrawingPath : MonoBehaviour
         }
         else  //tryb kolorowania
         {
-            // kolorowanie zakoñczone
+            // kolorowanie zakoÅ„czone
             if (pathManager.coloringFinished)
             {
                 if (coloringStarted)
@@ -164,7 +180,7 @@ public class DrawingPath : MonoBehaviour
                         {
                             coloringStartTime = Time.time;
                             coloringStarted = true;
-                            Debug.Log($"Log {Time.frameCount}: Zaczêto kolorowanie!");
+                            Debug.Log($"Log {Time.frameCount}: ZaczÄ™to kolorowanie!");
 
 
                             totalClicks++;
@@ -189,11 +205,11 @@ public class DrawingPath : MonoBehaviour
                         // Podczas kolorowania
                         else if (coloringStarted)
                         {
-                            //jesli kropka nie jest pokolorwana (i nie jest to pierwsze trafienie rozpoczynaj¹ce)
+                            //jesli kropka nie jest pokolorwana (i nie jest to pierwsze trafienie rozpoczynajÄ…ce)
                             if (!dotRecolor.IsColored)
                             {
                                 // zwiekszenie wszystkich klikniec i poprawnych
-                                Debug.Log($"Log {Time.frameCount}: Udane klikniêcie! Kropka: {dotRecolor.dotIndex}. totalClicks wynosi {totalClicks + 1}, successfulClicks wynosi {successfulClicks + 1}");
+                                Debug.Log($"Log {Time.frameCount}: Udane klikniÄ™cie! Kropka: {dotRecolor.dotIndex}. totalClicks wynosi {totalClicks + 1}, successfulClicks wynosi {successfulClicks + 1}");
                                 totalClicks++;
                                 successfulClicks++;
                                 dotRecolor.Recolor();
@@ -217,7 +233,7 @@ public class DrawingPath : MonoBehaviour
                                 if (lastDotPosition != Vector3.zero)
                                     lastDotPosition = Vector3.zero;
                             }
-                            else // trafienie w ju¿ pokolorowan¹ kropkê gdy trwa kolorowanie
+                            else // trafienie w juÅ¼ pokolorowanÄ… kropkÄ™ gdy trwa kolorowanie
                             {
                                 if (lastColoredHit == dotRecolor)
                                 {
@@ -238,12 +254,12 @@ public class DrawingPath : MonoBehaviour
                         if (coloringStarted)
                         {
                             consecutiveMisses++; // licznik nietrafien
-                            Debug.Log($"Log {Time.frameCount}: Nieudane klikniêcie! Hit: {hit.collider.gameObject.name}. B³êdne klikniêcia: {consecutiveMisses}. (TotalClicks: {totalClicks})");
+                            Debug.Log($"Log {Time.frameCount}: Nieudane klikniecie! Hit: {hit.collider.gameObject.name}. Bledne klikniecia: {consecutiveMisses}. (TotalClicks: {totalClicks})");
 
-                            if (consecutiveMisses >= 25) // manipulacja dok³adnoœci¹ 25 nietrafien dopiero zmniejsza dok³adnoœæ
+                            if (consecutiveMisses >= 25) // manipulacja dokadnoÅ›ciÄ… 25 nietrafien dopiero zmniejsza dokadnoÅ›Ä‡
                             {
-                                Debug.Log($"Log {Time.frameCount}: Zapisana niedok³adnoœæ. totalClicks wynosi {totalClicks + 1}");
-                                totalClicks++; // zwiêkszamy totalClicks tylko po 25 nietrafieniach
+                                Debug.Log($"Log {Time.frameCount}: Zapisana niedokladnosc. totalClicks wynosi {totalClicks + 1}");
+                                totalClicks++; // zwiÄ™kszamy totalClicks tylko po 25 nietrafieniach
                                 consecutiveMisses = 0;
                             }
                             lastColoredHit = null;
@@ -304,11 +320,11 @@ public class DrawingPath : MonoBehaviour
         }
         if (string.IsNullOrEmpty(nameToSave))
         {
-            Debug.LogError("Nie mo¿na zapisaæ z pust¹ œcie¿k¹.");
+            Debug.LogError("Nie moÅ¼na zapisac z pustÄ… Å›cieÅ¼kÄ….");
             return;
         }
         string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
-        Debug.Log($"Zapisanie œcie¿ki '{nameToSave}' do: {fullPath}");
+        Debug.Log($"Zapisanie Å›cieÅ¼ki '{nameToSave}' do: {fullPath}");
 
         pathManager.SaveNamedPath(nameToSave, fullPath);
     }
@@ -323,11 +339,11 @@ public class DrawingPath : MonoBehaviour
         }
         if (string.IsNullOrEmpty(nameToLoad))
         {
-            Debug.LogError("Nie mo¿na wczytaæ z pust¹ œcie¿k¹.");
+            Debug.LogError("Nie moÅ¼na wczytaÄ‡ z pustÄ… Å›cieÅ¼kÄ….");
             return;
         }
         string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
-        Debug.Log($"Œcie¿ka zapisu '{nameToLoad}' z: {fullPath}");
+        Debug.Log($"ÅšcieÅ¼ka zapisu '{nameToLoad}' z: {fullPath}");
 
         if (pathManager.LoadNamedPath(nameToLoad, fullPath))
         {
@@ -338,11 +354,18 @@ public class DrawingPath : MonoBehaviour
             consecutiveMisses = 0;
             coloredHoverTimer = 0f;
             lastColoredHit = null;
-            Debug.Log($"Œcie¿ka '{nameToLoad}' za³adowana.");
+            Debug.Log($"ÅšcieÅ¼ka '{nameToLoad}' zaÅ‚adowana.");
         }
         else
         {
-            Debug.LogWarning($"Nie uda³o siê za³adowaæ œcie¿ki '{nameToLoad}'.");
+            Debug.LogWarning($"Nie udaÅ‚o siÄ™ zaÅ‚adowaÄ‡ Å›cieÅ¼ki '{nameToLoad}'.");
         }
+    }
+
+    public void ResetDrawingState()
+    {
+        lastDotPosition = Vector3.zero;
+        blockDrawingForOneFrame = true; // zmiana flagi
+        Debug.Log("DrawingPath: Stan rysowania (lastDotPosition) zostaÅ‚ zresetowany i rysowanie bÄ™dzie zablokowane na jednÄ… klatkÄ™.");
     }
 }

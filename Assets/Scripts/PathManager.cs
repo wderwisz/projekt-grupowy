@@ -28,19 +28,24 @@ public class PathManager : MonoBehaviour
 
     public bool coloringFinished = false;
 
+    public DrawingPath drawingPathInstance; // Referencja do DrawingPath
+
     private float delayInSeconds = 1.0f;
 
     //dodawanie kropki do listy 
     public void AddDot(GameObject dot)
     {
         dots.Add(dot);
-        Debug.Log("Liczba kropek w úcieøce: " + dots.Count);
+        Debug.Log("Liczba kropek w ≈õcie≈ºcie: " + dots.Count);
 
         // ustaw indeks kropki
         DotRecolor dotRecolor = dot.GetComponent<DotRecolor>();
         if (dotRecolor != null)
         {
             dotRecolor.dotIndex = dots.Count - 1;
+            dotRecolor.pathManagerInstance = this;
+            Debug.Log($"PathManager: Dodano kropkƒô z indeksem {dotRecolor.dotIndex}. Razem kropek: {dots.Count}");
+            dotRecolor.ApplyInitialVisuals();
         }
     }
 
@@ -69,33 +74,19 @@ public class PathManager : MonoBehaviour
     }
 
 
-    //sprawdzenie czy ukoÒczono rysowanie szlaku
+    //sprawdzenie czy uko≈Ñczono rysowanie szlaku
     public void CheckAndRemoveDots()
     {
-        if (coloredDots == dots.Count)
+        Debug.Log($"PathManager.CheckAndRemoveDots -- pokolorowaneKropki: {coloredDots}, liczbaKropek: {dots.Count}");
+        if (dots.Count > 0 && coloredDots == dots.Count)
         {
+            Debug.Log("PathManager: Wszystkie kropki pokolorowane! Rozpoczynam proces usuwania.");
             coloringFinished = true;
-            StartCoroutine(RemoveDotsAfterDelay());  // Uruchamiamy coroutine, ktra poczeka 3 sekundy
+            StartCoroutine(RemoveDotsAfterDelay());
         }
     }
 
-
-    public void removeDots() //TODO sprawdziÊ czemy siÍ doty nie usuwajπ
-    {
-
-        foreach (GameObject dot in dots)
-        {
-            Destroy(dot);
-        }
-        // Teraz czyúcimy listÍ i zerujemy indeksy
-        dots.Clear();
-        nextDotIndex = 0;
-        coloredDots = 0;
-        Debug.Log("Wszystkie kropki zosta≥y usuniÍte.");
-
-    }
-
-    //usuwanie szlaku z opÛünieniem
+    //usuwanie szlaku z op√≥≈∫nieniem
     private IEnumerator RemoveDotsAfterDelay()
     {
         yield return new WaitForSeconds(delayInSeconds);
@@ -106,28 +97,28 @@ public class PathManager : MonoBehaviour
             Destroy(dot);
         }
 
-        // Teraz czyúcimy listÍ i zerujemy indeksy
+        // Teraz czy≈õcimy listƒô i zerujemy indeksy
         dots.Clear();
         nextDotIndex = 0;
         coloredDots = 0;
         coloringFinished = false;
-        Debug.Log("Wszystkie kropki zosta≥y usuniÍte.");
+        Debug.Log("Wszystkie kropki zosta≈Çy usuniƒôte.");
     }
 
     public void SaveNamedPath(string pathName, string filePath)
     {
         if (string.IsNullOrEmpty(pathName))
         {
-            Debug.LogError("åcieøka nie moøe byÊ pusta.");
+            Debug.LogError("≈õcie≈ºka nie mo≈ºe byƒá pusta.");
             return;
         }
         if (dots == null || dots.Count == 0)
         {
-            Debug.LogWarning("Brak kropek do zapisania.");
+            Debug.Log("Brak kropek do zapisania.");
             return;
         }
 
-        // 1. Za≥aduj kolekcjÍ lub jπ stwÛrz
+        // 1. Za≈Çaduj kolekcjƒô lub jƒÖ stw√≥rz
         SavedPathsCollection collection = LoadCollectionFromFile(filePath);
 
         // 2. przygotuj dane do zapisania
@@ -137,37 +128,37 @@ public class PathManager : MonoBehaviour
             dotPositions = dots.Select(dot => dot.transform.position).ToList()
         };
 
-        // 3. Czy taka úcieøka juø istnieje
+        // 3. Czy taka ≈õcie≈ºka ju≈º istnieje
         int existingIndex = collection.savedPaths.FindIndex(p => p.name == pathName);
 
         if (existingIndex != -1)
         {
-            // nadpisz úcieøke
+            // nadpisz ≈õcie≈ºka
             collection.savedPaths[existingIndex] = currentPathData;
-            Debug.Log($"Nadpisano úcieøke '{pathName}'.");
+            Debug.Log($"Nadpisano ≈õcie≈ºka '{pathName}'.");
         }
         else
         {
-            // utwÛrz úcieøke
+            // utw√≥rz ≈õcie≈ºka
             collection.savedPaths.Add(currentPathData);
-            Debug.Log($"Dodano úcieøke '{pathName}'.");
+            Debug.Log($"Dodano ≈õcie≈ºka '{pathName}'.");
         }
 
-        // 4. Zapisz zaktualizowanπ kolekcje
+        // 4. Zapisz zaktualizowanƒÖ kolekcjƒô
         if (SaveCollectionToFile(collection, filePath))
         {
-            Debug.Log($"åcieøka '{pathName}' ({currentPathData.dotPositions.Count} kropek) zapisano poprawnie. Wszystkie zapisy: {collection.savedPaths.Count}");
-            // 5. WyczyúÊ aktualnπ úcieøkÍ po zapisaniu
-            ClearPath();
+            Debug.Log($"≈õcie≈ºka '{pathName}' ({currentPathData.dotPositions.Count} kropek) zapisano poprawnie. Wszystkie zapisy: {collection.savedPaths.Count}");
+            // 5. Wyczy≈õƒá aktualnƒÖ cieƒákƒô po zapisaniu
+            //ClearPath();
         }
     }
 
-    // Funkcja ≥adowania úcieøki
+    // Funkcja ≈Çadowania cieƒáki
     public bool LoadNamedPath(string pathName, string filePath)
     {
         if (string.IsNullOrEmpty(pathName))
         {
-            Debug.LogError("åcieøka nie moøe byÊ pusta.");
+            Debug.LogError("≈õcie≈ºka nie mo≈ºe byƒá pusta.");
             return false;
         }
         if (dotPrefab == null)
@@ -176,31 +167,31 @@ public class PathManager : MonoBehaviour
             return false;
         }
 
-        // 1. Za≥aduj kolekcjÍ
+        // 1. Za≈Çaduj kolekcjƒô
         SavedPathsCollection collection = LoadCollectionFromFile(filePath);
         if (collection == null)
         {
-            // Nie moøna za≥adowaÊ kolekcji
+            // Nie mo≈ºna za≈Çadowaƒá kolekcji
             return false;
         }
 
-        // 2. Znajdü úcieøkÍ o podanej nazwie
+        // 2. Znajd≈∫ ≈õcie≈ºkƒô o podanej nazwie
         NamedPathData pathData = collection.savedPaths.FirstOrDefault(p => p.name == pathName);
 
         if (pathData == null)
         {
-            Debug.LogWarning($"åcieøka '{pathName}' nie znaleziona w {filePath}.");
+            Debug.Log($"≈õcie≈ºka '{pathName}' nie znaleziona w {filePath}.");
             return false;
         }
         if (pathData.dotPositions == null || pathData.dotPositions.Count == 0)
         {
-            Debug.LogWarning($"åcieøka '{pathName}' znaleziona, ale bez zawartoúci (bez kropek).");
+            Debug.Log($"≈õcie≈ºka '{pathName}' znaleziona, ale bez zawarto≈õci (bez kropek).");
         }
 
-        // 3. WyczyúÊ aktualnπ úcieøkÍ
+        // 3. Wyczy≈õƒá aktualnƒÖ ≈õcie≈ºkƒô
         ClearPath();
 
-        // 4. OdtwÛrz kropki
+        // 4. Odtw√≥rz kropki
         try
         {
             foreach (Vector3 position in pathData.dotPositions)
@@ -209,18 +200,18 @@ public class PathManager : MonoBehaviour
 
                 // Ustawienia kropki
                 if (newDot.GetComponent<SphereCollider>() == null) newDot.AddComponent<SphereCollider>();
-                if (newDot.GetComponent<DotRecolor>() == null) Debug.LogWarning($"Wczytana kropka na {position} brakuje DotRecolor.");
+                if (newDot.GetComponent<DotRecolor>() == null) Debug.Log($"Wczytana kropka na {position} brakuje DotRecolor.");
 
                 // dodaj do managera
                 AddDot(newDot);
             }
 
-            Debug.Log($"Path '{pathName}' loaded successfully ({dots.Count} dots).");
+            Debug.Log($"≈öcie≈ºka '{pathName}' wczytana pomy≈õlnie ({dots.Count} kropek).");
             return true;
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Error instantiating dots for path '{pathName}': {e.Message}");
+            Debug.LogError($"B≈ÇƒÖd instancji kropek dla ≈õcie≈ºki '{pathName}': {e.Message}");
             return false;
         }
     }
@@ -241,7 +232,7 @@ public class PathManager : MonoBehaviour
             // Plik pusty lub niepoprawny JSON
             if (collection == null)
             {
-                Debug.LogWarning($"Plik {filePath} pusty lub niepoprawny JSON, zaczynamy z pustπ kolekcjπ.");
+                Debug.Log($"Plik {filePath} pusty lub niepoprawny JSON, zaczynamy z pustƒÖ kolekcjƒÖ.");
                 return new SavedPathsCollection();
             }
 
@@ -254,7 +245,7 @@ public class PathManager : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"B≥ad wczytania úcieøki {filePath}: {e.Message}");
+            Debug.LogError($"B≈Çad wczytania ≈õcie≈ºki {filePath}: {e.Message}");
             return new SavedPathsCollection();
         }
     }
@@ -269,7 +260,7 @@ public class PathManager : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"B≥πd zapisania kolekcji na {filePath}: {e.Message}");
+            Debug.LogError($"B≈Çad zapisania kolekcji na {filePath}: {e.Message}");
             return false;
         }
     }
@@ -277,18 +268,95 @@ public class PathManager : MonoBehaviour
     public void ClearPath()
     {
         StopAllCoroutines();
+        Debug.Log($"PathManager.ClearPath() wywo≈Çane. Liczba kropek PRZED czyszczeniem: {dots.Count}");
+        int destroyedCount = 0;
 
-        foreach (GameObject dot in dots)
+        // Iteracja od ty≈Çu jest bezpieczniejsza przy operacjach na kolekcji
+        for (int i = dots.Count - 1; i >= 0; i--)
         {
-            if (dot != null)
+            GameObject dotToDestroy = dots[i];
+            if (dotToDestroy != null)
             {
-                Destroy(dot);
+                Destroy(dotToDestroy);
+                // Usuniƒôcie z listy indywidualnie nie jest konieczne, bo robimy dots.Clear() na ko≈Ñcu,
+                // ale dodajemy log dla ka≈ºdej niszczonej kropki.
+                Debug.Log($"PathManager: Niszczenie kropki {dotToDestroy.name} (indeks {i})");
+                destroyedCount++;
+            }
+            else
+            {
+                Debug.Log($"PathManager: Kropka o indeksie {i} w li≈õcie by≈Ça ju≈º nullem przed pr√≥bƒÖ zniszczenia.");
             }
         }
+
         dots.Clear();
+        Debug.Log($"PathManager.ClearPath(): Liczba kropek PO dots.Clear(): {dots.Count}. ≈ÅƒÖcznie przetworzonych GameObject√≥w do zniszczenia: {destroyedCount}");
+
         nextDotIndex = 0;
         coloredDots = 0;
         coloringFinished = false;
-        Debug.Log("Wyczyszczono úcieøke.");
+        Debug.Log("Wyczyszczono ≈õcie≈ºke.");
+
+        if (drawingPathInstance != null)
+        {
+            drawingPathInstance.ResetDrawingState();
+        }
+        else
+        {
+            Debug.Log("PathManager.ClearPath(): Instancja DrawingPath nie zosta≈Ça przypisana w PathManager.");
+        }
+    }
+
+    public void ForceClearAllDotsInScene()
+    {
+        Debug.Log("PathManager.ForceClearAllDotsInScene() wywo≈Çane.");
+
+        // 1: Znajd≈∫ wszystkie obiekty z komponentem DotRecolor
+        DotRecolor[] allDotsInScene = FindObjectsOfType<DotRecolor>();
+        int foundDotsCount = allDotsInScene.Length;
+        Debug.Log($"PathManager: Znaleziono {foundDotsCount} obiekt√≥w z komponentem DotRecolor w scenie.");
+
+        foreach (DotRecolor dotComponent in allDotsInScene)
+        {
+            if (dotComponent != null && dotComponent.gameObject != null)
+            {
+                Debug.Log($"PathManager: Niszczenie kropki ze sceny: {dotComponent.gameObject.name}");
+                Destroy(dotComponent.gameObject);
+            }
+        }
+
+        // 2: Wyczy≈õƒá wewnƒôtrznƒÖ listƒô i stan PathManager (dla sp√≥jno≈õci)
+        int listCountBeforeClear = dots.Count;
+        int destroyedFromListCount = 0;
+        for (int i = dots.Count - 1; i >= 0; i--)
+        {
+            GameObject dotInList = dots[i];
+            if (dotInList != null) 
+            {
+                Debug.Log($"PathManager: Upewnianie siƒô, ≈ºe kropka z wewnƒôtrznej listy jest zniszczona: {dotInList.name}");
+                Destroy(dotInList);
+                destroyedFromListCount++;
+            }
+        }
+        dots.Clear();
+        Debug.Log($"PathManager: Wewnƒôtrzna lista 'dots' wyczyszczona. Oryginalna liczba element√≥w: {listCountBeforeClear}. Przetworzono do zniszczenia z listy: {destroyedFromListCount}. Aktualna liczba w li≈õcie: {dots.Count}.");
+
+        nextDotIndex = 0;
+        coloredDots = 0;
+        coloringFinished = false;
+        Debug.Log("PathManager: Wewnƒôtrzny stan (nextDotIndex, coloredDots, coloringFinished) zresetowany.");
+
+        // 3: Zresetuj stan DrawingPath
+        if (drawingPathInstance != null)
+        {
+            drawingPathInstance.ResetDrawingState();
+            Debug.Log("PathManager: Wywo≈Çano ResetDrawingState() na instancji DrawingPath.");
+        }
+        else
+        {
+            Debug.Log("PathManager.ForceClearAllDotsInScene(): Instancja DrawingPath nie zosta≈Ça przypisana w PathManager. Nie mo≈ºna zresetowaƒá jej stanu.");
+        }
+
+        Debug.Log("PathManager.ForceClearAllDotsInScene() zako≈Ñczone.");
     }
 }
