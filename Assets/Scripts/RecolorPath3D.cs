@@ -22,32 +22,6 @@ public class RecolorPath3D : MonoBehaviour
     [SerializeField] private float hapticDuration = 0.1f;
 
     public DrawingPath3D drawingPath3D;
-<<<<<<< Updated upstream
-=======
-
-    void Start()
-    {
-        drawingPath3D = GetComponent<DrawingPath3D>();
-
-        // Jeśli nie znaleziono, spróbuj znaleźć go w obiekcie nadrzędnym lub innych obiektach
-        if (drawingPath3D == null)
-        {
-            drawingPath3D = FindObjectOfType<DrawingPath3D>();
-        }
-    }
->>>>>>> Stashed changes
-
-    void Start()
-    {
-        drawingPath3D = GetComponent<DrawingPath3D>();
-
-        // Jeśli nie znaleziono, spróbuj znaleźć go w obiekcie nadrzędnym lub innych obiektach
-        if (drawingPath3D == null)
-        {
-            drawingPath3D = FindObjectOfType<DrawingPath3D>();
-        }
-    }
-
 
     void Start()
     {
@@ -91,24 +65,15 @@ public class RecolorPath3D : MonoBehaviour
 
             // Wyciągnij numer segmentu z nazwy tego obiektu
             int currentIndex = int.Parse(gameObject.name.Replace("SplineSegmentMesh_", ""));
-
+ 
             // Jeśli mamy segment_0, to pierwszy segment ma index 0, w przeciwnym razie - 1
             int expectedFirstIndex = hasSegmentZero ? 0 : 1;
 
             // Sprawdzenie, czy to pierwszy segment i czy nie jest pokolorowany
             if (currentIndex == expectedFirstIndex && !segment.isColored())
             {
-
-                Debug.Log("TAK TO JA JESTEM NUMERO UNO!");
                 drawingPath3D.StartDrawing();
             }
-            
-
-                drawingPath3D.StartDrawing();
-            }
-
-
-
             // Sprawdzenie czy poprzedni segment pokolorowany
             if (previousSegment != null && !previousSegment.GetComponent<Segment3D>().isColored()) return;
 

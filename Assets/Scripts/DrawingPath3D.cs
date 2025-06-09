@@ -51,13 +51,9 @@ public class DrawingPath3D : MonoBehaviour
     private int hitSamples = 0;
     private float accuracy = 0f;
     private bool isColoring = false;
-
     private float maxAllowedDistance = 0.04f;
     private float deltaMeasureTime = 0.3f;
     private float waitInSecondsAfterFinishing = 0.1f;
-
-
-
     //miara czasu
     private float startTime = -1f; 
     private float totalDrawingTime = 0f; 
@@ -227,21 +223,6 @@ public class DrawingPath3D : MonoBehaviour
 
     private void SampleAccuracyPoint()
     {
-
-        if (GameManager.instance.isPaused) return;
-
-        Spline firstSpline = null;
-
-        if (listOfSplines != null && listOfSplines.Count > 0)
-        {
-            Debug.Log("ILOSC SPLINOW NA LISCIE " + listOfSplines.Count);
-            firstSpline = listOfSplines[0];
-        }
-        else
-        {
-            return;
-        }
-
         if (GameManager.instance.isPaused) return;
 
         Spline firstSpline = null;
@@ -327,7 +308,6 @@ public class DrawingPath3D : MonoBehaviour
         {
             //totalSegments = extruder.getSegmentList().Count;
             GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
-
             foreach (GameObject obj in allObjects)
             {
                 if (obj.name.StartsWith("SplineSegmentMesh_"))
@@ -469,7 +449,6 @@ public class DrawingPath3D : MonoBehaviour
         hitSamples = 0;
         accuracy = 0f;
         isColoring = false;
-
         isDrawing = false;
         FirstSegment.FindAndRecolor(1);
 

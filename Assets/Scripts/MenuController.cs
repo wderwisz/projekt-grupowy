@@ -126,10 +126,6 @@ public class MenuController : MonoBehaviour
 
             drawingPathScript.listOfSplines.Clear();
             drawingPathScript.ClearRecoloring();
-
-
-            drawingPathScript.listOfSplines.Clear();
-
         }
         else
         {
