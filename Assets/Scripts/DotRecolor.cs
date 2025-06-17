@@ -42,16 +42,16 @@ public class DotRecolor : MonoBehaviour
             }
             else if (originalMaterial != null)
             {
-                meshRenderer.material = new Material(originalMaterial); // Tworzymy kopię, by zmienić kolor
+                meshRenderer.material = new Material(originalMaterial);
                 meshRenderer.material.color = initialDarkColor;
             }
             else
             {
-                // Jeśli żaden materiał nie jest dostępny, użyj koloru na domyślnym materiale renderera
+                // uzyj domyslnego
                 meshRenderer.material.color = initialDarkColor;
             }
         }
-        else // Pozostałe kropki
+        else // pozostale kropki
         {
             if (originalMaterial != null)
             {
@@ -59,7 +59,7 @@ public class DotRecolor : MonoBehaviour
             }
             else
             {
-                // Domyślny wygląd dla pozostałych kropek, jeśli originalMaterial nie jest ustawiony
+                // bialy w razie braku koloru
                 meshRenderer.material.color = Color.white;
             }
         }
@@ -79,8 +79,6 @@ public class DotRecolor : MonoBehaviour
         if (pathManagerInstance.nextDotIndex + 1 >= dotIndex && !isColored)
         
         {
-           
-            // Zmiana materialu nie dziala, narazie ustawiamy kolor
             meshRenderer.material = coloredMaterial;
             meshRenderer.material.color = Color.red;
             

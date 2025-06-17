@@ -28,9 +28,25 @@ public class PathManager : MonoBehaviour
 
     public bool coloringFinished = false;
 
-    public DrawingPath drawingPathInstance; // Referencja do DrawingPath
-
     private float delayInSeconds = 1.0f;
+
+    public DrawingPath drawingPathInstance;
+
+    private void Awake()
+    {
+        if (drawingPathInstance == null)
+        {
+            drawingPathInstance = FindObjectOfType<DrawingPath>();
+            if (drawingPathInstance != null)
+            {
+                Debug.Log("PathManager: Pomyślnie znaleziono i przypisano instancję DrawingPath", this);
+            }
+            else
+            {
+                Debug.LogError("PathManager: Nie udało się znaleźć obiektu ze skryptem DrawingPath w scenie", this);
+            }
+        }
+    }
 
     //dodawanie kropki do listy 
     public void AddDot(GameObject dot)
@@ -91,17 +107,28 @@ public class PathManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayInSeconds);
 
-        // Usuwamy wszystkie obiekty z listy ze sceny
+        // usuwamy wszystkie obiekty z listy ze sceny
         foreach (GameObject dot in dots)
         {
             Destroy(dot);
         }
 
-        // Teraz czyścimy listę i zerujemy indeksy
+        // czyscimy liste i zerujemy indeksy
         dots.Clear();
         nextDotIndex = 0;
         coloredDots = 0;
         coloringFinished = false;
+
+        if (drawingPathInstance != null)
+        {
+            drawingPathInstance.ResetDrawingState();
+            Debug.Log("PathManager: Zresetowano stan rysowania (lastDotPosition) po ukończeniu i usunięciu ścieżki.");
+        }
+        else
+        {
+            Debug.LogError("PathManager: Nie można zresetować stanu rysowania, ponieważ referencja do DrawingPath jest pusta!");
+        }
+
         Debug.Log("Wszystkie kropki zostały usunięte.");
     }
 
@@ -269,94 +296,64 @@ public class PathManager : MonoBehaviour
     {
         StopAllCoroutines();
         Debug.Log($"PathManager.ClearPath() wywołane. Liczba kropek PRZED czyszczeniem: {dots.Count}");
-        int destroyedCount = 0;
 
-        // Iteracja od tyłu jest bezpieczniejsza przy operacjach na kolekcji
-        for (int i = dots.Count - 1; i >= 0; i--)
+        foreach (GameObject dot in dots)
         {
-            GameObject dotToDestroy = dots[i];
-            if (dotToDestroy != null)
+            if (dot != null)
             {
-                Destroy(dotToDestroy);
-                // Usunięcie z listy indywidualnie nie jest konieczne, bo robimy dots.Clear() na końcu,
-                // ale dodajemy log dla każdej niszczonej kropki.
-                Debug.Log($"PathManager: Niszczenie kropki {dotToDestroy.name} (indeks {i})");
-                destroyedCount++;
-            }
-            else
-            {
-                Debug.Log($"PathManager: Kropka o indeksie {i} w liście była już nullem przed próbą zniszczenia.");
+                Destroy(dot);
             }
         }
 
         dots.Clear();
-        Debug.Log($"PathManager.ClearPath(): Liczba kropek PO dots.Clear(): {dots.Count}. Łącznie przetworzonych GameObjectów do zniszczenia: {destroyedCount}");
-
         nextDotIndex = 0;
         coloredDots = 0;
         coloringFinished = false;
-        Debug.Log("Wyczyszczono ścieżke.");
+        Debug.Log("PathManager: Wewnętrzny stan (listy, liczniki) został zresetowany.");
 
+        // referencja powinna byc ustawiona w awake
         if (drawingPathInstance != null)
         {
             drawingPathInstance.ResetDrawingState();
         }
         else
         {
-            Debug.Log("PathManager.ClearPath(): Instancja DrawingPath nie została przypisana w PathManager.");
+            // jesli DrawingPath nie istnieje w scenie
+            Debug.LogError("PathManager.ClearPath(): Mimo próby, referencja do drawingPathInstance wciąż jest pusta", this);
         }
     }
 
     public void ForceClearAllDotsInScene()
     {
-        Debug.Log("PathManager.ForceClearAllDotsInScene() wywołane.");
+        Debug.Log("PathManager.ForceClearAllDotsInScene() wywołane - metoda siłowego czyszczenia.");
+        StopAllCoroutines();
 
-        // 1: Znajdź wszystkie obiekty z komponentem DotRecolor
         DotRecolor[] allDotsInScene = FindObjectsOfType<DotRecolor>();
-        int foundDotsCount = allDotsInScene.Length;
-        Debug.Log($"PathManager: Znaleziono {foundDotsCount} obiektów z komponentem DotRecolor w scenie.");
+        Debug.Log($"PathManager: Znaleziono {allDotsInScene.Length} obiektów z komponentem DotRecolor do zniszczenia.");
 
         foreach (DotRecolor dotComponent in allDotsInScene)
         {
-            if (dotComponent != null && dotComponent.gameObject != null)
+            if (dotComponent != null)
             {
-                Debug.Log($"PathManager: Niszczenie kropki ze sceny: {dotComponent.gameObject.name}");
                 Destroy(dotComponent.gameObject);
             }
         }
 
-        // 2: Wyczyść wewnętrzną listę i stan PathManager (dla spójności)
-        int listCountBeforeClear = dots.Count;
-        int destroyedFromListCount = 0;
-        for (int i = dots.Count - 1; i >= 0; i--)
-        {
-            GameObject dotInList = dots[i];
-            if (dotInList != null) 
-            {
-                Debug.Log($"PathManager: Upewnianie się, że kropka z wewnętrznej listy jest zniszczona: {dotInList.name}");
-                Destroy(dotInList);
-                destroyedFromListCount++;
-            }
-        }
         dots.Clear();
-        Debug.Log($"PathManager: Wewnętrzna lista 'dots' wyczyszczona. Oryginalna liczba elementów: {listCountBeforeClear}. Przetworzono do zniszczenia z listy: {destroyedFromListCount}. Aktualna liczba w liście: {dots.Count}.");
-
         nextDotIndex = 0;
         coloredDots = 0;
         coloringFinished = false;
-        Debug.Log("PathManager: Wewnętrzny stan (nextDotIndex, coloredDots, coloringFinished) zresetowany.");
+        Debug.Log("PathManager: Wewnętrzny stan (lista, liczniki, flagi) zresetowany.");
 
-        // 3: Zresetuj stan DrawingPath
         if (drawingPathInstance != null)
         {
             drawingPathInstance.ResetDrawingState();
-            Debug.Log("PathManager: Wywołano ResetDrawingState() na instancji DrawingPath.");
         }
         else
         {
-            Debug.Log("PathManager.ForceClearAllDotsInScene(): Instancja DrawingPath nie została przypisana w PathManager. Nie można zresetować jej stanu.");
+            Debug.LogError("PathManager.ForceClearAllDotsInScene(): Nie można zresetować stanu DrawingPath, ponieważ referencja jest pusta.");
         }
 
-        Debug.Log("PathManager.ForceClearAllDotsInScene() zakończone.");
+        Debug.Log("PathManager.ForceClearAllDotsInScene() zakończone pomyślnie.");
     }
 }

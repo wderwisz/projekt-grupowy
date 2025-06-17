@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.03945, z: 0.15}
+  m_LocalScale: {x: 0.15, y: 5e-10, z: 0.15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -126,6 +126,7 @@ MonoBehaviour:
   initialDarkerMaterial: {fileID: 2926557707537190794, guid: f396e3429a4864fc2ad497cb3ce5fe2c, type: 3}
   initialDarkColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
   dotIndex: 0
+  pathManagerInstance: {fileID: 0}
 --- !u!54 &-8944297493256851964
 Rigidbody:
   m_ObjectHideFlags: 0
