@@ -32,7 +32,7 @@ public class DrawingPath3D : MonoBehaviour
     private SplineSegmentMeshExtruder extruder;
     private List<Segment3D> segments;
     private FirstSegmentVisualHelper visualHelper;
-    public List<Spline> listOfSplines = new List<Spline>();
+    public List<SplineContainer> listOfSplines = new List<SplineContainer>();
 
     private Vector3 lastKnotPosition = Vector3.zero;
 
@@ -51,7 +51,7 @@ public class DrawingPath3D : MonoBehaviour
     private int hitSamples = 0;
     private float accuracy = 0f;
     private bool isColoring = false;
-    private float maxAllowedDistance = 0.04f;
+    private float maxAllowedDistance = 0.02f;
     private float deltaMeasureTime = 0.3f;
     private float waitInSecondsAfterFinishing = 0.1f;
     //miara czasu
@@ -225,37 +225,36 @@ public class DrawingPath3D : MonoBehaviour
     {
         if (GameManager.instance.isPaused) return;
 
-        Spline firstSpline = null;
+        if (listOfSplines == null || listOfSplines.Count == 0) return;
 
-        if (listOfSplines != null && listOfSplines.Count > 0)
-        {
-            Debug.Log("ILOSC SPLINOW NA LISCIE " + listOfSplines.Count);
-            firstSpline = listOfSplines[0];
-        }
-        else
-        {
-            return;
-        }
+        Debug.Log("ILOSC SPLINOW NA LISCIE " + listOfSplines.Count);
+
+        SplineContainer currentSplineContainer = listOfSplines[0];
+        Spline spline = currentSplineContainer.Spline;
 
         Vector3 posRight = rightController.transform.position;
         Vector3 posLeft = leftController.transform.position;
 
-        float3 nearestRight;
-        float tRight;
-        float3 nearestLeft;
-        float tLeft;
 
-        var spline = firstSpline;
+        float3 posRightLocal = currentSplineContainer.transform.InverseTransformPoint(posRight);
+        float3 posLeftLocal = currentSplineContainer.transform.InverseTransformPoint(posLeft);
 
-        SplineUtility.GetNearestPoint(spline, (float3)posRight, out nearestRight, out tRight);
-        SplineUtility.GetNearestPoint(spline, (float3)posLeft, out nearestLeft, out tLeft);
+        // Najbliższe punkty na spline lokalnie
+        float3 nearestRightLocal, nearestLeftLocal;
+        float tRight, tLeft;
+        SplineUtility.GetNearestPoint(spline, posRightLocal, out nearestRightLocal, out tRight);
+        SplineUtility.GetNearestPoint(spline, posLeftLocal, out nearestLeftLocal, out tLeft);
 
-        float distanceRight = Vector3.Distance(posRight, (Vector3)nearestRight);
-        float distanceLeft = Vector3.Distance(posLeft, (Vector3)nearestLeft);
+        // Najbliższe punkty względem sceny
+        Vector3 nearestRightWorld = currentSplineContainer.transform.TransformPoint((Vector3)nearestRightLocal);
+        Vector3 nearestLeftWorld = currentSplineContainer.transform.TransformPoint((Vector3)nearestLeftLocal);
+
+        float distanceRight = Vector3.Distance(posRight, nearestRightWorld);
+        float distanceLeft = Vector3.Distance(posLeft, nearestLeftWorld);
+
 
         Vector3 selectedPos;
         float distance;
-
         if (distanceRight < distanceLeft)
         {
             selectedPos = posRight;
@@ -271,19 +270,35 @@ public class DrawingPath3D : MonoBehaviour
 
         totalSamples++;
 
-        if (distance <= maxAllowedDistance)
+        float allowedDistance = maxAllowedDistance;
+
+        SplineSegmentMeshExtruder extruder = currentSplineContainer.GetComponent<SplineSegmentMeshExtruder>();
+
+        if (extruder != null)
+        {
+            float scaleFactor = extruder.getVectorScale();
+            allowedDistance = maxAllowedDistance * scaleFactor;
+        }
+
+        if (distance <= allowedDistance)
         {
             hitSamples++;
         }
+
         Debug.Log("Distance!! " + distance);
-        // haptics feedback za dokładne trafienie
-        if (distance <= maxAllowedDistance && hapticIntensity > 0f)
+
+        // Haptic feedback przy trafieniu
+        if (distance <= allowedDistance && hapticIntensity > 0f)
         {
             activeController.SendHapticImpulse(hapticIntensity, hapticDuration);
         }
+
         float acc = (float)hitSamples / totalSamples * 100f;
         Debug.Log($"Celność: {acc}%");
     }
+
+
+
 
 
     private float CalculateColoringAccuracy()
@@ -398,7 +413,7 @@ public class DrawingPath3D : MonoBehaviour
             extruder.restoreSettings();
             // listOfSplines.Add(currentSpline.Spline);
         }
-        listOfSplines.Add(currentSpline.Spline);
+        listOfSplines.Add(currentSpline);
 
         var list = extruder.getSegmentList();
         if (list.Count >= 2)
@@ -422,8 +437,9 @@ public class DrawingPath3D : MonoBehaviour
     public void ClearRecoloring()
     {
         
-        foreach (Spline spline in listOfSplines)
+        foreach (SplineContainer splineContainer in listOfSplines)
         {
+            Spline spline = splineContainer.Spline;
             foreach (var knotIndex in System.Linq.Enumerable.Range(0, spline.Count - 1))
             {
                 string segmentName = $"SplineSegmentMesh_{knotIndex}";

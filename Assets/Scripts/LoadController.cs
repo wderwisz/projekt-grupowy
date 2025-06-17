@@ -158,7 +158,7 @@ public class LoadController : MonoBehaviour
             currentSpline.Spline.Add(new BezierKnot(Quaternion.LookRotation(forward, up) * mappedPoint + offsetVector) );
 
         }
-        drawingPathScript.listOfSplines.Add(currentSpline.Spline);
+        drawingPathScript.listOfSplines.Add(currentSpline);
         drawingPathScript.ClearRecoloring();
 
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
