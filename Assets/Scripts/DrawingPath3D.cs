@@ -51,7 +51,7 @@ public class DrawingPath3D : MonoBehaviour
     private int hitSamples = 0;
     private float accuracy = 0f;
     private bool isColoring = false;
-    private float maxAllowedDistance = 0.02f;
+    private float maxAllowedDistance = 0.015f;
     private float deltaMeasureTime = 0.3f;
     private float waitInSecondsAfterFinishing = 0.1f;
     //miara czasu
