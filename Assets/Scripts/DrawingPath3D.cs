@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using Unity.Mathematics;
+using UnityEngine.SceneManagement;
+using UnityEditor.SearchService;
 
 public class DrawingPath3D : MonoBehaviour
 {
@@ -67,10 +69,15 @@ public class DrawingPath3D : MonoBehaviour
 
 
     public int counter = 0;
+
+
+    UnityEngine.SceneManagement.Scene m_Scene;
+
     void Awake()
     {
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges; //DrawingPath subskrybuje GameManager
-        visualHelper = this.GetComponent<FirstSegmentVisualHelper>(); 
+        visualHelper = this.GetComponent<FirstSegmentVisualHelper>();
+        m_Scene = SceneManager.GetActiveScene();
     }
 
     private void OnDestroy()
@@ -101,6 +108,7 @@ public class DrawingPath3D : MonoBehaviour
 
     void Update()
     {
+        string sceneName = m_Scene.name;
 
         if(currentGameState == GameState.OPTIONS_MENU_OPENED)
         {
@@ -139,10 +147,8 @@ public class DrawingPath3D : MonoBehaviour
         if (activeController == null) return;
 
 
-        if (listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
-
-
-        if(listOfSplines.Count >= maxAmountOfSplines)  return; // osiagnieto maksymalna liczbe szlakow
+        // osiagnieto maksymalna liczbe szlakow
+        if (listOfSplines.Count >= maxAmountOfSplines && sceneName != "Scene3DFreehand" && sceneName != "Scene3DFreehandAR") return; 
 
         if (activeController.activateInteractionState.active)
         {
@@ -298,9 +304,6 @@ public class DrawingPath3D : MonoBehaviour
     }
 
 
-
-
-
     private float CalculateColoringAccuracy()
     {
         if (totalSamples == 0)
@@ -402,7 +405,9 @@ public class DrawingPath3D : MonoBehaviour
     void StopDrawing()
     {
         isDrawing = false;
-        if (!config.getDrawingMode())
+        if (currentSpline.Spline.Count <= 3) return;
+        
+        if (!config.getDrawingMode() )
         {
             ExtrudeSpline();
         }
