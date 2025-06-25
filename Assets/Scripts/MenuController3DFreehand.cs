@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class MenuController3DFreehand : MonoBehaviour
 {
-
-
     [SerializeField] public XRBaseController leftController;
     [SerializeField] private XRBaseController rightController;
     //public InputActionProperty showMenuAction;
@@ -25,8 +23,6 @@ public class MenuController3DFreehand : MonoBehaviour
     private Spline spline;
     private SplineSegmentMeshExtruder[] splineExtruder;
     private SplineContainer[] splineContainer;
-
-
 
     // Start is called before the first frame update
     void Start()

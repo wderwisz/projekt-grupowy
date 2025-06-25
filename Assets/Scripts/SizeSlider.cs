@@ -1,7 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class SizeSlider : MonoBehaviour
 {
 
@@ -11,11 +12,18 @@ public class SizeSlider : MonoBehaviour
 
     public float sizeValue = 0;
 
-    // Start is called before the first frame update
     private void Start()
     {
 
-        slider.value = PlayerPrefs.GetFloat("Size");
+        Scene activeScene = SceneManager.GetActiveScene();
+        string sceneName = activeScene.name;
+
+        float valueFromPlayerPrefs = PlayerPrefs.GetFloat("Size" + sceneName); // Uzale¿nienie wielkoœci od sceny
+        float roundedValue = Mathf.Round(valueFromPlayerPrefs * 100.0f) / 100.0f; // Zaokr¹glenie do 2 miejsc po przecinku
+        slider.value = roundedValue;
+
+        splineExtruder.setVectorScale(slider.value); //ustawianie wartoœæi slidera od razu po w³¹czeniu sceny
+
         sliderText.text = slider.value.ToString();
         sizeValue = slider.value;
         slider.onValueChanged.AddListener((v) =>
@@ -26,11 +34,12 @@ public class SizeSlider : MonoBehaviour
         });
     }
 
-    // Update is called once per frame
     private void Update()
     {
+        Scene activeScene = SceneManager.GetActiveScene();
+        string sceneName = activeScene.name;
         slider.value = sizeValue;
-        PlayerPrefs.SetFloat("Size", sizeValue);
+        PlayerPrefs.SetFloat("Size"+sceneName, sizeValue);
     }
 
 

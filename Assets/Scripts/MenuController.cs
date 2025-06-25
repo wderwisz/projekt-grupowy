@@ -11,7 +11,6 @@ public class MenuController : MonoBehaviour
 
     [SerializeField] public XRBaseController leftController;
     [SerializeField] private XRBaseController rightController;
-    //public InputActionProperty showMenuAction;
     [SerializeField] private GameObject menu;
     [SerializeField] private XRRayInteractor leftRay;
     [SerializeField] private XRRayInteractor rightRay;
