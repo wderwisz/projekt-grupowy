@@ -156,7 +156,7 @@ public class DrawingPath : MonoBehaviour
         {
             if (dotSizeSlider != null)
             {
-                currentPathSize = Mathf.Lerp(0.5f, 2.0f, dotSizeSlider.normalizedValue) / 10.0f;
+                currentPathSize = Mathf.Lerp(0.5f, 1.1f, dotSizeSlider.normalizedValue) / 20.0f;
             }
             else
             {
@@ -169,7 +169,7 @@ public class DrawingPath : MonoBehaviour
             float distance = Vector3.Distance(newPos, lastDotPosition);
             if (distance > maxDotSpacing)
             {
-                int numInterpolated = Mathf.FloorToInt(distance / maxDotSpacing);
+                int numInterpolated = Mathf.FloorToInt(distance * 2 / maxDotSpacing);
                 for (int i = 1; i <= numInterpolated; i++)
                 {
                     float t = (float)i / (float)(numInterpolated + 1);
@@ -188,7 +188,7 @@ public class DrawingPath : MonoBehaviour
         {
             if (dotSizeSlider != null)
             {
-                currentPathSize = Mathf.Lerp(0.5f, 2.0f, dotSizeSlider.normalizedValue) / 10.0f;
+                currentPathSize = Mathf.Lerp(0.5f, 1.1f, dotSizeSlider.normalizedValue) / 20.0f;
             }
             else
             {
@@ -213,7 +213,7 @@ public class DrawingPath : MonoBehaviour
         CreateDotWithComponents(newPos);
         lastDotPosition = newPos;
     }
-    // gumka
+
     private void HandleEraser(RaycastHit hit)
     {
         DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
@@ -232,17 +232,26 @@ public class DrawingPath : MonoBehaviour
     /*
     private GameObject CreateDotWithComponents(Vector3 position)
     {
-        Vector3 modifiedPosition = new Vector3(position.x * 1.01f, position.y, position.z);
+        // offset aby uniknac migotania
+        position.y += 0.01f;
 
-        GameObject newDot = Instantiate(dot, modifiedPosition, Quaternion.Euler(0f, 0f, 90f));
+        ///////////////////////
+        //TU JEST JEDNA LINIJKA, KTÓRĄ TESTOWO DODAŁEM
+        //DZIEKI NIEJ PRZY ODPOWIEDNIM USTAWIENIU TABLICY NIE MA MIGANA
+        position.x -= 0.1f;
+        ///////////////////////
 
-        newDot.transform.localScale = Vector3.one * currentPathSize;
+        GameObject newDot = Instantiate(dot, position, Quaternion.Euler(0f, 0f, 90f));
+
+        newDot.transform.localScale = new Vector3(currentPathSize, dot.transform.localScale.y, currentPathSize);
 
         if (newDot.GetComponent<SphereCollider>() == null) { newDot.AddComponent<SphereCollider>(); }
         DotRecolor dotRecolor = newDot.GetComponent<DotRecolor>();
+
         if (dotRecolor == null) { dotRecolor = newDot.AddComponent<DotRecolor>(); }
 
         dotRecolor.pathManagerInstance = pathManager;
+
         if (pathManager != null)
         {
             pathManager.AddDot(newDot);
@@ -253,38 +262,49 @@ public class DrawingPath : MonoBehaviour
         {
             Debug.LogError("PathManager jest null!");
         }
+
+        return newDot;
+    }*/
+
+
+
+    private GameObject CreateDotWithComponents(Vector3 worldPosition)
+    {
+        GameObject newDot = Instantiate(dot, whiteboard.transform);
+        Vector3 localPosition = whiteboard.transform.InverseTransformPoint(worldPosition);
+        localPosition.z -= 0.01f;
+
+        newDot.transform.localPosition = localPosition;
+        newDot.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+
+        newDot.transform.localScale = Vector3.one * currentPathSize;
+
+        SphereCollider sCollider = newDot.GetComponent<SphereCollider>();
+        if (sCollider == null)
+        {
+            sCollider = newDot.AddComponent<SphereCollider>();
+        }
+
+        sCollider.radius = 0.5f;
+
+        DotRecolor dotRecolor = newDot.GetComponent<DotRecolor>();
+        if (dotRecolor == null) { dotRecolor = newDot.AddComponent<DotRecolor>(); }
+
+        dotRecolor.pathManagerInstance = pathManager;
+
+        if (pathManager != null)
+        {
+            pathManager.AddDot(newDot);
+        }
+        else
+        {
+            Debug.LogError("PathManager jest null!");
+        }
+
         return newDot;
     }
-    */
-    // zmiana rozmiaru kropki
-    private GameObject CreateDotWithComponents(Vector3 position)
-    {
 
-       GameObject newDot = Instantiate(dot, position, Quaternion.Euler(0f, 0f, 90f));
 
-       newDot.transform.localScale = Vector3.one * currentPathSize;
-       if (newDot.GetComponent<SphereCollider>() == null) { newDot.AddComponent<SphereCollider>(); }
-       DotRecolor dotRecolor = newDot.GetComponent<DotRecolor>();
-       
-       if (dotRecolor == null) { dotRecolor = newDot.AddComponent<DotRecolor>(); }
-       dotRecolor.pathManagerInstance = pathManager;
-
-       if (pathManager != null)
-       {
-           pathManager.AddDot(newDot);
-           dotRecolor.dotIndex = pathManager.dots.Count - 1;
-           dotRecolor.ApplyInitialVisuals();
-       }
-       else
-       {
-           Debug.LogError("PathManager jest null!");
-       }
-
-       return newDot;
-
-    } 
-    
-    // usuwanie szlaku
     public void ResetDrawingState()
     {
         Debug.Log("DrawingPath: Resetting full drawing and coloring state.");
@@ -297,7 +317,7 @@ public class DrawingPath : MonoBehaviour
         blockDrawingForOneFrame = true;
         currentPathSize = 1.0f;
     }
-    // tryb pacjenta
+
     private void HandlePatientMode(RaycastHit hit)
     {
         if (pathManager.coloringFinished)
@@ -353,7 +373,7 @@ public class DrawingPath : MonoBehaviour
     {
         dotToColor.Recolor();
         int hitIndex = dotToColor.dotIndex;
-        for (int i = 1; i <= 6; i++)
+        for (int i = 1; i <= 20; i++)
         {
             if (hitIndex - i >= 0)
             {

@@ -124,7 +124,7 @@ MonoBehaviour:
   coloredMaterial: {fileID: -8309319643020345216, guid: 7ab6f3b0fd1a6ba41b2a47766c16613f, type: 3}
   originalMaterial: {fileID: 5561349426305759274, guid: 63e02ddb08ce42da868504e1333d48ae, type: 3}
   initialDarkerMaterial: {fileID: 2926557707537190794, guid: f396e3429a4864fc2ad497cb3ce5fe2c, type: 3}
-  initialDarkColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+  initialDarkColor: {r: 0.6792453, g: 0.073050864, b: 0.073050864, a: 1}
   dotIndex: 0
   pathManagerInstance: {fileID: 0}
 --- !u!54 &-8944297493256851964
