@@ -35,6 +35,7 @@ public class DrawingPath : MonoBehaviour
     private Vector3 lastDotPosition = Vector3.zero;
     private bool blockDrawingForOneFrame = false;
     private float currentPathSize = 1.0f;
+    private int consecutiveMisses = 0;
 
     private const float holdThreshold = 0.2f;
 
@@ -51,7 +52,6 @@ public class DrawingPath : MonoBehaviour
     private float coloringStartTime = 0f;
     private int totalClicks = 0;
     private int successfulClicks = 0;
-    private int consecutiveMisses = 0;
 
     private void Awake()
     {
@@ -229,45 +229,6 @@ public class DrawingPath : MonoBehaviour
         }
     }
 
-    /*
-    private GameObject CreateDotWithComponents(Vector3 position)
-    {
-        // offset aby uniknac migotania
-        position.y += 0.01f;
-
-        ///////////////////////
-        //TU JEST JEDNA LINIJKA, KTÓRĄ TESTOWO DODAŁEM
-        //DZIEKI NIEJ PRZY ODPOWIEDNIM USTAWIENIU TABLICY NIE MA MIGANA
-        position.x -= 0.1f;
-        ///////////////////////
-
-        GameObject newDot = Instantiate(dot, position, Quaternion.Euler(0f, 0f, 90f));
-
-        newDot.transform.localScale = new Vector3(currentPathSize, dot.transform.localScale.y, currentPathSize);
-
-        if (newDot.GetComponent<SphereCollider>() == null) { newDot.AddComponent<SphereCollider>(); }
-        DotRecolor dotRecolor = newDot.GetComponent<DotRecolor>();
-
-        if (dotRecolor == null) { dotRecolor = newDot.AddComponent<DotRecolor>(); }
-
-        dotRecolor.pathManagerInstance = pathManager;
-
-        if (pathManager != null)
-        {
-            pathManager.AddDot(newDot);
-            dotRecolor.dotIndex = pathManager.dots.Count - 1;
-            dotRecolor.ApplyInitialVisuals();
-        }
-        else
-        {
-            Debug.LogError("PathManager jest null!");
-        }
-
-        return newDot;
-    }*/
-
-
-
     private GameObject CreateDotWithComponents(Vector3 worldPosition)
     {
         GameObject newDot = Instantiate(dot, whiteboard.transform);
@@ -307,13 +268,12 @@ public class DrawingPath : MonoBehaviour
 
     public void ResetDrawingState()
     {
-        Debug.Log("DrawingPath: Resetting full drawing and coloring state.");
+        Debug.Log("DrawingPath: Usunieto szlak.");
         lastDotPosition = Vector3.zero;
         coloringStarted = false;
         coloringStartTime = 0f;
         totalClicks = 0;
         successfulClicks = 0;
-        consecutiveMisses = 0;
         blockDrawingForOneFrame = true;
         currentPathSize = 1.0f;
     }
@@ -325,7 +285,7 @@ public class DrawingPath : MonoBehaviour
             if (coloringStarted)
             {
                 float elapsedTime = Time.time - coloringStartTime;
-                float accuracy = (totalClicks > 0) ? (successfulClicks / (float)totalClicks) * 100f : 0f;
+                float accuracy = (totalClicks > 0) ? ((float)successfulClicks / totalClicks) * 100f : 0f;
                 Debug.Log($"Log {Time.frameCount}: Koniec kolorowania. Czas: {elapsedTime:F2}s, Trafienia: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
 
                 coloringStarted = false;
@@ -340,6 +300,7 @@ public class DrawingPath : MonoBehaviour
         if (dotRecolor != null)
         {
             consecutiveMisses = 0;
+
             if (!coloringStarted && dotRecolor.dotIndex == 0 && !dotRecolor.IsColored)
             {
                 coloringStartTime = Time.time;
@@ -360,7 +321,7 @@ public class DrawingPath : MonoBehaviour
             if (coloringStarted)
             {
                 consecutiveMisses++;
-                if (consecutiveMisses >= 25)
+                if (consecutiveMisses >= 5)
                 {
                     totalClicks++;
                     consecutiveMisses = 0;
@@ -373,7 +334,7 @@ public class DrawingPath : MonoBehaviour
     {
         dotToColor.Recolor();
         int hitIndex = dotToColor.dotIndex;
-        for (int i = 1; i <= 20; i++)
+        for (int i = 1; i <= 12; i++)
         {
             if (hitIndex - i >= 0)
             {
