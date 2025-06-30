@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class Config : ScriptableObject
 {
+
     // Tryb rysowania w prototypie (do zmiany po implementacji prze³¹czania miêdzy trybami fizjo i pacjenta)
     // true -> ekstrudowanie szlaku nastêpuje w trakcie kreœlenia krzywej - brak mo¿liwoœci kolorowania istniej¹cego szlaku
     // false -> ekstrudowanie nastêpuje dopiero po skoñczeniu rysowania - kolorowanie po najechaniu na istniej¹cy szlak
@@ -17,12 +18,13 @@ public class Config : ScriptableObject
     // usuwanie linii jedynie od jej koñca
     [SerializeField] private bool erasingMode = false;
 
+
     public bool getDrawingMode()
     {
         return liveDrawingMode;
     }
 
-    public bool getErasingMode() 
+    public bool getErasingMode()
     {
         return erasingMode;
     }

@@ -2338,6 +2338,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd4433c87d5e87547b247a426fc1cceb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leftController: {fileID: 0}
+  rightController: {fileID: 0}
   menu: {fileID: 1576014493}
   leftRay: {fileID: 179407471}
   rightRay: {fileID: 1945308621}
@@ -4620,7 +4622,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000869751, y: 0.00057789317}
+  m_AnchoredPosition: {x: 0.0008392334, y: 0.00057789317}
   m_SizeDelta: {x: -251.29999, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &747662235
@@ -6584,11 +6586,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteboard: {fileID: 1123183019}
   dot: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
+  config: {fileID: 0}
   pathManager: {fileID: 1123183027}
   menuController: {fileID: 0}
-  primaryButtonActionXRI: {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  primaryButtonActionSimulator: {fileID: -2439264783773714294, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
-  isSimulated: 0
+  leftHandRayInteractor: {fileID: 0}
+  leftHandActivateAction: {fileID: 0}
+  rightHandRayInteractor: {fileID: 0}
+  rightHandActivateAction: {fileID: 0}
+  dotSizeSlider: {fileID: 0}
+  savePathAction: {fileID: 0}
+  loadPathAction: {fileID: 0}
+  pathFileName: namedPathsData.json
   maxDotSpacing: 0.1
 --- !u!54 &1123183026
 Rigidbody:
@@ -6630,8 +6638,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dots: []
+  dotPrefab: {fileID: 0}
   nextDotIndex: 0
   coloredDots: 0
+  coloringFinished: 0
+  drawingPathInstance: {fileID: 0}
 --- !u!1 &1137092224
 GameObject:
   m_ObjectHideFlags: 0
@@ -7826,7 +7837,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2050484257}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9972863
+  m_Size: 0.99985844
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

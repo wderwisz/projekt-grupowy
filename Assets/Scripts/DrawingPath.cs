@@ -1,35 +1,76 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
+using System.IO;
+using UnityEngine.UI;
 
 public class DrawingPath : MonoBehaviour
 {
+    [Header("Komponenty sceny")]
     [SerializeField] private GameObject whiteboard;
     [SerializeField] private GameObject dot;
+    [SerializeField] private Config config;
     [SerializeField] private PathManager pathManager;
     [SerializeField] private MenuController2D menuController;
-    private InputActionReference primaryButtonAction;
-    public InputActionReference primaryButtonActionXRI;
-    public InputActionReference primaryButtonActionSimulator;
-    public bool isSimulated = true;
-    private GameState currentGameState;
-    
-    private XRRayInteractor rayInteractor;
-    private bool isHovering = false;
 
-    // maksymalna odleglosc miedzy kropkami
+    [Header("Lewy kontroler")]
+    [SerializeField] private XRRayInteractor leftHandRayInteractor;
+    [SerializeField] private InputActionReference leftHandActivateAction;
+
+    [Header("Prawy kontroler")]
+    [SerializeField] private XRRayInteractor rightHandRayInteractor;
+    [SerializeField] private InputActionReference rightHandActivateAction;
+
+    [Header("Konfiguracja slidera")]
+    [SerializeField] private Slider dotSizeSlider;
+
+    [Header("Inne")]
+    public InputActionReference savePathAction;
+    public InputActionReference loadPathAction;
+
+    // Zmienne wewnętrzne
+    private GameState currentGameState;
+    [SerializeField] private string pathFileName = "namedPathsData.json";
     [SerializeField] private float maxDotSpacing = 0.03f;
-    private float detectionRadius = 0.0f;  // Promie� wykrywania
-    private Vector3 lastDotPosition = Vector3.zero; // pozycja ostatniej kropki
+    private Vector3 lastDotPosition = Vector3.zero;
+    private bool blockDrawingForOneFrame = false;
+    private float currentPathSize = 1.0f;
+    private int consecutiveMisses = 0;
+
+    private const float holdThreshold = 0.2f;
+
+    private class ControllerDrawState
+    {
+        public float buttonDownTime = -1f;
+        public bool continuousDrawingStarted = false;
+        public Vector3 clickDownPosition;
+    }
+    private ControllerDrawState leftHandState = new ControllerDrawState();
+    private ControllerDrawState rightHandState = new ControllerDrawState();
+
+    private bool coloringStarted = false;
+    private float coloringStartTime = 0f;
+    private int totalClicks = 0;
+    private int successfulClicks = 0;
 
     private void Awake()
     {
-        rayInteractor = FindObjectOfType<XRRayInteractor>();
         GameManager.onGameStateChanged += GameManagerOnGameStateChanges;
-        // Przypisujemy poprawn� akcj� w zale�no�ci od stanu checkboxa
-        primaryButtonAction = isSimulated ? primaryButtonActionSimulator : primaryButtonActionXRI;
+
+        if (leftHandRayInteractor == null || rightHandRayInteractor == null || leftHandActivateAction == null || rightHandActivateAction == null)
+        {
+            Debug.LogError("DrawingPath: Nie wszystkie referencje do kontrolerów i ich akcji zostały przypisane w inspektorze", this);
+        }
+        if (dotSizeSlider == null)
+        {
+            Debug.LogWarning("DrawingPath: Referencja do suwaka 'dotSizeSlider' nie jest ustawiona! Używany będzie domyślny rozmiar kropki.", this);
+        }
     }
 
+    private void OnDestroy()
+    {
+        GameManager.onGameStateChanged -= GameManagerOnGameStateChanges;
+    }
 
     private void GameManagerOnGameStateChanges(GameState newState)
     {
@@ -38,162 +79,291 @@ public class DrawingPath : MonoBehaviour
 
     private void Update()
     {
-
-        //tryb rysowania
-        
-        if (GameManager.instance.GetGameState() == GameState.DOCTOR_MODE)
+        if (blockDrawingForOneFrame)
         {
-            //tryb usuwania
-            if (!menuController.getEareserState())
+            blockDrawingForOneFrame = false;
+            return;
+        }
+
+        HandleDrawingInput(leftHandRayInteractor, leftHandActivateAction, leftHandState);
+        HandleDrawingInput(rightHandRayInteractor, rightHandActivateAction, rightHandState);
+    }
+
+    private void HandleDrawingInput(XRRayInteractor interactor, InputActionReference actionRef, ControllerDrawState state)
+    {
+        if (interactor == null || actionRef?.action == null) return;
+        var action = actionRef.action;
+
+        if (currentGameState != GameState.DOCTOR_MODE || (currentGameState == GameState.DOCTOR_MODE && !menuController.getEareserState()))
+        {
+            if (action.IsPressed() && interactor.TryGetCurrent3DRaycastHit(out var hit))
             {
-                if (isHovering)
+                if (currentGameState == GameState.PATIENT_MODE)
                 {
-                    if (primaryButtonAction.action.ReadValue<float>() > 0)
-                    {
-                        if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
-                        {
-                            DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
-                            if (dotRemoval != null)
-                            {
-                                int removalIndex = dotRemoval.dotIndex;
-
-                                // Usuwanie kropek od ko�ca
-                                for (int i = pathManager.dots.Count - 1; i >= removalIndex; i--)
-                                {
-                                    // Zniszczenie obiektu kropki
-                                    Destroy(pathManager.dots[i]);
-
-                                    // Usuni�cie kropki z listy
-                                    pathManager.dots.RemoveAt(i);
-                                }
-
-                                // Aktualizacja lastDotPosition po usuni�ciu kropek
-                                if (pathManager.dots.Count > 0)
-                                {
-                                    lastDotPosition = pathManager.dots[pathManager.dots.Count - 1].transform.position;
-                                }
-                                else
-                                {
-                                    lastDotPosition = Vector3.zero;
-                                }
-                            }
-                        }
-                    }
+                    HandlePatientMode(hit);
+                }
+                else if (currentGameState == GameState.DOCTOR_MODE /*&& action.WasPressedThisFrame()*/) // gumka na klikniecie
+                {
+                    HandleEraser(hit);
                 }
             }
-        
+            return;
+        }
+
+        // rysowanie
+        if (action.WasPressedThisFrame())
+        {
+            if (interactor.TryGetCurrent3DRaycastHit(out var hit) && hit.collider.gameObject == whiteboard)
+            {
+                state.buttonDownTime = Time.time;
+                state.continuousDrawingStarted = false;
+                state.clickDownPosition = hit.point;
+            }
+        }
+
+        if (action.IsPressed() && state.buttonDownTime > 0)
+        {
+            if (!state.continuousDrawingStarted && (Time.time - state.buttonDownTime > holdThreshold))
+            {
+                state.continuousDrawingStarted = true;
+                HandleClickDrawing(state.clickDownPosition);
+            }
+
+            if (state.continuousDrawingStarted)
+            {
+                if (interactor.TryGetCurrent3DRaycastHit(out var hit) && hit.collider.gameObject == whiteboard)
+                {
+                    HandleContinuousDrawing(hit.point);
+                }
+            }
+        }
+
+        if (action.WasReleasedThisFrame() && state.buttonDownTime > 0)
+        {
+            if (!state.continuousDrawingStarted)
+            {
+                HandleClickDrawing(state.clickDownPosition);
+            }
+
+            state.buttonDownTime = -1f;
+            state.continuousDrawingStarted = false;
+        }
+    }
+
+    private void HandleClickDrawing(Vector3 newPos)
+    {
+        if (lastDotPosition == Vector3.zero)
+        {
+            if (dotSizeSlider != null)
+            {
+                currentPathSize = Mathf.Lerp(0.5f, 1.1f, dotSizeSlider.normalizedValue) / 20.0f;
+            }
             else
             {
-                //Debug.Log("Tryb rysowania wlaczony");
-                if (isHovering)
+                currentPathSize = 0.1f;
+            }
+            CreateDotWithComponents(newPos);
+        }
+        else
+        {
+            float distance = Vector3.Distance(newPos, lastDotPosition);
+            if (distance > maxDotSpacing)
+            {
+                int numInterpolated = Mathf.FloorToInt(distance * 2 / maxDotSpacing);
+                for (int i = 1; i <= numInterpolated; i++)
                 {
-                    if (primaryButtonAction.action.ReadValue<float>() > 0)
-                    {
-                        if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit) && hit.collider.gameObject == whiteboard)
-                        {
-                            Vector3 newPos = hit.point;
-                            Debug.Log($"Hit Point (rysowanie): {newPos}");
-
-                            // Jesli mamy zapisana poprzednia pozycje wypelniamy ewentualne luki
-                            if (lastDotPosition != Vector3.zero)
-                            {
-                                float distance = Vector3.Distance(newPos, lastDotPosition);
-                                if (distance > maxDotSpacing)
-                                {
-                                    int numInterpolated = Mathf.FloorToInt(distance * 2 / maxDotSpacing);
-                                    for (int i = 1; i <= numInterpolated; i++)
-                                    {
-                                        // interpolacja liniowa miedzy lastDotPosition a newPos
-                                        float t = (float)i / (numInterpolated + 1);
-                                        Vector3 interpPos = Vector3.Lerp(lastDotPosition, newPos, t);
-                                        GameObject interpDot = Instantiate(dot, interpPos, Quaternion.Euler(0f, 0f, 90f));
-                                        interpDot.AddComponent<SphereCollider>();
-
-                                        if (pathManager != null)
-                                            pathManager.AddDot(interpDot);
-                                        else
-                                            Debug.LogWarning("PathManager jest null!");
-                                    }
-                                }
-                            }
-
-                            // dodajemy glowna kropke na nowej pozycji
-                            GameObject newDot = Instantiate(dot, newPos, Quaternion.Euler(0f, 0f, 90f));
-                            newDot.AddComponent<SphereCollider>();
-                            if (pathManager != null)
-                                pathManager.AddDot(newDot);
-
-
-                            // aktualizacja pozycji ostatniej kropki
-                            lastDotPosition = newPos;
-                        }
-                    }
+                    float t = (float)i / (float)(numInterpolated + 1);
+                    Vector3 interpPos = Vector3.Lerp(lastDotPosition, newPos, t);
+                    CreateDotWithComponents(interpPos);
                 }
+            }
+            CreateDotWithComponents(newPos);
+        }
+        lastDotPosition = newPos;
+    }
+
+    private void HandleContinuousDrawing(Vector3 newPos)
+    {
+        if (lastDotPosition == Vector3.zero)
+        {
+            if (dotSizeSlider != null)
+            {
+                currentPathSize = Mathf.Lerp(0.5f, 1.1f, dotSizeSlider.normalizedValue) / 20.0f;
+            }
+            else
+            {
+                currentPathSize = 0.1f;
+            }
+        }
+
+        if (lastDotPosition != Vector3.zero)
+        {
+            float distance = Vector3.Distance(newPos, lastDotPosition);
+            if (distance > maxDotSpacing)
+            {
+                int numInterpolated = Mathf.FloorToInt(distance * 2 / maxDotSpacing);
+                for (int i = 1; i <= numInterpolated; i++)
+                {
+                    float t = (float)i / (numInterpolated + 1);
+                    Vector3 interpPos = Vector3.Lerp(lastDotPosition, newPos, t);
+                    CreateDotWithComponents(interpPos);
+                }
+            }
+        }
+        CreateDotWithComponents(newPos);
+        lastDotPosition = newPos;
+    }
+
+    private void HandleEraser(RaycastHit hit)
+    {
+        DotRecolor dotRemoval = hit.collider.GetComponent<DotRecolor>();
+        if (dotRemoval != null)
+        {
+            int removalIndex = dotRemoval.dotIndex;
+            for (int i = pathManager.dots.Count - 1; i >= removalIndex; i--)
+            {
+                Destroy(pathManager.dots[i]);
+                pathManager.dots.RemoveAt(i);
+            }
+            lastDotPosition = (pathManager.dots.Count > 0) ? pathManager.dots[pathManager.dots.Count - 1].transform.position : Vector3.zero;
+        }
+    }
+
+    private GameObject CreateDotWithComponents(Vector3 worldPosition)
+    {
+        GameObject newDot = Instantiate(dot, whiteboard.transform);
+        Vector3 localPosition = whiteboard.transform.InverseTransformPoint(worldPosition);
+        localPosition.z -= 0.01f;
+
+        newDot.transform.localPosition = localPosition;
+        newDot.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+
+        newDot.transform.localScale = Vector3.one * currentPathSize;
+
+        SphereCollider sCollider = newDot.GetComponent<SphereCollider>();
+        if (sCollider == null)
+        {
+            sCollider = newDot.AddComponent<SphereCollider>();
+        }
+
+        sCollider.radius = 0.5f;
+
+        DotRecolor dotRecolor = newDot.GetComponent<DotRecolor>();
+        if (dotRecolor == null) { dotRecolor = newDot.AddComponent<DotRecolor>(); }
+
+        dotRecolor.pathManagerInstance = pathManager;
+
+        if (pathManager != null)
+        {
+            pathManager.AddDot(newDot);
+        }
+        else
+        {
+            Debug.LogError("PathManager jest null!");
+        }
+
+        return newDot;
+    }
+
+
+    public void ResetDrawingState()
+    {
+        Debug.Log("DrawingPath: Usunieto szlak.");
+        lastDotPosition = Vector3.zero;
+        coloringStarted = false;
+        coloringStartTime = 0f;
+        totalClicks = 0;
+        successfulClicks = 0;
+        blockDrawingForOneFrame = true;
+        currentPathSize = 1.0f;
+    }
+
+    private void HandlePatientMode(RaycastHit hit)
+    {
+        if (pathManager.coloringFinished)
+        {
+            if (coloringStarted)
+            {
+                float elapsedTime = Time.time - coloringStartTime;
+                float accuracy = (totalClicks > 0) ? ((float)successfulClicks / totalClicks) * 100f : 0f;
+                Debug.Log($"Log {Time.frameCount}: Koniec kolorowania. Czas: {elapsedTime:F2}s, Trafienia: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
+
+                coloringStarted = false;
+                totalClicks = 0;
+                successfulClicks = 0;
+                consecutiveMisses = 0;
+            }
+            return;
+        }
+
+        DotRecolor dotRecolor = hit.collider.GetComponent<DotRecolor>();
+        if (dotRecolor != null)
+        {
+            consecutiveMisses = 0;
+
+            if (!coloringStarted && dotRecolor.dotIndex == 0 && !dotRecolor.IsColored)
+            {
+                coloringStartTime = Time.time;
+                coloringStarted = true;
+                totalClicks++;
+                successfulClicks++;
+                ColorTheDotAndNeighbours(dotRecolor);
+            }
+            else if (coloringStarted && !dotRecolor.IsColored)
+            {
+                totalClicks++;
+                successfulClicks++;
+                ColorTheDotAndNeighbours(dotRecolor);
             }
         }
         else
         {
-            //tryb kolorowania
-            if (isHovering)
+            if (coloringStarted)
             {
-                if (primaryButtonAction.action.ReadValue<float>() > 0)
+                consecutiveMisses++;
+                if (consecutiveMisses >= 5)
                 {
-                    if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
-                    {
-                        Debug.Log($"Hit Point (kolorowanie): {hit.point} - Trafiono w: {hit.collider.gameObject.name}");
-                        DotRecolor dotRecolor = hit.collider.GetComponent<DotRecolor>();
-                        if (dotRecolor != null) { 
-                            Debug.Log("Klikni�to kropk� o indeksie: " + dotRecolor.dotIndex);
-                            dotRecolor.Recolor();
-                            int hitIndex = dotRecolor.dotIndex;
-                            //Zmiana koloru poprzednich kropek - zapobiega przenikaniu i lukom
-                            for (int i = 1; i <= 6; i++)
-                            {                          
-                                if (hitIndex - i >= 0)
-                                {
-                                    DotRecolor neighborDot = pathManager.GetDot(hitIndex - i);
-                                    if (neighborDot != null)
-                                    {
-                                        neighborDot.Recolor();
-                                    }
-                                }
-                            }
-                            //Sprawdzamy czy szlak zosta� w pe�ni odwzorowany
-                            pathManager.CheckAndRemoveDots();
-                            if (lastDotPosition != Vector3.zero)
-                                lastDotPosition = Vector3.zero;
-
-
-                        }
-                        else
-                        {
-                            Debug.Log("Trafiono obiekt, ktory nie jest kropka.");
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Laser nie trafi� w zaden obiekt.");
-                    }
+                    totalClicks++;
+                    consecutiveMisses = 0;
                 }
             }
         }
     }
 
-    public void OnHoverEntered(HoverEnterEventArgs args)
+    private void ColorTheDotAndNeighbours(DotRecolor dotToColor)
     {
-        isHovering = true;
-        //Debug.Log("isHovering ustawione na true");
+        dotToColor.Recolor();
+        int hitIndex = dotToColor.dotIndex;
+        for (int i = 1; i <= 12; i++)
+        {
+            if (hitIndex - i >= 0)
+            {
+                DotRecolor neighborDot = pathManager.GetDot(hitIndex - i);
+                if (neighborDot != null) neighborDot.Recolor();
+            }
+        }
+        pathManager.CheckAndRemoveDots();
     }
 
-    public void OnHoverExit(HoverExitEventArgs args)
+    public void SavePath(string nameToSave)
     {
-        isHovering = false;
-        //Debug.Log("isHovering ustawione na false");
+        if (pathManager == null) { Debug.LogError("PathManager jest nieprzypisany!"); return; }
+        if (string.IsNullOrEmpty(nameToSave)) { Debug.LogError("Nie można zapisać z pustą ścieżką."); return; }
+        string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
+        Debug.Log($"Zapisanie ścieżki '{nameToSave}' do: {fullPath}");
+        pathManager.SaveNamedPath(nameToSave, fullPath);
     }
 
-    private void OnDestroy()
+    public void LoadPath(string nameToLoad)
     {
-        GameManager.onGameStateChanged -= GameManagerOnGameStateChanges;
+        if (pathManager == null) { Debug.LogError("PathManager jest nieprzypisany!"); return; }
+        if (string.IsNullOrEmpty(nameToLoad)) { Debug.LogError("Nie można wczytać z pustą ścieżką."); return; }
+        string fullPath = Path.Combine(Application.persistentDataPath, pathFileName);
+        if (pathManager.LoadNamedPath(nameToLoad, fullPath))
+        {
+            ResetDrawingState();
+            Debug.Log($"Ścieżka '{nameToLoad}' załadowana.");
+        }
+        else { Debug.LogWarning($"Nie udało się załadować ścieżki '{nameToLoad}'."); }
     }
-
 }

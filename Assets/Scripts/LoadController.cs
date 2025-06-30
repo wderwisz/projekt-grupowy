@@ -119,6 +119,7 @@ public class LoadController : MonoBehaviour
             CreateSpline(pointsList);
         }
         lastPoint = Vector3.zero;
+
     }
 
     public void CreateSpline(List<Vector3> points)
@@ -157,8 +158,9 @@ public class LoadController : MonoBehaviour
             currentSpline.Spline.Add(new BezierKnot(Quaternion.LookRotation(forward, up) * mappedPoint + offsetVector) );
 
         }
-        drawingPathScript.listOfSplines.Add(currentSpline.Spline);
-       
+        drawingPathScript.listOfSplines.Add(currentSpline);
+        drawingPathScript.ClearRecoloring();
+
         extruder.ExtrudeAndApplyMaterials(currentSpline.Spline);
         currentSpline.transform.position =  newPosition ;
         

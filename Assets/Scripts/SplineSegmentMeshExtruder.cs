@@ -46,6 +46,11 @@ public class SplineSegmentMeshExtruder : MonoBehaviour
         return segments;
     }
 
+    public float getVectorScale()
+    {
+        return vectorScale;
+    }
+
     private void Awake()
     {
         segments = new List<GameObject>();

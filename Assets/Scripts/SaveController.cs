@@ -7,6 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
 using Microsoft.MixedReality.Toolkit.Experimental.UI;
 using System;
+using System.Linq;
 
 public class SaveController : MonoBehaviour
 {
@@ -114,7 +115,7 @@ public class SaveController : MonoBehaviour
 
     public void Save()
     {
-        List<Spline> splines = drawingPathScript.listOfSplines;
+        List<Spline> splines = drawingPathScript.listOfSplines.Select(c => c.Spline).ToList();
 
         Debug.Log("lista splinów " + splines.Count );
 
