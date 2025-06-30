@@ -102,7 +102,7 @@ public class DrawingPath : MonoBehaviour
                 {
                     HandlePatientMode(hit);
                 }
-                else if (currentGameState == GameState.DOCTOR_MODE && action.WasPressedThisFrame()) // gumka na klikniecie
+                else if (currentGameState == GameState.DOCTOR_MODE /*&& action.WasPressedThisFrame()*/) // gumka na klikniecie
                 {
                     HandleEraser(hit);
                 }

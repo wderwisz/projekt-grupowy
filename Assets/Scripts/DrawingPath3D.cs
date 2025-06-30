@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
-using UnityEditor.SearchService;
 
 public class DrawingPath3D : MonoBehaviour
 {
