@@ -6,6 +6,7 @@ using System.Linq;
 
 public class PathManager : MonoBehaviour
 {
+    [SerializeField] private FinishBanner2D finishBannerController;
     [System.Serializable]
     private class NamedPathData
     {
@@ -91,20 +92,22 @@ public class PathManager : MonoBehaviour
 
 
     //sprawdzenie czy ukończono rysowanie szlaku
-    public void CheckAndRemoveDots()
+    public void CheckAndRemoveDots(float elapsedTime, float accuracy)
     {
         Debug.Log($"PathManager.CheckAndRemoveDots -- pokolorowaneKropki: {coloredDots}, liczbaKropek: {dots.Count}");
         if (dots.Count > 0 && coloredDots == dots.Count)
         {
             Debug.Log("PathManager: Wszystkie kropki pokolorowane! Rozpoczynam proces usuwania.");
             coloringFinished = true;
-            StartCoroutine(RemoveDotsAfterDelay());
+            finishBannerController.ShowBanner(elapsedTime, accuracy);
         }
     }
 
     //usuwanie szlaku z opóźnieniem
     private IEnumerator RemoveDotsAfterDelay()
     {
+        
+        
         yield return new WaitForSeconds(delayInSeconds);
 
         // usuwamy wszystkie obiekty z listy ze sceny

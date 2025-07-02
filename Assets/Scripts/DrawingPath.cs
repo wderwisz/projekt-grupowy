@@ -12,6 +12,7 @@ public class DrawingPath : MonoBehaviour
     [SerializeField] private Config config;
     [SerializeField] private PathManager pathManager;
     [SerializeField] private MenuController2D menuController;
+    [SerializeField] private FinishBanner2D finishBannerController;
 
     [Header("Lewy kontroler")]
     [SerializeField] private XRRayInteractor leftHandRayInteractor;
@@ -36,7 +37,8 @@ public class DrawingPath : MonoBehaviour
     private bool blockDrawingForOneFrame = false;
     private float currentPathSize = 1.0f;
     private int consecutiveMisses = 0;
-
+    private float elapsedTime;
+    private float accuracy;
     private const float holdThreshold = 0.2f;
 
     private class ControllerDrawState
@@ -284,10 +286,10 @@ public class DrawingPath : MonoBehaviour
         {
             if (coloringStarted)
             {
-                float elapsedTime = Time.time - coloringStartTime;
-                float accuracy = (totalClicks > 0) ? ((float)successfulClicks / totalClicks) * 100f : 0f;
+                elapsedTime = Time.time - coloringStartTime;
+                accuracy = (totalClicks > 0) ? ((float)successfulClicks / totalClicks) * 100f : 0f;
                 Debug.Log($"Log {Time.frameCount}: Koniec kolorowania. Czas: {elapsedTime:F2}s, Trafienia: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
-
+                finishBannerController.ShowBanner(this.elapsedTime, this.accuracy);
                 coloringStarted = false;
                 totalClicks = 0;
                 successfulClicks = 0;
@@ -342,7 +344,8 @@ public class DrawingPath : MonoBehaviour
                 if (neighborDot != null) neighborDot.Recolor();
             }
         }
-        pathManager.CheckAndRemoveDots();
+        pathManager.CheckAndRemoveDots(elapsedTime, accuracy);
+        
     }
 
     public void SavePath(string nameToSave)
