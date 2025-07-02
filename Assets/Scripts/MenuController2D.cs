@@ -21,11 +21,8 @@ public class MenuController2D : MonoBehaviour
     public XRBaseController controller;
     public Transform player;
     public float menuDistance = 1.5f;
-    private Spline spline;
-    private SplineSegmentMeshExtruder[] splineExtruder;
-    private SplineContainer[] splineContainer;
     private bool isStateX = true;
-
+    public LineRenderer lineRenderer;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +33,8 @@ public class MenuController2D : MonoBehaviour
         player = mainCamera.transform;
         ereaserButton.onClick.AddListener(OnToggleClicked);
         isStateX = true; //œcieranie wy³¹czone
+        GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
+        modeToggle.value = 0;
         UpdateButtonText();
     }
 

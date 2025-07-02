@@ -24,7 +24,6 @@ public class MenuController3DFreehand : MonoBehaviour
     private SplineSegmentMeshExtruder[] splineExtruder;
     private SplineContainer[] splineContainer;
 
-    // Start is called before the first frame update
     void Start()
     {
         isMenuActive = false;
@@ -100,8 +99,6 @@ public class MenuController3DFreehand : MonoBehaviour
     }
     public void FindSplineExtruder() //funkcja do usuwania szlaku
     {
-
-        //drawingPathScript.listOfSplines.Clear();// czyszczenie Splinów
         splineExtruder = FindObjectsByType<SplineSegmentMeshExtruder>(0); //znalezienie wszystkich szlaków
         splineContainer = FindObjectsByType<SplineContainer>(0);
         if (splineExtruder != null)
@@ -115,14 +112,9 @@ public class MenuController3DFreehand : MonoBehaviour
                 Destroy(spline.gameObject);
             }
         }
-        else
-        {
-            Debug.Log("Nie znaleziono szlaku");
-        }
     }
     public void CloseMenu() // Funkcja do zamykania menu
     {
-
         isMenuActive = false;
         menu.SetActive(false);
 
@@ -130,8 +122,6 @@ public class MenuController3DFreehand : MonoBehaviour
         rightRay.enabled = false;
 
         GameManager.instance.UpdateGameState(GameState.DOCTOR_MODE);
-
-
     }
 
     public void ControllerModelOnOff(Toggle toogle)
@@ -140,8 +130,6 @@ public class MenuController3DFreehand : MonoBehaviour
         foreach (var renderer in leftController.model.GetComponentsInChildren<Renderer>())
         {
             renderer.enabled = isVisible;
-            Debug.Log("zmiana");
-
         }
 
         foreach (var renderer in rightController.model.GetComponentsInChildren<Renderer>())

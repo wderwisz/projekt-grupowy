@@ -14,8 +14,6 @@ public class GameManager : MonoBehaviour
 
     public static event Action<GameState> onGameStateChanged;
 
-    private bool wasPressedLastFrame = false;
-
     public bool isPaused = false;
 
     void Awake()

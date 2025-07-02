@@ -83,16 +83,14 @@ public class DotRecolor : MonoBehaviour
             meshRenderer.material.color = Color.red;
             
             isColored = true;
-            Debug.Log($"DotRecolor ({gameObject.name}, indeks {dotIndex}): Pomyślnie ZMIENIONO KOLOR. pathManager.coloredDots = {pathManagerInstance.coloredDots}, pathManager.dots.Count = {pathManagerInstance.dots.Count}");
             if (dotIndex > pathManagerInstance.nextDotIndex)
                 pathManagerInstance.nextDotIndex = dotIndex;
             pathManagerInstance.coloredDots++;
 
-            //pathManager.CheckAndRemoveDots();
         }
         else
         {
-            Debug.Log($"DotRecolor ({gameObject.name}, indeks {dotIndex}): Warunki NIE SPEŁNIONE do zmiany koloru. isColored: {isColored}, nextDotIndex: {pathManagerInstance.nextDotIndex}, Wymagany nextDotIndex lub nextDotIndex+1: {dotIndex}");
+   
         }
     }
 

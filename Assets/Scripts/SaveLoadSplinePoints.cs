@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using System;
-using UnityEngine;
 using System.Globalization;
 using UnityEngine.Splines;
 

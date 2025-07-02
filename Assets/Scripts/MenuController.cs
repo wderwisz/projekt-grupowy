@@ -42,7 +42,6 @@ public class MenuController : MonoBehaviour
         player = mainCamera.transform;
         leftRay.enabled =  false;
         rightRay.enabled =  false;
-        
     }
 
     // Update is called once per frame

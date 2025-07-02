@@ -79,13 +79,11 @@ public class PathManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Obiekt nie ma komponentu DotRecolor.");
                 return null;
             }
         }
         else
         {
-            Debug.Log("Indeks spoza zakresu listy.");
             return null;
         }
     }
@@ -94,7 +92,6 @@ public class PathManager : MonoBehaviour
     //sprawdzenie czy ukończono rysowanie szlaku
     public void CheckAndRemoveDots(float elapsedTime, float accuracy)
     {
-        Debug.Log($"PathManager.CheckAndRemoveDots -- pokolorowaneKropki: {coloredDots}, liczbaKropek: {dots.Count}");
         if (dots.Count > 0 && coloredDots == dots.Count)
         {
             Debug.Log("PathManager: Wszystkie kropki pokolorowane! Rozpoczynam proces usuwania.");

@@ -29,6 +29,7 @@ public class FinishBannerController : MonoBehaviour
         }
 
         bannerPanel.SetActive(true);
+        GameManager.instance.UpdateGameState(GameState.PAUSE);
         timeText.text = $"Czas: {time:F2} s";
         accuracyText.text = $"Celnoœæ: {accuracy:F1} %";
         leftRay.enabled = true;
@@ -38,6 +39,8 @@ public class FinishBannerController : MonoBehaviour
     public void HideBanner()
     {
         bannerPanel.SetActive(false);
+        leftRay.enabled = false;
+        rightRay.enabled = false;
 
 
     }

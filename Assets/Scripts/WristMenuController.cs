@@ -42,9 +42,8 @@ public class WristMenuController : MonoBehaviour
     void OnButtonClicked(InputAction.CallbackContext context)
     {
         isMenuActive = !isMenuActive;
-        Debug.Log("Button clicked!");
         menu.SetActive(isMenuActive);
-        
+     
     }
 
     private void Start()
@@ -64,15 +63,8 @@ public class WristMenuController : MonoBehaviour
         
 
     }
-    void Update()
-    {
-
-
-    }
-
     private void HandleColorChange(Color newColor)
     {
-            Debug.Log("zmiana koloru");
             presentColor = newColor;
 
             Renderer rendererLeft = drawingPointLeft.GetComponent<Renderer>();
@@ -93,10 +85,5 @@ public class WristMenuController : MonoBehaviour
                              leftController.forward * positionOffset.z;
         transform.rotation = leftController.rotation * Quaternion.Euler(rotationOffset);
     }
-
-
-
-
-
 
 }

@@ -24,13 +24,13 @@ public class FinishBanner2D : MonoBehaviour
     {
         if (bannerPanel == null || timeText == null || accuracyText == null)
         {
-            Debug.LogWarning("FinishBannerController is not fully assigned!");
             return;
         }
 
         bannerPanel.SetActive(true);
         timeText.text = $"Czas: {time:F2} s";
         accuracyText.text = $"Celnoœæ: {accuracy:F1} %";
+        GameManager.instance.UpdateGameState(GameState.PAUSE);
         leftRay.enabled = true;
         rightRay.enabled = true;
     }
@@ -38,8 +38,8 @@ public class FinishBanner2D : MonoBehaviour
     public void HideBanner()
     {
         bannerPanel.SetActive(false);
-
-
+        leftRay.enabled = false;
+        rightRay.enabled = false;
     }
 
     void PositionMenu()
