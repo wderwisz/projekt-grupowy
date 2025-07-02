@@ -31,7 +31,6 @@ public class DrawingPath3D : MonoBehaviour
     [SerializeField] private FinishBannerController bannerController;
 
     private SplineSegmentMeshExtruder extruder;
-    private List<Segment3D> segments;
     private FirstSegmentVisualHelper visualHelper;
     public List<SplineContainer> listOfSplines = new List<SplineContainer>();
 

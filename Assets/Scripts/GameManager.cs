@@ -91,10 +91,7 @@ public class GameManager : MonoBehaviour
 
         //wasPressedLastFrame = isPressed; // Zapami�tanie stanu na kolejn� klatk�
     }
-
-
 }
-
 
 public enum GameState
 {

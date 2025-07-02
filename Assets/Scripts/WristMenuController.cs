@@ -21,7 +21,6 @@ public class WristMenuController : MonoBehaviour
 
     private Color presentColor;
 
-    public float activationAngle = 60f; // k¹t, po którym menu siê pokazuje
     public Vector3 positionOffset = new Vector3(0.1f, 0.05f, 0.05f);
     public Vector3 rotationOffset = new Vector3(30f, 0f, 0f);
     // Domyœlny materia³
@@ -32,6 +31,7 @@ public class WristMenuController : MonoBehaviour
     {
         Xbuttonleft.action.performed += OnButtonClicked;
         drawingCustomizer.OnColorChanged += HandleColorChange;
+        HandleColorChange(Color.red);
     }
 
     void OnDisable()
