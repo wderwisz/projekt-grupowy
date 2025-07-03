@@ -42,7 +42,6 @@ public class FinishBannerController : MonoBehaviour
         leftRay.enabled = false;
         rightRay.enabled = false;
 
-
     }
 
     void PositionMenu()

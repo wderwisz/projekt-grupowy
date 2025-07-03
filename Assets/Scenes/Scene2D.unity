@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028498, g: 0.22571546, b: 0.30692378, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028499, g: 0.22571546, b: 0.30692378, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2741,7 +2741,7 @@ MonoBehaviour:
   accuracyText: {fileID: 1451441633}
   leftRay: {fileID: 1031576133}
   rightRay: {fileID: 460284178}
-  player: {fileID: 1970030912}
+  player: {fileID: 1470357960}
   menuDistance: 1.5
 --- !u!1001 &814791263
 PrefabInstance:
@@ -3010,11 +3010,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   finishBannerController: {fileID: 738195160}
   dots: []
-  dotPrefab: {fileID: 0}
+  dotPrefab: {fileID: 6264365713699064991, guid: c71da49add680034c9452232d42a5c8b, type: 3}
   nextDotIndex: 0
   coloredDots: 0
   coloringFinished: 0
-  drawingPathInstance: {fileID: 0}
+  drawingPathInstance: {fileID: 1328693256}
 --- !u!1 &969463435
 GameObject:
   m_ObjectHideFlags: 0
@@ -6833,6 +6833,7 @@ MonoBehaviour:
   controller: {fileID: 1611919295}
   player: {fileID: 1470357960}
   menuDistance: 1.5
+  lineRenderer: {fileID: 0}
 --- !u!1 &1910818622
 GameObject:
   m_ObjectHideFlags: 0
@@ -6865,7 +6866,6 @@ Transform:
   - {fileID: 1807564215}
   - {fileID: 483785304}
   - {fileID: 933795185}
-  - {fileID: 2079049050}
   - {fileID: 738195159}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7456,7 +7456,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2079049044}
   m_LocalRotation: {x: -0, y: -0.054743286, z: -0, w: 0.9985005}
-  m_LocalPosition: {x: 0, y: 0, z: -0.0010659695}
+  m_LocalPosition: {x: 0, y: 0, z: 1.063415}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7472,11 +7472,11 @@ RectTransform:
   - {fileID: 1086816733}
   - {fileID: 1560907076}
   - {fileID: 2110612197}
-  m_Father: {fileID: 1910818623}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -6.276, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.009691536, y: 0.0009999275}
+  m_AnchoredPosition: {x: 283.17426, y: 1018.001}
   m_SizeDelta: {x: 888.99994, y: 633}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2110612196
@@ -7918,3 +7918,4 @@ SceneRoots:
   - {fileID: 1596663415}
   - {fileID: 1800656505}
   - {fileID: 219951126}
+  - {fileID: 2079049050}

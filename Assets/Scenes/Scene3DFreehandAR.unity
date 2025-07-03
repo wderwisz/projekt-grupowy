@@ -1072,7 +1072,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5055,7 +5055,6 @@ MonoBehaviour:
   drawingPointLeft: {fileID: 88956017}
   drawingPointRight: {fileID: 1265756753}
   drawingCustomizer: {fileID: 2078405836}
-  activationAngle: 60
   positionOffset: {x: 0.1, y: 0.05, z: 0.05}
   rotationOffset: {x: 30, y: 0, z: 0}
   material: {fileID: 2100000, guid: 80d674ef57a629f44ae34b4bf866f032, type: 2}

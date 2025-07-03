@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using System.IO;
 using UnityEngine.UI;
+using System;
 
 public class DrawingPath : MonoBehaviour
 {
@@ -282,14 +283,18 @@ public class DrawingPath : MonoBehaviour
 
     private void HandlePatientMode(RaycastHit hit)
     {
+        Debug.Log(pathManager.coloringFinished);
+        elapsedTime = Time.time - coloringStartTime;
+        accuracy = (totalClicks > 0) ? ((float)successfulClicks / totalClicks) * 100f : 0f;
         if (pathManager.coloringFinished)
         {
             if (coloringStarted)
             {
-                elapsedTime = Time.time - coloringStartTime;
-                accuracy = (totalClicks > 0) ? ((float)successfulClicks / totalClicks) * 100f : 0f;
-                Debug.Log($"Log {Time.frameCount}: Koniec kolorowania. Czas: {elapsedTime:F2}s, Trafienia: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
-                finishBannerController.ShowBanner(this.elapsedTime, this.accuracy);
+                //elapsedTime = Time.time - coloringStartTime;
+                //accuracy = (totalClicks > 0) ? ((float)successfulClicks / totalClicks) * 100f : 0f;
+                //Debug.Log($"time: {elapsedTime} accuracy: {accuracy}");
+                //Debug.Log($"Log {Time.frameCount}: Koniec kolorowania. Czas: {elapsedTime:F2}s, Trafienia: {successfulClicks}/{totalClicks} ({accuracy:F1}%).");
+                //finishBannerController.ShowBanner(this.elapsedTime, this.accuracy);
                 coloringStarted = false;
                 totalClicks = 0;
                 successfulClicks = 0;

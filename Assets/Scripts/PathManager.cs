@@ -94,42 +94,45 @@ public class PathManager : MonoBehaviour
     {
         if (dots.Count > 0 && coloredDots == dots.Count)
         {
-            Debug.Log("PathManager: Wszystkie kropki pokolorowane! Rozpoczynam proces usuwania.");
+            Debug.Log("PathManager: Wszystkie kropki pokolorowane! Rozpoczynam proces usuwania." );
             coloringFinished = true;
+            //StartCoroutine(RemoveDotsAfterDelay(elapsedTime, accuracy));
             finishBannerController.ShowBanner(elapsedTime, accuracy);
         }
     }
 
     //usuwanie szlaku z opóźnieniem
-    private IEnumerator RemoveDotsAfterDelay()
+    private IEnumerator RemoveDotsAfterDelay(float elapsedTime, float accuracy)
     {
         
         
-        yield return new WaitForSeconds(delayInSeconds);
+        yield return new WaitForSeconds(1f);
 
-        // usuwamy wszystkie obiekty z listy ze sceny
-        foreach (GameObject dot in dots)
-        {
-            Destroy(dot);
-        }
+        finishBannerController.ShowBanner(elapsedTime, accuracy);
 
-        // czyscimy liste i zerujemy indeksy
-        dots.Clear();
-        nextDotIndex = 0;
-        coloredDots = 0;
-        coloringFinished = false;
+        //// usuwamy wszystkie obiekty z listy ze sceny
+        //foreach (GameObject dot in dots)
+        //{
+        //    Destroy(dot);
+        //}
 
-        if (drawingPathInstance != null)
-        {
-            drawingPathInstance.ResetDrawingState();
-            Debug.Log("PathManager: Zresetowano stan rysowania (lastDotPosition) po ukończeniu i usunięciu ścieżki.");
-        }
-        else
-        {
-            Debug.LogError("PathManager: Nie można zresetować stanu rysowania, ponieważ referencja do DrawingPath jest pusta!");
-        }
+        //// czyscimy liste i zerujemy indeksy
+        //dots.Clear();
+        //nextDotIndex = 0;
+        //coloredDots = 0;
+        //coloringFinished = false;
 
-        Debug.Log("Wszystkie kropki zostały usunięte.");
+        //if (drawingPathInstance != null)
+        //{
+        //    drawingPathInstance.ResetDrawingState();
+        //    Debug.Log("PathManager: Zresetowano stan rysowania (lastDotPosition) po ukończeniu i usunięciu ścieżki.");
+        //}
+        //else
+        //{
+        //    Debug.LogError("PathManager: Nie można zresetować stanu rysowania, ponieważ referencja do DrawingPath jest pusta!");
+        //}
+
+        //Debug.Log("Wszystkie kropki zostały usunięte.");
     }
 
     public void SaveNamedPath(string pathName, string filePath)

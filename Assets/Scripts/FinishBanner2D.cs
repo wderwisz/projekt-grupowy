@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEditor;
 
 public class FinishBanner2D : MonoBehaviour
 {
@@ -18,10 +19,16 @@ public class FinishBanner2D : MonoBehaviour
 
     public void Update()
     {
-        PositionMenu();
+        //Debug.Log(bannerPanel.activeSelf);
+        //if (bannerPanel.activeSelf)
+        //{
+            FollowPlayer();
+        //}
+
     }
     public void ShowBanner(float time, float accuracy)
     {
+        PositionMenu();
         if (bannerPanel == null || timeText == null || accuracyText == null)
         {
             return;
@@ -31,15 +38,11 @@ public class FinishBanner2D : MonoBehaviour
         timeText.text = $"Czas: {time:F2} s";
         accuracyText.text = $"Celnoœæ: {accuracy:F1} %";
         GameManager.instance.UpdateGameState(GameState.PAUSE);
-        leftRay.enabled = true;
-        rightRay.enabled = true;
     }
 
     public void HideBanner()
     {
         bannerPanel.SetActive(false);
-        leftRay.enabled = false;
-        rightRay.enabled = false;
     }
 
     void PositionMenu()
@@ -55,6 +58,22 @@ public class FinishBanner2D : MonoBehaviour
         // Obracamy menu w stronê gracza
         Quaternion lookRotation = Quaternion.LookRotation(forward);
         bannerPanel.transform.rotation = lookRotation;
+    }
+
+    void FollowPlayer()
+    {
+        // Pobieramy kierunek w którym patrzy gracz (bez wp³ywu nachylenia góra/dó³)
+        Vector3 forward = player.forward;
+        forward.y = 0; // Ignorujemy nachylenie g³owy gracza
+        forward.Normalize();
+
+        // Ustawiamy menu w odpowiedniej pozycji przed graczem
+        Vector3 targetPosition = player.position + forward * menuDistance;
+        bannerPanel.transform.position = Vector3.Lerp(bannerPanel.transform.position, targetPosition, Time.deltaTime * 10f);
+
+        // Ustawiamy rotacjê menu, aby zawsze patrzy³o na gracza
+        Quaternion targetRotation = Quaternion.LookRotation(forward);
+        bannerPanel.transform.rotation = Quaternion.Slerp(bannerPanel.transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
 
 }

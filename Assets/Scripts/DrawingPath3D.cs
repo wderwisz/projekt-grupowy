@@ -217,6 +217,8 @@ public class DrawingPath3D : MonoBehaviour
             StopCoroutine(samplingCoroutine);
 
         accuracy = CalculateColoringAccuracy();
+        Debug.Log(accuracy);
+        Debug.Log(totalDrawingTime);
         if (optionsMenu.gameObject.activeInHierarchy == false)
         {
             bannerController?.ShowBanner(totalDrawingTime, accuracy);
