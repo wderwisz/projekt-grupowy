@@ -177,17 +177,17 @@ public class MenuController : MonoBehaviour
 
     public void ControllerModelOnOff(Toggle toogle)
     {
-        bool isVisible = toogle.isOn;
-        foreach (var renderer in leftController.model.GetComponentsInChildren<Renderer>())
-        {
-            renderer.enabled = isVisible;
-            Debug.Log("zmiana");
+        //bool isVisible = toogle.isOn;
+        //foreach (var renderer in leftController.model.GetComponentsInChildren<Renderer>())
+        //{
+        //    renderer.enabled = isVisible;
+        //    Debug.Log("zmiana");
 
-        }
+        //}
 
-        foreach (var renderer in rightController.model.GetComponentsInChildren<Renderer>())
-        {
-            renderer.enabled = isVisible;
-        }
+        //foreach (var renderer in rightController.model.GetComponentsInChildren<Renderer>())
+        //{
+        //    renderer.enabled = isVisible;
+        //}
     }
 }

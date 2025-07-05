@@ -2338,8 +2338,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd4433c87d5e87547b247a426fc1cceb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftController: {fileID: 0}
-  rightController: {fileID: 0}
+  leftController: {fileID: 817923286}
+  rightController: {fileID: 1789286848}
   menu: {fileID: 1576014493}
   leftRay: {fileID: 179407471}
   rightRay: {fileID: 1945308621}
@@ -2351,7 +2351,7 @@ MonoBehaviour:
   endMenu: {fileID: 1677174101}
   modeToggle: {fileID: 68659398}
   controller: {fileID: 817923286}
-  player: {fileID: 0}
+  player: {fileID: 169858461}
   menuDistance: 1.5
 --- !u!1 &310144910
 GameObject:
@@ -4622,7 +4622,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0006866455, y: 0.00057789317}
+  m_AnchoredPosition: {x: 0.00044250488, y: 0.00057789317}
   m_SizeDelta: {x: -251.29999, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &747662235
@@ -7839,7 +7839,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2050484257}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99996287
+  m_Size: 0.9999963
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

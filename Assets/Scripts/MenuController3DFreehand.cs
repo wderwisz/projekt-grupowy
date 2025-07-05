@@ -126,16 +126,16 @@ public class MenuController3DFreehand : MonoBehaviour
 
     public void ControllerModelOnOff(Toggle toogle)
     {
-        bool isVisible = toogle.isOn;
-        foreach (var renderer in leftController.model.GetComponentsInChildren<Renderer>())
-        {
-            renderer.enabled = isVisible;
-        }
+        //bool isVisible = toogle.isOn;
+        //foreach (var renderer in leftController.model.GetComponentsInChildren<Renderer>())
+        //{
+        //    renderer.enabled = isVisible;
+        //}
 
-        foreach (var renderer in rightController.model.GetComponentsInChildren<Renderer>())
-        {
-            renderer.enabled = isVisible;
-        }
+        //foreach (var renderer in rightController.model.GetComponentsInChildren<Renderer>())
+        //{
+        //    renderer.enabled = isVisible;
+        //}
     }
 }
 
