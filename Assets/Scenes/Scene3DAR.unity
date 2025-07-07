@@ -1786,7 +1786,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00016784668, y: 0.00057789317}
+  m_AnchoredPosition: {x: 0.0001373291, y: 0.00057789317}
   m_SizeDelta: {x: -251.29999, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &206508072
@@ -8699,7 +8699,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1325735312}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999964
+  m_Size: 0.9999844
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11310,7 +11310,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12320,6 +12320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14178188f158bd44aab486f3fb40b6e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  finishBannerController: {fileID: 0}
   dots: []
   dotPrefab: {fileID: 0}
   nextDotIndex: 0
@@ -12517,6 +12518,7 @@ MonoBehaviour:
   config: {fileID: 0}
   pathManager: {fileID: 2057698926}
   menuController: {fileID: 0}
+  finishBannerController: {fileID: 0}
   leftHandRayInteractor: {fileID: 0}
   leftHandActivateAction: {fileID: 0}
   rightHandRayInteractor: {fileID: 0}

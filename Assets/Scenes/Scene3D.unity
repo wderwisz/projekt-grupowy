@@ -4622,7 +4622,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00044250488, y: 0.00057789317}
+  m_AnchoredPosition: {x: 0.000030517578, y: 0.00057789317}
   m_SizeDelta: {x: -251.29999, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &747662235
@@ -4980,7 +4980,7 @@ MonoBehaviour:
   m_EnableInputTracking: 1
   m_EnableInputActions: 1
   m_ModelPrefab: {fileID: 6350655580882400678, guid: 086e1b7d7f7d1494d838f82c83e6baae, type: 3}
-  m_ModelParent: {fileID: 0}
+  m_ModelParent: {fileID: 6350655580882400678, guid: 086e1b7d7f7d1494d838f82c83e6baae, type: 3}
   m_Model: {fileID: 0}
   m_AnimateModel: 0
   m_ModelSelectTransition: 
@@ -7839,7 +7839,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2050484257}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999963
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10421,7 +10421,7 @@ MonoBehaviour:
   m_EnableInputTracking: 1
   m_EnableInputActions: 1
   m_ModelPrefab: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
-  m_ModelParent: {fileID: 0}
+  m_ModelParent: {fileID: 4511239235996002542, guid: 2c7f5b0fc4f82254e9fd7af7590b0bbc, type: 3}
   m_Model: {fileID: 0}
   m_AnimateModel: 0
   m_ModelSelectTransition: 
